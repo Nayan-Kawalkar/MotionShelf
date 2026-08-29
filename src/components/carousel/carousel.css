@@ -1,0 +1,178 @@
+.carousel {
+  /* Defaults — the component overrides these inline from its props. */
+  --carousel-accent: #ffffff;
+  --carousel-card-w: 280px;
+  --carousel-card-h: 400px;
+  --carousel-radius: 16px;
+
+  position: relative;
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.carousel-stage {
+  position: relative;
+  height: calc(var(--carousel-card-h) + 80px);
+  perspective: 1200px;
+}
+
+.carousel-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--carousel-card-w);
+  height: var(--carousel-card-h);
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: var(--carousel-radius);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-card:focus-visible {
+  outline: 3px solid var(--carousel-accent);
+  outline-offset: 2px;
+}
+
+.carousel-card--active {
+  border-color: var(--carousel-accent);
+}
+
+.carousel-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-card__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.05) 45%,
+    transparent 70%
+  );
+}
+
+.carousel-card__info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  text-align: left;
+  color: #fff;
+}
+
+.carousel-card__count {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.carousel-card__title {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.carousel-card__subtitle {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background-color 150ms ease;
+  z-index: 20;
+}
+
+.carousel-control:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-control:focus-visible {
+  outline: 2px solid var(--carousel-accent);
+  outline-offset: 2px;
+}
+
+.carousel-control--prev {
+  left: -16px;
+}
+
+.carousel-control--next {
+  right: -16px;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.carousel-dot {
+  height: 6px;
+  border: none;
+  border-radius: 9999px;
+  padding: 0;
+  cursor: pointer;
+  transition: width 200ms ease;
+}
+
+@media (max-width: 640px) {
+  .carousel-card {
+    /* Never let a wide card setting overflow a phone screen. */
+    width: min(var(--carousel-card-w), 68vw);
+    height: min(var(--carousel-card-h), 96vw);
+  }
+
+  .carousel-stage {
+    height: calc(min(var(--carousel-card-h), 96vw) + 60px);
+  }
+
+  .carousel-control--prev {
+    left: 0;
+  }
+
+  .carousel-control--next {
+    right: 0;
+  }
+
+  .carousel-card__info {
+    padding: 16px;
+  }
+
+  .carousel-card__title {
+    font-size: 18px;
+  }
+
+  .carousel-card__subtitle {
+    font-size: 12px;
+  }
+}

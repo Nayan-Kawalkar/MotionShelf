@@ -1,0 +1,347 @@
+/* ---- Workbench layout --------------------------------------------------- */
+.workbench {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+  padding: 20px;
+}
+
+/* ---- Left rail ---------------------------------------------------------- */
+.rail {
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - var(--nav-h) - 40px);
+  overflow-y: auto;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+}
+
+.rail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 14px;
+}
+
+.rail__back:hover {
+  background: var(--elevated);
+}
+
+.rail__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.rail__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rail__card {
+  display: block;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  overflow: hidden;
+  transition: border-color 140ms ease;
+}
+
+.rail__card:hover {
+  border-color: var(--border);
+}
+
+.rail__preview {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #000;
+  container-type: size;
+  /* Previews are pictures, not playgrounds — scale them down and keep clicks
+     going to the card link. */
+  pointer-events: none;
+}
+
+.rail__scale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--preview-w, 1280px);
+  height: var(--preview-h, 800px);
+  transform: scale(calc(100cqw / var(--preview-wn, 1280)));
+  transform-origin: top left;
+}
+
+.rail__scale > * {
+  width: 100%;
+  height: 100%;
+}
+
+.rail__name {
+  display: block;
+  padding: 12px 14px;
+  font-size: 14.5px;
+}
+
+/* ---- Centre column ------------------------------------------------------ */
+.work {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.work__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.work__title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.work__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.work__stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.work__get {
+  padding: 14px 26px;
+  border: none;
+  border-radius: var(--radius);
+  background: #fff;
+  color: #0a0a0b;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.work__get:hover {
+  opacity: 0.88;
+}
+
+/* ---- Stage -------------------------------------------------------------- */
+.stage {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #000;
+  overflow: hidden;
+}
+
+.stage:fullscreen {
+  border-radius: 0;
+  display: grid;
+  align-content: center;
+}
+
+.stage__tools {
+  position: absolute;
+  top: 14px;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+}
+
+.stage__tools--left {
+  left: 14px;
+}
+
+.stage__tools--right {
+  right: 14px;
+}
+
+.stage__tool {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(20, 20, 22, 0.82);
+  color: var(--text-muted);
+  backdrop-filter: blur(6px);
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.stage__tool:hover {
+  color: var(--text);
+  background: var(--elevated);
+}
+
+.stage__tool--on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.stage__widths {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(20, 20, 22, 0.82);
+  backdrop-filter: blur(6px);
+}
+
+.stage__width {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.stage__width--active {
+  background: var(--elevated);
+  color: var(--text);
+}
+
+.stage__px {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.stage__frame {
+  display: grid;
+  /* minmax(0, 1fr) keeps a wide-content component (a nowrap marquee track)
+     from sizing the column to its own overflow. */
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  min-height: 560px;
+  padding: 64px 24px 32px;
+  overflow: hidden;
+}
+
+/* Scroll-driven components render in an iframe and scroll their own document,
+   so this frame just gives that document a viewport to sit in. */
+.stage__frame--scroll {
+  display: block;
+  height: 640px;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.preview-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+.stage:fullscreen .stage__frame--scroll {
+  height: 100vh;
+}
+
+/* The frame is the scroll viewport, so the canvas must fill it exactly. */
+.stage__frame--scroll .stage__canvas {
+  height: 100%;
+}
+
+.stage__badge {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: rgba(20, 20, 22, 0.82);
+  backdrop-filter: blur(6px);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  pointer-events: none;
+}
+
+.stage__canvas {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  transition: width 220ms ease;
+}
+
+.stage__canvas--sized > * {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1240px) {
+  .workbench {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .rail {
+    grid-column: 1 / -1;
+    position: static;
+    max-height: none;
+  }
+
+  .rail__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rail__card {
+    width: 220px;
+  }
+}
+
+@media (max-width: 900px) {
+  .workbench {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .work__title {
+    font-size: 26px;
+  }
+
+  .stage__frame {
+    min-height: 420px;
+    padding: 60px 12px 24px;
+  }
+}

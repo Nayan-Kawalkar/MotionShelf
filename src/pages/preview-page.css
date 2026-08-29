@@ -1,0 +1,27 @@
+/* The preview document. No app chrome, no scrollbars of our own — the
+   component owns the page, exactly as it would on a real site. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+body {
+  /* Scroll-driven components build a track taller than the frame; that track
+     is what scrolls, so the document must be free to grow. */
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100%;
+}
+
+.preview-missing {
+  margin: 0;
+  padding: 40px;
+  color: #a1a1aa;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  text-align: center;
+}
