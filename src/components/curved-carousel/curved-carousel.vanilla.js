@@ -4,7 +4,9 @@
 //   const ring = mount(document.getElementById("curved-carousel"));
 //   ring.destroy();
 //
-// All styling is injected by this file — no stylesheet needed.
+// All styling is injected by this file — no stylesheet needed. The single-file
+// export inlines this module into the page, so there the `export` below is
+// stripped and `mount` is already in scope.
 
 const DEFAULT_IMAGES = [
   "https://picsum.photos/id/1080/900/650",

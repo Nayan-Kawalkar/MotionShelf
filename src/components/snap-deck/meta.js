@@ -72,12 +72,12 @@ const meta = {
   previewHeight: 640,
   previewBox: [1100, 688],
   views: 4100,
+  likes: 738,
   copies: 187,
   addedAt: "2026-08-29",
   pro: true,
   sources: {
     jsx: { name: "SnapDeck.tsx", lang: "tsx", code: source },
-    framer: { name: "SnapDeck.tsx", lang: "tsx", code: source },
   },
 };
 

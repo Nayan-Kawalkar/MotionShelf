@@ -18,8 +18,8 @@ const NAV_LINKS = [
 function BrandMark() {
   return (
     <span className="topnav__mark" aria-hidden="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2 15.5 8.5 22 12l-6.5 3.5L12 22l-3.5-6.5L2 12l6.5-3.5Z" />
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
+        <path d="M1 4h10M1 8h10M4 1v10M8 1v10" />
       </svg>
     </span>
   );
@@ -58,10 +58,12 @@ function App() {
 
   return (
     <div className="shell">
+      <div className="sheet">
       <nav className="topnav">
         <Link to="/" className="topnav__brand">
           <BrandMark />
           Comp Shope
+          <span className="topnav__ref">Idx / 01</span>
         </Link>
 
         <div className="topnav__links">
@@ -96,6 +98,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,171 @@
+{
+  "id": "carousel",
+  "name": "Coverflow Carousel",
+  "description": "3D coverflow-style image carousel with keyboard and dot navigation.",
+  "category": "Image Gallery",
+  "tags": [
+    "carousel",
+    "gallery",
+    "3d",
+    "slider"
+  ],
+  "pro": false,
+  "dependencies": [],
+  "controls": [
+    {
+      "key": "accent",
+      "label": "Accent",
+      "type": "color",
+      "default": "#ffffff"
+    },
+    {
+      "key": "dotColor",
+      "label": "Dot",
+      "type": "color",
+      "default": "#d4d4d8"
+    },
+    {
+      "key": "cardWidth",
+      "label": "Card Width",
+      "type": "range",
+      "min": 140,
+      "max": 420,
+      "step": 2,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "key": "cardHeight",
+      "label": "Card Height",
+      "type": "range",
+      "min": 200,
+      "max": 560,
+      "step": 4,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "key": "radius",
+      "label": "Radius",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "key": "spacing",
+      "label": "Spread",
+      "type": "range",
+      "min": 20,
+      "max": 130,
+      "step": 1,
+      "unit": "%",
+      "default": 62
+    },
+    {
+      "key": "sideScale",
+      "label": "Falloff",
+      "type": "range",
+      "min": 0.4,
+      "max": 1,
+      "step": 0.02,
+      "default": 0.74
+    },
+    {
+      "key": "speed",
+      "label": "Speed",
+      "type": "range",
+      "min": 150,
+      "max": 1200,
+      "step": 10,
+      "unit": "ms",
+      "default": 520
+    },
+    {
+      "key": "showArrows",
+      "label": "Arrows",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "showDots",
+      "label": "Dots",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "showCaption",
+      "label": "Caption",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Variant 2",
+      "values": {
+        "accent": "#ec5228",
+        "radius": 4,
+        "spacing": 84,
+        "sideScale": 0.62,
+        "showCaption": false
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Variant 3",
+      "values": {
+        "accent": "#111113",
+        "dotColor": "#9ca3af",
+        "cardWidth": 200,
+        "cardHeight": 300,
+        "radius": 32,
+        "spacing": 46,
+        "speed": 320
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Variant 4",
+      "values": {
+        "accent": "#38bdf8",
+        "cardWidth": 340,
+        "cardHeight": 480,
+        "radius": 8,
+        "spacing": 110,
+        "sideScale": 0.52,
+        "speed": 780,
+        "showArrows": false
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "Carousel.jsx",
+      "target": "component",
+      "content": "import { useState, useRef, useCallback, useEffect } from \"react\";\nimport \"./carousel.css\";\n\n// Demo content — swap `slides` for your own data (title + subtitle + image url).\nconst DEFAULT_SLIDES = [\n  { id: 1, title: \"Kyoto, Japan\", subtitle: \"Maples along the Philosopher's Path\", image: \"https://picsum.photos/seed/kyoto-path/900/1100\" },\n  { id: 2, title: \"Faroe Islands\", subtitle: \"Grass-roofed villages above the fjord\", image: \"https://picsum.photos/seed/faroe-islands/900/1100\" },\n  { id: 3, title: \"Marrakech\", subtitle: \"Spice stalls in the Jemaa el-Fnaa souk\", image: \"https://picsum.photos/seed/marrakech-souk/900/1100\" },\n  { id: 4, title: \"Patagonia\", subtitle: \"Granite towers over Lago Torre\", image: \"https://picsum.photos/seed/patagonia-towers/900/1100\" },\n  { id: 5, title: \"Lofoten\", subtitle: \"Fishing huts under the midnight sun\", image: \"https://picsum.photos/seed/lofoten-huts/900/1100\" },\n];\n\n/* @controls:start */\nconst DEFAULTS = {\n  accent: \"#ffffff\",\n  dotColor: \"#d4d4d8\",\n  cardWidth: 280,\n  cardHeight: 400,\n  radius: 16,\n  spacing: 62,\n  sideScale: 0.74,\n  speed: 520,\n  showArrows: true,\n  showDots: true,\n  showCaption: true,\n};\n/* @controls:end */\n\n// Shortest signed distance from `index` to `i` on a ring of size `count`.\nfunction ringOffset(i, index, count) {\n  let d = i - index;\n  if (d > count / 2) d -= count;\n  if (d < -count / 2) d += count;\n  return d;\n}\n\nfunction Chevron({ direction }) {\n  const points = direction === \"left\" ? \"15 18 9 12 15 6\" : \"9 18 15 12 9 6\";\n  return (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth=\"2\"\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <polyline points={points} />\n    </svg>\n  );\n}\n\nexport default function Carousel({\n  slides = DEFAULT_SLIDES,\n  accent = DEFAULTS.accent,\n  dotColor = DEFAULTS.dotColor,\n  cardWidth = DEFAULTS.cardWidth,\n  cardHeight = DEFAULTS.cardHeight,\n  radius = DEFAULTS.radius,\n  spacing = DEFAULTS.spacing,\n  sideScale = DEFAULTS.sideScale,\n  speed = DEFAULTS.speed,\n  showArrows = DEFAULTS.showArrows,\n  showDots = DEFAULTS.showDots,\n  showCaption = DEFAULTS.showCaption,\n}) {\n  const [index, setIndex] = useState(0);\n  const containerRef = useRef(null);\n  const count = slides.length;\n\n  const goTo = useCallback(\n    (i) => setIndex(((i % count) + count) % count),\n    [count]\n  );\n  const next = useCallback(() => goTo(index + 1), [goTo, index]);\n  const prev = useCallback(() => goTo(index - 1), [goTo, index]);\n\n  useEffect(() => {\n    const el = containerRef.current;\n    if (!el) return;\n    const onKey = (e) => {\n      if (e.key === \"ArrowLeft\") prev();\n      if (e.key === \"ArrowRight\") next();\n    };\n    el.addEventListener(\"keydown\", onKey);\n    return () => el.removeEventListener(\"keydown\", onKey);\n  }, [next, prev]);\n\n  // Only render cards close enough to the center to matter.\n  const visible = slides\n    .map((slide, i) => ({ slide, i, offset: ringOffset(i, index, count) }))\n    .filter((s) => Math.abs(s.offset) <= 2);\n\n  const styleFor = (offset) => {\n    const abs = Math.abs(offset);\n    // Each step further out keeps shrinking by the same falloff ratio.\n    const scale = offset === 0 ? 1 : abs === 1 ? sideScale : sideScale * sideScale;\n    const step = spacing + (abs - 1) * (spacing * 0.65);\n    const shift = offset === 0 ? 0 : offset > 0 ? step : -step;\n    const opacity = abs > 2 ? 0 : abs === 2 ? 0.35 : abs === 1 ? 0.75 : 1;\n    const zIndex = 10 - abs;\n    const blur = abs >= 2 ? 1 : 0;\n    return {\n      transform: `translate(-50%, -50%) translateX(${shift}%) scale(${scale})`,\n      opacity,\n      zIndex,\n      filter: blur ? `blur(${blur}px)` : \"none\",\n      transition: `transform ${speed}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${speed}ms ease, filter ${speed}ms ease`,\n    };\n  };\n\n  const cssVars = {\n    \"--carousel-accent\": accent,\n    \"--carousel-card-w\": `${cardWidth}px`,\n    \"--carousel-card-h\": `${cardHeight}px`,\n    \"--carousel-radius\": `${radius}px`,\n  };\n\n  return (\n    <div ref={containerRef} tabIndex={0} className=\"carousel\" style={cssVars}>\n      <div className=\"carousel-stage\">\n        {visible.map(({ slide, i, offset }) => (\n          <button\n            key={slide.id}\n            onClick={() => offset !== 0 && goTo(i)}\n            aria-label={offset === 0 ? `${slide.title}, current slide` : `Go to ${slide.title}`}\n            className={`carousel-card${offset === 0 ? \" carousel-card--active\" : \"\"}`}\n            style={{\n              ...styleFor(offset),\n              cursor: offset === 0 ? \"default\" : \"pointer\",\n            }}\n          >\n            <img\n              src={slide.image}\n              alt={slide.title}\n              className=\"carousel-card__img\"\n              draggable={false}\n            />\n            <div className=\"carousel-card__shade\" />\n            {showCaption && offset === 0 && (\n              <div className=\"carousel-card__info\">\n                <span className=\"carousel-card__count\">\n                  {String(i + 1).padStart(2, \"0\")} / {String(count).padStart(2, \"0\")}\n                </span>\n                <h3 className=\"carousel-card__title\">{slide.title}</h3>\n                <p className=\"carousel-card__subtitle\">{slide.subtitle}</p>\n              </div>\n            )}\n          </button>\n        ))}\n      </div>\n\n      {showArrows && (\n        <>\n          <button\n            onClick={prev}\n            aria-label=\"Previous slide\"\n            className=\"carousel-control carousel-control--prev\"\n          >\n            <Chevron direction=\"left\" />\n          </button>\n          <button\n            onClick={next}\n            aria-label=\"Next slide\"\n            className=\"carousel-control carousel-control--next\"\n          >\n            <Chevron direction=\"right\" />\n          </button>\n        </>\n      )}\n\n      {showDots && (\n        <div className=\"carousel-dots\">\n          {slides.map((slide, i) => (\n            <button\n              key={slide.id}\n              onClick={() => goTo(i)}\n              aria-label={`Go to slide ${i + 1}`}\n              aria-current={i === index}\n              className=\"carousel-dot\"\n              style={{\n                width: i === index ? 22 : 8,\n                backgroundColor: i === index ? accent : dotColor,\n              }}\n            />\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "carousel.css",
+      "target": "styles",
+      "content": ".carousel {\n  /* Defaults — the component overrides these inline from its props. */\n  --carousel-accent: #ffffff;\n  --carousel-card-w: 280px;\n  --carousel-card-h: 400px;\n  --carousel-radius: 16px;\n\n  position: relative;\n  width: 100%;\n  max-width: 768px;\n  margin: 0 auto;\n  outline: none;\n  user-select: none;\n  -webkit-user-select: none;\n  font-family: ui-sans-serif, system-ui, sans-serif;\n}\n\n.carousel-stage {\n  position: relative;\n  height: calc(var(--carousel-card-h) + 80px);\n  perspective: 1200px;\n}\n\n.carousel-card {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  width: var(--carousel-card-w);\n  height: var(--carousel-card-h);\n  padding: 0;\n  border: 3px solid transparent;\n  border-radius: var(--carousel-radius);\n  overflow: hidden;\n  background: #000;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);\n  -webkit-tap-highlight-color: transparent;\n}\n\n.carousel-card:focus-visible {\n  outline: 3px solid var(--carousel-accent);\n  outline-offset: 2px;\n}\n\n.carousel-card--active {\n  border-color: var(--carousel-accent);\n}\n\n.carousel-card__img {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n\n.carousel-card__shade {\n  position: absolute;\n  inset: 0;\n  background: linear-gradient(\n    to top,\n    rgba(0, 0, 0, 0.75) 0%,\n    rgba(0, 0, 0, 0.05) 45%,\n    transparent 70%\n  );\n}\n\n.carousel-card__info {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  padding: 20px;\n  text-align: left;\n  color: #fff;\n}\n\n.carousel-card__count {\n  color: rgba(255, 255, 255, 0.7);\n  font-size: 10px;\n  letter-spacing: 0.2em;\n  text-transform: uppercase;\n}\n\n.carousel-card__title {\n  margin: 4px 0 0;\n  font-size: 20px;\n  line-height: 1.25;\n  font-weight: 600;\n}\n\n.carousel-card__subtitle {\n  margin: 2px 0 0;\n  font-size: 14px;\n  color: rgba(255, 255, 255, 0.8);\n}\n\n.carousel-control {\n  position: absolute;\n  top: 50%;\n  transform: translateY(-50%);\n  display: grid;\n  place-items: center;\n  width: 44px;\n  height: 44px;\n  border: none;\n  border-radius: 50%;\n  background: rgba(0, 0, 0, 0.5);\n  color: #fff;\n  cursor: pointer;\n  backdrop-filter: blur(4px);\n  transition: background-color 150ms ease;\n  z-index: 20;\n}\n\n.carousel-control:hover {\n  background: rgba(0, 0, 0, 0.7);\n}\n\n.carousel-control:focus-visible {\n  outline: 2px solid var(--carousel-accent);\n  outline-offset: 2px;\n}\n\n.carousel-control--prev {\n  left: -16px;\n}\n\n.carousel-control--next {\n  right: -16px;\n}\n\n.carousel-dots {\n  display: flex;\n  justify-content: center;\n  gap: 8px;\n  margin-top: 20px;\n}\n\n.carousel-dot {\n  height: 6px;\n  border: none;\n  border-radius: 9999px;\n  padding: 0;\n  cursor: pointer;\n  transition: width 200ms ease;\n}\n\n@media (max-width: 640px) {\n  .carousel-card {\n    /* Never let a wide card setting overflow a phone screen. */\n    width: min(var(--carousel-card-w), 68vw);\n    height: min(var(--carousel-card-h), 96vw);\n  }\n\n  .carousel-stage {\n    height: calc(min(var(--carousel-card-h), 96vw) + 60px);\n  }\n\n  .carousel-control--prev {\n    left: 0;\n  }\n\n  .carousel-control--next {\n    right: 0;\n  }\n\n  .carousel-card__info {\n    padding: 16px;\n  }\n\n  .carousel-card__title {\n    font-size: 18px;\n  }\n\n  .carousel-card__subtitle {\n    font-size: 12px;\n  }\n}\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "carousel.vanilla.js"
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "id": "spherical-gallery",
+  "name": "Spherical Gallery",
+  "description": "A room of cards wrapped around the viewer. Drag to look around, hover a card to bring it forward.",
+  "category": "Image Gallery",
+  "tags": [
+    "3d",
+    "webgl",
+    "drag",
+    "gallery",
+    "three"
+  ],
+  "pro": false,
+  "dependencies": [
+    "three"
+  ],
+  "controls": [
+    {
+      "key": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "#000000"
+    },
+    {
+      "key": "rows",
+      "label": "Rows",
+      "type": "range",
+      "min": 3,
+      "max": 14,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "key": "columns",
+      "label": "Columns",
+      "type": "range",
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "key": "cardWidth",
+      "label": "Card Size",
+      "type": "range",
+      "min": 2,
+      "max": 10,
+      "step": 0.1,
+      "default": 5
+    },
+    {
+      "key": "cardAspect",
+      "label": "Card Ratio",
+      "type": "range",
+      "min": 0.3,
+      "max": 3.5,
+      "step": 0.01,
+      "default": 1.6
+    },
+    {
+      "key": "cornerRadius",
+      "label": "Corners",
+      "type": "range",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.005,
+      "default": 0.045
+    },
+    {
+      "key": "distance",
+      "label": "Distance",
+      "type": "range",
+      "min": 6,
+      "max": 70,
+      "step": 0.5,
+      "default": 23
+    },
+    {
+      "key": "density",
+      "label": "Fill",
+      "type": "range",
+      "min": 0.2,
+      "max": 1,
+      "step": 0.02,
+      "default": 1
+    },
+    {
+      "key": "tilt",
+      "label": "Tilt",
+      "type": "range",
+      "min": 0,
+      "max": 0.3,
+      "step": 0.005,
+      "default": 0
+    },
+    {
+      "key": "fieldOfView",
+      "label": "FOV",
+      "type": "range",
+      "min": 25,
+      "max": 115,
+      "step": 1,
+      "unit": "°",
+      "default": 74
+    },
+    {
+      "key": "fogColor",
+      "label": "Fog Color",
+      "type": "color",
+      "default": "#000000"
+    },
+    {
+      "key": "fog",
+      "label": "Fog",
+      "type": "range",
+      "min": 0,
+      "max": 0.08,
+      "step": 0.001,
+      "default": 0.016
+    },
+    {
+      "key": "glowColor",
+      "label": "Glow Color",
+      "type": "color",
+      "default": "#ffffff"
+    },
+    {
+      "key": "vignette",
+      "label": "Vignette",
+      "type": "range",
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "default": 1
+    },
+    {
+      "key": "vignetteSize",
+      "label": "Vignette Size",
+      "type": "range",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 115
+    },
+    {
+      "key": "autoDrift",
+      "label": "Auto Drift",
+      "type": "range",
+      "min": 0,
+      "max": 3,
+      "step": 0.01,
+      "default": 0.28
+    },
+    {
+      "key": "driftDirection",
+      "label": "Direction",
+      "type": "select",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "dependent": true
+    },
+    {
+      "key": "dragSpeed",
+      "label": "Drag Speed",
+      "type": "range",
+      "min": 0.0005,
+      "max": 0.012,
+      "step": 0.0001,
+      "default": 0.0032
+    },
+    {
+      "key": "friction",
+      "label": "Glide",
+      "type": "range",
+      "min": 0.75,
+      "max": 0.995,
+      "step": 0.005,
+      "default": 0.935
+    },
+    {
+      "key": "startPitch",
+      "label": "Start Pitch",
+      "type": "range",
+      "min": -40,
+      "max": 40,
+      "step": 1,
+      "unit": "°",
+      "default": 0
+    },
+    {
+      "key": "wheel",
+      "label": "Wheel",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "enabled",
+      "label": "Hover",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "scale",
+      "label": "Hover Grow",
+      "type": "range",
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "default": 0.16,
+      "dependent": true
+    },
+    {
+      "key": "brightness",
+      "label": "Hover Brighten",
+      "type": "range",
+      "min": 0,
+      "max": 2,
+      "step": 0.05,
+      "default": 0.45,
+      "dependent": true
+    },
+    {
+      "key": "dim",
+      "label": "Dim Others",
+      "type": "range",
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "default": 0.3,
+      "dependent": true
+    },
+    {
+      "key": "showTitle",
+      "label": "Overlay",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "title",
+      "label": "Title",
+      "type": "text",
+      "default": "Made with\nSquarespace",
+      "dependent": true
+    },
+    {
+      "key": "titleColor",
+      "label": "Title Color",
+      "type": "color",
+      "default": "#ffffff",
+      "dependent": true
+    },
+    {
+      "key": "subtitle",
+      "label": "Caption",
+      "type": "text",
+      "default": "Drag to explore",
+      "dependent": true
+    },
+    {
+      "key": "subtitleColor",
+      "label": "Caption Color",
+      "type": "color",
+      "default": "rgba(255,255,255,0.42)",
+      "dependent": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Variant 2 — Close Wall",
+      "values": {
+        "distance": 14,
+        "rows": 5,
+        "columns": 12,
+        "cardWidth": 6.2,
+        "cornerRadius": 0,
+        "autoDrift": 0.6,
+        "vignette": 0.6,
+        "title": "Step\ninside"
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Variant 3 — Wide Dome",
+      "values": {
+        "distance": 38,
+        "rows": 11,
+        "columns": 24,
+        "cardWidth": 3.4,
+        "cardAspect": 1.1,
+        "tilt": 0.08,
+        "fieldOfView": 92,
+        "fog": 0.028,
+        "autoDrift": 0.12
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Variant 4 — Bare",
+      "values": {
+        "showTitle": false,
+        "autoDrift": 0,
+        "vignette": 0.35,
+        "density": 0.7,
+        "cornerRadius": 0.12,
+        "background": "#0a0a0b",
+        "fogColor": "#0a0a0b"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "SphericalGallery.tsx",
+      "target": "component",
+      "content": "import * as React from \"react\"\n// @ts-ignore — URL import, resolved by Framer at build time\nimport * as THREE from \"three\"\n\n// Framer's render-target switch, stubbed for use outside Framer.\nconst RenderTarget = {\n    canvas: \"CANVAS\",\n    thumbnail: \"THUMBNAIL\",\n    preview: \"PREVIEW\",\n    current: () => \"PREVIEW\",\n}\n\n/* @controls:start */\nconst DEFAULTS = {\n    images: [] as any[],\n    imageFit: \"cover\",\n    seed: 7,\n    placeholder: {\n        lightRatio: 0.82,\n        chrome: 0.38,\n        names:\n            \"Myrtle Village\\nSecond Story\\nFlaneur\\nBathhouse\\nXanadu\\nPotted\\nStretch Squared\\nMargaret Rajic\\nNaughty Nancy\\nEveryday\\nDreamscape\\nFat Cherry\\nSunny Studio\\nAtelier Nord\\nField Notes\\nRitual\\nThe Green Room\\nSuperbloom\\nNorthsound\\nCopper & Oak\\nWildflower\\nHalcyon\\nMarlow\\nPaper Plane\\nStudio Verde\\nLantern\\nHollow\",\n        headlines:\n            \"A ritual best shared.\\nForming deeper relationships.\\nYou're not stuck, you're overthinking.\\nLet's connect.\\nMade to be lived in.\\nSlow mornings, good light.\\nBuilt for the long game.\\nEverything in its place.\\nDesigned for the everyday.\\nWhere the light lands.\\nSmall batch, made slowly.\\nCome as you are.\\nA quiet kind of luxury.\\nNew work, twice a year.\",\n    },\n    grid: {\n        rows: 7,\n        columns: 16,\n        cardWidth: 5,\n        cardAspect: 1.6,\n        cornerRadius: 0.045,\n        edgeLight: 0.28,\n        distance: 23,\n        gapMode: false,\n        gapX: 4,\n        gapY: 3.1,\n        bandTop: 0.24,\n        bandBottom: 0.76,\n        stagger: 0,\n        density: 1,\n        sizeVariation: 0,\n        depthVariation: 0,\n        angleJitter: 0,\n        tilt: 0,\n    },\n    lens: {\n        fieldOfView: 74,\n        maxPixelRatio: 2,\n        antialias: true,\n    },\n    look: {\n        background: \"#000000\",\n        fogColor: \"#000000\",\n        fog: 0.016,\n        glow: 0.16,\n        glowColor: \"#ffffff\",\n        fadeStart: 0.4,\n        fadeEnd: 0.985,\n        fadeCurve: 1.12,\n        minBrightness: 0.05,\n        vignette: 1,\n        vignetteColor: \"#000000\",\n        vignetteSize: 115,\n    },\n    motion: {\n        drag: true,\n        dragSpeed: 0.0032,\n        invert: false,\n        lockVertical: false,\n        wheel: true,\n        wheelSpeed: 0.0016,\n        friction: 0.935,\n        smoothing: 0.1,\n        dragSmoothing: 0.32,\n        pitchLimit: 0.4,\n        rubber: 0.28,\n        overshoot: 0.09,\n        autoDrift: 0.28,\n        driftDirection: \"left\",\n        driftDelay: 0.6,\n        parallax: 0.02,\n        startAngle: 0,\n        startPitch: 0,\n    },\n    hover: {\n        enabled: true,\n        scale: 0.16,\n        lift: 0.055,\n        brightness: 0.45,\n        glow: 3.2,\n        dim: 0.3,\n        speed: 0.16,\n        pauseDrift: true,\n        cursor: true,\n    },\n    overlay: {\n        showTitle: true,\n        title: \"Made with\\nSquarespace\",\n        titleFont: {\n            fontSize: 64,\n            fontWeight: 400,\n            lineHeight: \"1.05em\",\n            fontFamily: \"Georgia, serif\",\n        },\n        titleColor: \"#ffffff\",\n        textShadow: 1,\n        subtitle: \"Drag to explore\",\n        subtitleColor: \"rgba(255,255,255,0.42)\",\n        subtitleSize: 11,\n        subtitleSpacing: 3.5,\n        subtitleUppercase: true,\n        subtitleGap: 18,\n        offsetY: 0,\n        backdrop: 1,\n    },\n}\n/* @controls:end */\n\n// Framer hands object-groups over as partial objects, so every value gets\n// filled in from DEFAULTS rather than trusting the prop to be complete.\nfunction fill(base: any, over: any) {\n    const out = { ...base }\n    if (over && typeof over === \"object\") {\n        for (const k in over) {\n            if (over[k] !== undefined && over[k] !== null) out[k] = over[k]\n        }\n    }\n    return out\n}\n\n/**\n * 3D SPHERICAL GALLERY\n *\n * A room of cards wrapped around the viewer. Drag to look around, hover a\n * card to bring it forward. Drop your own images into the Images control —\n * with none set it draws placeholder \"site screenshots\", so the component\n * looks right the moment it lands on the canvas.\n *\n * @framerIntrinsicWidth 1200\n * @framerIntrinsicHeight 700\n * @framerSupportedLayoutWidth any\n * @framerSupportedLayoutHeight any\n */\nexport default function SphericalGallery(props: any) {\n    const style = props.style\n    const images = props.images ?? DEFAULTS.images\n    const imageFit = props.imageFit ?? DEFAULTS.imageFit\n    const seed = props.seed ?? DEFAULTS.seed\n    const placeholder = fill(DEFAULTS.placeholder, props.placeholder)\n    const grid = fill(DEFAULTS.grid, props.grid)\n    const lens = fill(DEFAULTS.lens, props.lens)\n    const look = fill(DEFAULTS.look, props.look)\n    const motion = fill(DEFAULTS.motion, props.motion)\n    const hover = fill(DEFAULTS.hover, props.hover)\n    const overlay = fill(DEFAULTS.overlay, props.overlay)\n    const overlayFont = fill(DEFAULTS.overlay.titleFont, overlay.titleFont)\n\n    const [error, setError] = React.useState<string | null>(null)\n\n    const hostRef = React.useRef<HTMLDivElement>(null)\n\n    // live, fully-populated values for the render loop — tweaking motion /\n    // hover / colour never rebuilds the scene\n    const live = React.useRef<any>(null)\n    live.current = {\n        images, imageFit, seed, placeholder, grid, lens, look, motion, hover, overlay,\n    }\n\n    const isCanvas = RenderTarget.current() === RenderTarget.canvas\n\n    const imageKey = React.useMemo(\n        () =>\n            (images || [])\n                .map((i: any) => (typeof i === \"string\" ? i : i?.src || \"\"))\n                .join(\"|\"),\n        [images]\n    )\n\n    // only these force a rebuild of the sphere\n    const structuralKey = JSON.stringify([\n        imageKey,\n        imageFit,\n        seed,\n        placeholder,\n        grid,\n        lens.fieldOfView,\n        lens.antialias,\n        isCanvas,\n    ])\n\n    React.useEffect(() => {\n        const host = hostRef.current\n        if (!host) return\n        let teardown: (() => void) | null = null\n\n        try {\n        const P0 = live.current\n        const G = P0.grid\n        const PH = P0.placeholder\n\n        /* ---------------------------------------------------------------\n           SEEDED RANDOM — layout and placeholder art stay identical\n           across re-renders until you change the Seed control\n        --------------------------------------------------------------- */\n        const mulberry32 = (a: number) => () => {\n            a |= 0\n            a = (a + 0x6d2b79f5) | 0\n            let t = Math.imul(a ^ (a >>> 15), 1 | a)\n            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t\n            return ((t ^ (t >>> 14)) >>> 0) / 4294967296\n        }\n        let rngState = (seed | 0) || 1\n        const rnd = () => {\n            rngState = (rngState * 1664525 + 1013904223) | 0\n            return mulberry32(rngState)()\n        }\n        const rand = (a: number, b: number) => a + rnd() * (b - a)\n        const pick = (a: any[]) => a[(rnd() * a.length) | 0]\n        const shuffle = (a: any[]) => {\n            for (let i = a.length - 1; i > 0; i--) {\n                const j = (rnd() * (i + 1)) | 0\n                ;[a[i], a[j]] = [a[j], a[i]]\n            }\n            return a\n        }\n\n        /* ---------------------------------------------------------------\n           SCENE\n        --------------------------------------------------------------- */\n        const scene = new THREE.Scene()\n        scene.fog = new THREE.FogExp2(0x000000, P0.look.fog)\n\n        // Framer can mount the component before layout settles — fall back\n        // to the intrinsic size and let the ResizeObserver correct it\n        const sizeOf = () => ({\n            w: host.clientWidth || host.offsetWidth || 1200,\n            h: host.clientHeight || host.offsetHeight || 700,\n        })\n        const s0 = sizeOf()\n\n        const camera = new THREE.PerspectiveCamera(\n            P0.lens.fieldOfView,\n            s0.w / s0.h,\n            0.1,\n            400\n        )\n\n        const renderer = new THREE.WebGLRenderer({\n            antialias: P0.lens.antialias,\n            alpha: true,\n        })\n        renderer.setPixelRatio(\n            Math.min(window.devicePixelRatio, P0.lens.maxPixelRatio)\n        )\n        renderer.setSize(s0.w, s0.h)\n        renderer.setClearColor(0x000000, 0)\n        if (\"outputColorSpace\" in renderer && (THREE as any).SRGBColorSpace) {\n            ;(renderer as any).outputColorSpace = (THREE as any).SRGBColorSpace\n        } else if ((THREE as any).sRGBEncoding !== undefined) {\n            ;(renderer as any).outputEncoding = (THREE as any).sRGBEncoding\n        }\n\n        const canvas = renderer.domElement\n        canvas.style.display = \"block\"\n        canvas.style.width = \"100%\"\n        canvas.style.height = \"100%\"\n        canvas.style.touchAction = \"none\"\n        host.appendChild(canvas)\n\n        const group = new THREE.Group()\n        scene.add(group)\n\n        const disposables: any[] = []\n        const tagSRGB = (t: any) => {\n            if (\"colorSpace\" in t && (THREE as any).SRGBColorSpace) {\n                t.colorSpace = (THREE as any).SRGBColorSpace\n            } else if ((THREE as any).sRGBEncoding !== undefined) {\n                t.encoding = (THREE as any).sRGBEncoding\n            }\n            return t\n        }\n        const mip =\n            (THREE as any).LinearMipmapLinearFilter ??\n            (THREE as any).LinearMipMapLinearFilter\n\n        const TEX_W = 512\n        const TEX_H = Math.round(512 / G.cardAspect)\n        const CORNER = Math.min(TEX_W, TEX_H) * G.cornerRadius\n\n        function roundRect(c: any, x: number, y: number, w: number, h: number, r: number) {\n            r = Math.min(r, w / 2, h / 2)\n            c.beginPath()\n            c.moveTo(x + r, y)\n            c.arcTo(x + w, y, x + w, y + h, r)\n            c.arcTo(x + w, y + h, x, y + h, r)\n            c.arcTo(x, y + h, x, y, r)\n            c.arcTo(x, y, x + w, y, r)\n            c.closePath()\n        }\n\n        /* ---------------------------------------------------------------\n           ROUNDED MASK + EDGE-LIGHT FRAME\n           (alpha mask keeps cross-origin images from tainting a canvas)\n        --------------------------------------------------------------- */\n        const maskTex = (() => {\n            const cv = document.createElement(\"canvas\")\n            cv.width = TEX_W\n            cv.height = TEX_H\n            const c = cv.getContext(\"2d\")!\n            c.fillStyle = \"#000\"\n            c.fillRect(0, 0, TEX_W, TEX_H)\n            c.fillStyle = \"#fff\"\n            roundRect(c, 0, 0, TEX_W, TEX_H, CORNER)\n            c.fill()\n            const t = new THREE.CanvasTexture(cv)\n            disposables.push(t)\n            return t\n        })()\n\n        const frameTex =\n            G.edgeLight > 0\n                ? (() => {\n                      const cv = document.createElement(\"canvas\")\n                      cv.width = TEX_W\n                      cv.height = TEX_H\n                      const c = cv.getContext(\"2d\")!\n                      c.strokeStyle = \"#fff\"\n                      c.lineWidth = Math.max(2, TEX_W * 0.006)\n                      roundRect(c, 1.5, 1.5, TEX_W - 3, TEX_H - 3, CORNER)\n                      c.stroke()\n                      const t = new THREE.CanvasTexture(cv)\n                      disposables.push(t)\n                      return t\n                  })()\n                : null\n\n        /* ---------------------------------------------------------------\n           PLACEHOLDER ARTWORK\n        --------------------------------------------------------------- */\n        const PALETTES = [\n            { bg: \"#f5f2ec\", ink: \"#16150f\", accent: \"#2f4f36\", soft: \"#e3ddd0\" },\n            { bg: \"#ffffff\", ink: \"#101114\", accent: \"#2f6df6\", soft: \"#eaeef6\" },\n            { bg: \"#0d0d0d\", ink: \"#ffffff\", accent: \"#ccff2f\", soft: \"#1b1b1b\" },\n            { bg: \"#e9f0e4\", ink: \"#1e2b1c\", accent: \"#6f9455\", soft: \"#d4e2ca\" },\n            { bg: \"#f8e6ea\", ink: \"#3a1e26\", accent: \"#e35d84\", soft: \"#f0cfd8\" },\n            { bg: \"#efe8dc\", ink: \"#2a251d\", accent: \"#b9773a\", soft: \"#e0d4bf\" },\n            { bg: \"#171b25\", ink: \"#eef2f8\", accent: \"#6ea8ff\", soft: \"#252c3a\" },\n            { bg: \"#fdfbf6\", ink: \"#121212\", accent: \"#0f7268\", soft: \"#e9e4d9\" },\n            { bg: \"#f1eeff\", ink: \"#1b1436\", accent: \"#7a5cff\", soft: \"#e0dafa\" },\n            { bg: \"#fff7e8\", ink: \"#241a09\", accent: \"#f0a02a\", soft: \"#f4e6cb\" },\n            { bg: \"#101010\", ink: \"#f6f6f6\", accent: \"#ff4d3d\", soft: \"#1d1d1d\" },\n            { bg: \"#e6eef2\", ink: \"#0f2029\", accent: \"#2f7f9c\", soft: \"#d3e2e9\" },\n        ]\n        const LIGHT = [0, 1, 3, 4, 5, 7, 8, 9, 11]\n        const DARK = [2, 6, 10]\n        const pickPalette = () =>\n            PALETTES[rnd() < PH.lightRatio ? pick(LIGHT) : pick(DARK)]\n\n        const NAMES = (PH.names || \"\")\n            .split(\"\\n\")\n            .map((s: string) => s.trim())\n            .filter(Boolean)\n        const LINES = (PH.headlines || \"\")\n            .split(\"\\n\")\n            .map((s: string) => s.trim())\n            .filter(Boolean)\n\n        function cycler(arr: any[]) {\n            let bag: any[] = []\n            return () => {\n                if (!arr.length) return \"\"\n                if (!bag.length) bag = shuffle(arr.slice())\n                return bag.pop()\n            }\n        }\n        const nextName = cycler(NAMES)\n        const nextLine = cycler(LINES)\n\n        function fitText(c: any, text: string, maxW: number, px: number, weight: any, family: string) {\n            let size = px\n            do {\n                c.font = `${weight} ${Math.round(size)}px ${family}`\n                if (c.measureText(text).width <= maxW) break\n                size *= 0.94\n            } while (size > 8)\n        }\n        function textBlock(c: any, x: number, y: number, w: number, lines: number, size: number, gap: number, color: string, alpha: number) {\n            c.fillStyle = color\n            c.globalAlpha = alpha\n            for (let i = 0; i < lines; i++) {\n                const lw = w * (i === lines - 1 ? rand(0.4, 0.7) : rand(0.85, 1))\n                c.fillRect(x, y + i * (size + gap), lw, size)\n            }\n            c.globalAlpha = 1\n        }\n        function drawNav(c: any, w: number, dark: boolean) {\n            c.fillStyle = dark ? \"rgba(255,255,255,0.75)\" : \"rgba(0,0,0,0.72)\"\n            const y = w * 0.055\n            c.fillRect(w * 0.05, y, w * 0.1, w * 0.014)\n            let x = w * 0.6\n            for (let i = 0; i < 4; i++) {\n                c.globalAlpha = 0.55\n                c.fillRect(x, y, w * 0.055, w * 0.012)\n                x += w * 0.085\n            }\n            c.globalAlpha = 1\n        }\n\n        function makePlaceholder() {\n            const w = TEX_W, h = TEX_H\n            const cv = document.createElement(\"canvas\")\n            cv.width = w\n            cv.height = h\n            const ctx = cv.getContext(\"2d\")!\n            const p = pickPalette()\n            const dark = parseInt(p.bg.slice(1, 3), 16) < 90\n\n            ctx.fillStyle = p.bg\n            ctx.fillRect(0, 0, w, h)\n\n            const q = rnd()\n            const kind =\n                q < 0.28 ? \"hero\" :\n                q < 0.5 ? \"editorial\" :\n                q < 0.66 ? \"grid\" :\n                q < 0.82 ? \"product\" :\n                q < 0.94 ? \"split\" : \"type\"\n\n            if (kind === \"hero\") {\n                const g = ctx.createLinearGradient(0, 0, w, h * 0.9)\n                g.addColorStop(0, p.accent)\n                g.addColorStop(1, p.soft)\n                ctx.fillStyle = g\n                ctx.fillRect(0, 0, w, h * 0.72)\n                ctx.fillStyle = \"rgba(0,0,0,0.28)\"\n                ctx.fillRect(0, h * 0.32, w, h * 0.4)\n                ctx.fillStyle = \"#fff\"\n                const nm = nextName()\n                fitText(ctx, nm, w * 0.88, h * 0.115, 600, \"Georgia, serif\")\n                ctx.fillText(nm, w * 0.06, h * 0.6)\n                textBlock(ctx, w * 0.06, h * 0.8, w * 0.55, 2, h * 0.028, h * 0.035, p.ink, 0.45)\n                drawNav(ctx, w, true)\n            } else if (kind === \"editorial\") {\n                drawNav(ctx, w, dark)\n                ctx.fillStyle = p.ink\n                const line = nextLine()\n                ctx.textAlign = \"center\"\n                fitText(ctx, line, w * 0.84, h * 0.135, 400, \"Georgia, serif\")\n                ctx.fillText(line, w / 2, h * 0.44)\n                ctx.textAlign = \"left\"\n                ctx.fillStyle = p.soft\n                ctx.fillRect(w * 0.3, h * 0.58, w * 0.4, h * 0.26)\n                ctx.fillStyle = p.accent\n                ctx.globalAlpha = 0.85\n                ctx.fillRect(w * 0.3, h * 0.58, w * 0.4, h * 0.05)\n                ctx.globalAlpha = 1\n            } else if (kind === \"grid\") {\n                drawNav(ctx, w, dark)\n                const cols = 3, gr = 2\n                const pad = w * 0.05, gx = w * 0.025\n                const cw = (w - pad * 2 - gx * (cols - 1)) / cols\n                const ch = (h * 0.62 - gx * (gr - 1)) / gr\n                for (let y = 0; y < gr; y++) {\n                    for (let x = 0; x < cols; x++) {\n                        const qq = pickPalette()\n                        ctx.fillStyle = rnd() > 0.35 ? qq.accent : p.ink\n                        ctx.globalAlpha = rnd() > 0.35 ? rand(0.65, 1) : 0.14\n                        const hh = ch * rand(0.72, 1)\n                        roundRect(ctx, pad + x * (cw + gx), h * 0.2 + y * (ch + gx), cw, hh, CORNER * 0.5)\n                        ctx.fill()\n                        ctx.globalAlpha = 0.18\n                        ctx.strokeStyle = p.ink\n                        ctx.lineWidth = Math.max(1, w * 0.002)\n                        ctx.stroke()\n                    }\n                }\n                ctx.globalAlpha = 1\n            } else if (kind === \"product\") {\n                drawNav(ctx, w, dark)\n                const g = ctx.createRadialGradient(w * 0.5, h * 0.48, 4, w * 0.5, h * 0.48, h * 0.42)\n                g.addColorStop(0, p.accent)\n                g.addColorStop(1, p.soft)\n                ctx.fillStyle = g\n                ctx.beginPath()\n                ctx.arc(w * 0.5, h * 0.48, h * 0.26, 0, Math.PI * 2)\n                ctx.fill()\n                textBlock(ctx, w * 0.36, h * 0.8, w * 0.28, 2, h * 0.026, h * 0.03, p.ink, 0.5)\n                ctx.fillStyle = p.accent\n                roundRect(ctx, w * 0.41, h * 0.9, w * 0.18, h * 0.06, h * 0.03)\n                ctx.fill()\n            } else if (kind === \"type\") {\n                ctx.fillStyle = p.accent\n                ctx.fillRect(0, 0, w, h)\n                ctx.fillStyle = dark ? \"#0b0b0b\" : rnd() > 0.5 ? \"#0b0b0b\" : \"#fff\"\n                const word = (nextName() || \"Studio\").split(\" \")[0].toUpperCase()\n                ctx.textAlign = \"center\"\n                fitText(ctx, word, w * 0.86, h * 0.34, 800, \"Helvetica, Arial, sans-serif\")\n                ctx.fillText(word, w / 2, h * 0.6)\n                ctx.textAlign = \"left\"\n                ctx.globalAlpha = 0.4\n                ctx.fillRect(w * 0.08, h * 0.72, w * 0.84, h * 0.01)\n                ctx.globalAlpha = 1\n                textBlock(ctx, w * 0.08, h * 0.8, w * 0.42, 2, h * 0.022, h * 0.028, dark ? \"#fff\" : \"#0b0b0b\", 0.42)\n                drawNav(ctx, w, !dark)\n            } else {\n                ctx.fillStyle = p.soft\n                ctx.fillRect(0, 0, w * 0.48, h)\n                ctx.fillStyle = p.accent\n                ctx.globalAlpha = 0.9\n                ctx.fillRect(w * 0.48, h * 0.16, w * 0.52, h * 0.68)\n                ctx.globalAlpha = 1\n                ctx.fillStyle = p.ink\n                const nm = (nextName() || \"Studio\").split(\" \")[0]\n                fitText(ctx, nm, w * 0.38, h * 0.1, 500, \"Georgia, serif\")\n                ctx.fillText(nm, w * 0.06, h * 0.42)\n                textBlock(ctx, w * 0.06, h * 0.52, w * 0.34, 3, h * 0.022, h * 0.028, p.ink, 0.4)\n                drawNav(ctx, w, dark)\n            }\n\n            if (rnd() < PH.chrome) {\n                ctx.fillStyle = dark ? \"rgba(255,255,255,0.10)\" : \"rgba(0,0,0,0.07)\"\n                ctx.fillRect(0, 0, w, h * 0.075)\n                ;[\"#ff5f57\", \"#febc2e\", \"#28c840\"].forEach((c, i) => {\n                    ctx.fillStyle = c\n                    ctx.globalAlpha = 0.75\n                    ctx.beginPath()\n                    ctx.arc(w * 0.035 + i * w * 0.028, h * 0.038, h * 0.012, 0, Math.PI * 2)\n                    ctx.fill()\n                })\n                ctx.globalAlpha = 1\n            }\n\n            const t = new THREE.CanvasTexture(cv)\n            tagSRGB(t)\n            t.minFilter = mip\n            disposables.push(t)\n            return t\n        }\n\n        /* ---------------------------------------------------------------\n           TEXTURES\n        --------------------------------------------------------------- */\n        let dirty = true\n        const urls: string[] = (images || [])\n            .map((i: any) => (typeof i === \"string\" ? i : i?.src))\n            .filter(Boolean)\n\n        const maxAniso = renderer.capabilities.getMaxAnisotropy\n            ? renderer.capabilities.getMaxAnisotropy()\n            : 1\n        const byTexture = new Map<any, any[]>()\n\n        function loadImageTexture(url: string) {\n            const loader = new THREE.TextureLoader()\n            loader.setCrossOrigin(\"anonymous\")\n            const tex = loader.load(\n                url,\n                (t: any) => {\n                    const ia = t.image.width / t.image.height\n                    if (imageFit === \"cover\") {\n                        if (ia > G.cardAspect) {\n                            t.repeat.set(G.cardAspect / ia, 1)\n                            t.offset.set((1 - G.cardAspect / ia) / 2, 0)\n                        } else {\n                            t.repeat.set(1, ia / G.cardAspect)\n                            t.offset.set(0, (1 - ia / G.cardAspect) / 2)\n                        }\n                        t.needsUpdate = true\n                    } else {\n                        // contain — reshape the card itself to the image\n                        const list = byTexture.get(t) || []\n                        list.forEach((c: any) => {\n                            if (ia > G.cardAspect) c.baseScale[1] = G.cardAspect / ia\n                            else c.baseScale[0] = ia / G.cardAspect\n                        })\n                    }\n                    dirty = true\n                },\n                undefined,\n                () => { dirty = true }\n            )\n            tagSRGB(tex)\n            tex.anisotropy = maxAniso\n            tex.minFilter = mip\n            disposables.push(tex)\n            return tex\n        }\n\n        const TEXTURES: any[] = []\n        if (urls.length) {\n            urls.forEach((u) => TEXTURES.push(loadImageTexture(u)))\n        } else {\n            for (let i = 0; i < 26; i++) TEXTURES.push(makePlaceholder())\n            shuffle(TEXTURES)\n        }\n\n        const glowTex = (() => {\n            const s = 128\n            const cv = document.createElement(\"canvas\")\n            cv.width = cv.height = s\n            const c = cv.getContext(\"2d\")!\n            const g = c.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2)\n            g.addColorStop(0, \"rgba(255,255,255,0.55)\")\n            g.addColorStop(0.45, \"rgba(255,255,255,0.16)\")\n            g.addColorStop(1, \"rgba(255,255,255,0)\")\n            c.fillStyle = g\n            c.fillRect(0, 0, s, s)\n            const t = new THREE.CanvasTexture(cv)\n            disposables.push(t)\n            return t\n        })()\n\n        /* ---------------------------------------------------------------\n           SPACING — either you set the card size and the gaps fall out,\n           or you set the gaps and the card size is solved for.\n\n           Rows near the top and bottom sit on a narrower circle, so the\n           horizontal gap is honoured at the TIGHTEST row: card width and\n           the vertical band depend on each other, and a few passes settle\n           it (each pass converges quickly — 6 is far more than enough).\n        --------------------------------------------------------------- */\n        const ring = (phi: number) =>\n            (2 * Math.PI * G.distance * Math.sin(phi)) / G.columns\n\n        let CARD_W = G.cardWidth\n        let BAND_TOP = G.bandTop\n        let BAND_BOTTOM = G.bandBottom\n\n        if (G.gapMode) {\n            let phiTop = Math.PI / 2\n            CARD_W = Math.max(0.2, ring(Math.PI / 2) - G.gapX)\n            for (let i = 0; i < 6; i++) {\n                const ch = CARD_W / G.cardAspect\n                const span = Math.max(0, G.rows - 1) * (ch + G.gapY) // world units\n                const half = span / 2 / G.distance                   // radians\n                phiTop = Math.max(0.05 * Math.PI, Math.PI / 2 - half)\n                CARD_W = Math.max(0.2, ring(phiTop) - G.gapX)\n            }\n            BAND_TOP = phiTop / Math.PI\n            BAND_BOTTOM = 1 - BAND_TOP\n        }\n\n        const cards: any[] = []\n        const CARD_H = CARD_W / G.cardAspect\n        const cardGeo = new THREE.PlaneGeometry(CARD_W, CARD_H)\n        disposables.push(cardGeo)\n\n        let seq = 0\n        for (let row = 0; row < G.rows; row++) {\n            const t = G.rows === 1 ? 0.5 : row / (G.rows - 1)\n            const phiBase = (BAND_TOP + t * (BAND_BOTTOM - BAND_TOP)) * Math.PI\n            const rowOffset = (row % 2) * ((Math.PI / G.columns) * G.stagger)\n\n            for (let col = 0; col < G.columns; col++) {\n                const tex = TEXTURES[seq % TEXTURES.length]\n                seq++\n                if (rnd() > G.density) continue // deliberate hole\n\n                const step = (Math.PI * 2) / G.columns\n                const theta =\n                    col * step + rowOffset + rand(-1, 1) * step * G.angleJitter\n                const phi = phiBase + rand(-1, 1) * 0.035 * Math.PI * G.angleJitter\n                const rad = G.distance + rand(-1, 1) * G.depthVariation\n                const s = 1 + rand(-1, 1) * G.sizeVariation\n\n                const mat = new THREE.MeshBasicMaterial({\n                    map: tex,\n                    alphaMap: maskTex,\n                    transparent: true,\n                    alphaTest: 0.5,\n                    side: THREE.FrontSide,\n                    fog: true,\n                })\n                disposables.push(mat)\n\n                const mesh = new THREE.Mesh(cardGeo, mat)\n                mesh.position.set(\n                    rad * Math.sin(phi) * Math.sin(theta),\n                    rad * Math.cos(phi),\n                    rad * Math.sin(phi) * Math.cos(theta)\n                )\n                mesh.lookAt(0, 0, 0)\n                if (G.tilt) mesh.rotateZ(rand(-G.tilt, G.tilt))\n                group.add(mesh)\n\n                // edge light\n                let frameMat: any = null\n                if (frameTex) {\n                    frameMat = new THREE.MeshBasicMaterial({\n                        map: frameTex,\n                        transparent: true,\n                        blending: THREE.AdditiveBlending,\n                        depthWrite: false,\n                        opacity: 0,\n                        fog: true,\n                    })\n                    disposables.push(frameMat)\n                    const frame = new THREE.Mesh(cardGeo, frameMat)\n                    frame.position.set(0, 0, 0.002)\n                    mesh.add(frame)\n                }\n\n                // halo\n                const glowMat = new THREE.SpriteMaterial({\n                    map: glowTex,\n                    transparent: true,\n                    blending: THREE.AdditiveBlending,\n                    depthWrite: false,\n                    opacity: 0,\n                })\n                disposables.push(glowMat)\n                const glow = new THREE.Sprite(glowMat)\n                glow.position.copy(mesh.position).multiplyScalar(1.012)\n                group.add(glow)\n\n                const card = {\n                    mesh, mat, frameMat, glow, glowMat, tex,\n                    basePos: mesh.position.clone(),\n                    dir: mesh.position.clone().normalize(),\n                    baseScale: [s, s],\n                    hover: 0,\n                    glowW: CARD_W * 1.9 * s,\n                    glowH: CARD_H * 2.2 * s,\n                }\n                mesh.scale.set(s, s, 1)\n                glow.scale.set(card.glowW, card.glowH, 1)\n                ;(mesh as any).userData.card = card\n                cards.push(card)\n\n                const list = byTexture.get(tex) || []\n                list.push(card)\n                byTexture.set(tex, list)\n            }\n        }\n        const meshes = cards.map((c) => c.mesh)\n\n        /* ---------------------------------------------------------------\n           INPUT\n        --------------------------------------------------------------- */\n        let targetY = (P0.motion.startAngle * Math.PI) / 180\n        let targetX = (P0.motion.startPitch * Math.PI) / 180\n        let currentY = targetY\n        let currentX = targetX\n        let velY = 0, velX = 0\n        let dragging = false\n        let idle = 0\n        let lastX = 0, lastY = 0\n        let pendingDX = 0, pendingDY = 0     // input collected between frames\n        let parallaxX = 0, parallaxY = 0     // where the cursor is\n        let parX = 0, parY = 0               // eased parallax actually applied\n\n        const raycaster = new THREE.Raycaster()\n        const ndc = new THREE.Vector2()\n        let hoverEnabled = false\n        let hovered: any = null\n        let hoverMix = 0\n\n        const sens = () =>\n            live.current.motion.dragSpeed *\n            (1400 / Math.max(host.clientWidth, 700)) *\n            (live.current.motion.invert ? -1 : 1)\n\n        const setCursor = (c: string) => {\n            canvas.style.cursor = live.current.hover.cursor ? c : \"default\"\n        }\n        setCursor(\"grab\")\n\n        const onPointerDown = (e: PointerEvent) => {\n            if (!live.current.motion.drag) return\n            dragging = true\n            idle = 0\n            velY = velX = 0\n            pendingDX = pendingDY = 0\n            clock.getDelta()          // drop the idle gap so frame 1 is normal\n            lastX = e.clientX\n            lastY = e.clientY\n            canvas.setPointerCapture(e.pointerId)\n            setCursor(\"grabbing\")\n        }\n\n        const onPointerMove = (e: PointerEvent) => {\n            hoverEnabled = e.pointerType === \"mouse\"\n            const r = canvas.getBoundingClientRect()\n            ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1\n            ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1\n            parallaxX = ndc.x\n            parallaxY = -ndc.y\n            if (!dragging) return\n\n            // Collect movement and let the frame apply it. Several pointer\n            // events can land between two frames; summing them keeps the\n            // throw speed honest and the motion even.\n            const events: any[] =\n                (e as any).getCoalescedEvents?.() || [e]\n            for (const ev of events) {\n                pendingDX += ev.clientX - lastX\n                pendingDY += ev.clientY - lastY\n                lastX = ev.clientX\n                lastY = ev.clientY\n            }\n            idle = 0\n        }\n\n        const endDrag = (e: PointerEvent) => {\n            if (!dragging) return\n            dragging = false\n            const TOP = live.current.motion.pitchLimit\n            targetX = Math.max(-TOP, Math.min(TOP, targetX))\n            setCursor(hovered ? \"pointer\" : \"grab\")\n            try { canvas.releasePointerCapture(e.pointerId) } catch (_) {}\n        }\n\n        const onPointerLeave = () => {\n            hoverEnabled = false\n            hovered = null\n        }\n\n        const onWheel = (e: WheelEvent) => {\n            if (!live.current.motion.wheel) return\n            e.preventDefault()\n            idle = 0\n            const d = e.deltaY * live.current.motion.wheelSpeed * 0.35\n            targetY -= d\n            velY = -d * 0.6\n        }\n\n        canvas.addEventListener(\"pointerdown\", onPointerDown)\n        canvas.addEventListener(\"pointermove\", onPointerMove)\n        canvas.addEventListener(\"pointerup\", endDrag)\n        canvas.addEventListener(\"pointercancel\", endDrag)\n        canvas.addEventListener(\"pointerleave\", onPointerLeave)\n        canvas.addEventListener(\"wheel\", onWheel, { passive: false })\n\n        /* ---------------------------------------------------------------\n           LOOP\n        --------------------------------------------------------------- */\n        const clock = new THREE.Clock()\n        const q3 = new THREE.Quaternion()\n        const eu = new THREE.Euler(0, 0, 0, \"XYZ\")\n        const v3 = new THREE.Vector3()\n        const smoothstep = (a: number, b: number, x: number) => {\n            const t = Math.max(0, Math.min(1, (x - a) / (b - a)))\n            return t * t * (3 - 2 * t)\n        }\n\n        let lastFog = -1\n        let lastFogColor = \"\"\n        let warmup = 90        // always draw the first ~1.5s\n        let raf = 0\n\n        function frame() {\n            raf = requestAnimationFrame(frame)\n            const P = live.current\n            const M = P.motion\n            const H = P.hover\n            const L = P.look\n            const dt = Math.min(clock.getDelta(), 0.05)\n            const f = Math.min(dt * 60, 2)   // never take a giant step after a stall\n            const TOP = M.pitchLimit\n\n            // ---- apply the drag collected since the last frame\n            if (dragging) {\n                if (pendingDX || pendingDY) {\n                    const k = sens()\n                    const dx = pendingDX * k\n                    const dy = (M.lockVertical ? 0 : pendingDY) * k\n                    pendingDX = pendingDY = 0\n\n                    targetY -= dx\n                    velY = -dx * 0.9\n\n                    let next = targetX - dy\n                    if (next > TOP) next = TOP + (next - TOP) * M.rubber\n                    else if (next < -TOP) next = -TOP + (next + TOP) * M.rubber\n                    velX = (next - targetX) * 0.9\n                    targetX = next\n                } else {\n                    // finger held still — bleed off the throw so releasing\n                    // after a pause does not fling\n                    velY *= Math.pow(0.8, f)\n                    velX *= Math.pow(0.8, f)\n                }\n            }\n\n            if (!dragging) {\n                targetY += velY * f\n                targetX += velX * f\n                velY *= Math.pow(M.friction, f)\n                velX *= Math.pow(M.friction, f)\n                if (Math.abs(velY) < 1e-5) velY = 0\n                if (Math.abs(velX) < 1e-5) velX = 0\n\n                if (targetX > TOP) targetX += (TOP - targetX) * 0.12 * f\n                if (targetX < -TOP) targetX += (-TOP - targetX) * 0.12 * f\n\n                idle += dt\n                if (!isCanvas && M.autoDrift) {\n                    const ramp =\n                        smoothstep(M.driftDelay, M.driftDelay + 1.6, idle) *\n                        (1 - Math.min(1, Math.abs(velY) * 200)) *\n                        (H.pauseDrift ? 1 - hoverMix : 1)\n                    targetY -=\n                        M.autoDrift * 0.001 * ramp * f *\n                        (M.driftDirection === \"right\" ? -1 : 1)\n                }\n            } else {\n                idle = 0\n            }\n\n            // follow the pointer closely while dragging, coast gently after\n            const ease = 1 - Math.pow(1 - (dragging ? M.dragSmoothing : M.smoothing), f)\n            const prevY = currentY, prevX = currentX\n            currentY += (targetY - currentY) * ease\n            currentX += (targetX - currentX) * ease\n\n            // parallax eases to zero on press instead of snapping there\n            const pEase = 1 - Math.pow(1 - 0.08, f)\n            const wantX = dragging ? 0 : parallaxX * M.parallax\n            const wantY = dragging ? 0 : parallaxY * M.parallax * 0.75\n            parX += (wantX - parX) * pEase\n            parY += (wantY - parY) * pEase\n\n            group.rotation.y = currentY + parX\n            group.rotation.x = Math.max(\n                -TOP - M.overshoot,\n                Math.min(TOP + M.overshoot, currentX + parY)\n            )\n\n            // hover pick\n            if (!H.enabled || !hoverEnabled || dragging || isCanvas) {\n                hovered = null\n            } else {\n                raycaster.setFromCamera(ndc, camera)\n                const hit = raycaster.intersectObjects(meshes, false)[0]\n                hovered = hit ? (hit.object as any).userData.card : null\n            }\n            if (!dragging) setCursor(hovered ? \"pointer\" : \"grab\")\n\n            const hEase = 1 - Math.pow(1 - H.speed, f)\n            const prevMix = hoverMix\n            hoverMix += ((hovered ? 1 : 0) - hoverMix) * hEase\n\n            // live look values\n            if (L.fog !== lastFog) {\n                ;(scene.fog as any).density = L.fog\n                lastFog = L.fog\n                dirty = true\n            }\n            if (L.fogColor !== lastFogColor) {\n                ;(scene.fog as any).color.set(L.fogColor)\n                lastFogColor = L.fogColor\n                dirty = true\n            }\n\n            eu.set(group.rotation.x, group.rotation.y, 0, \"XYZ\")\n            q3.setFromEuler(eu)\n\n            for (let i = 0; i < cards.length; i++) {\n                const c = cards[i]\n                v3.copy(c.dir).applyQuaternion(q3)\n                const facing = -v3.z\n                const k = smoothstep(L.fadeStart, L.fadeEnd, facing)\n                let b = L.minBrightness + (1 - L.minBrightness) * Math.pow(k, L.fadeCurve)\n\n                const want = c === hovered ? 1 : 0\n                if (c.hover !== want) {\n                    c.hover += (want - c.hover) * hEase\n                    if (Math.abs(want - c.hover) < 0.001) c.hover = want\n                }\n                const hv = c.hover\n\n                b *= 1 - H.dim * hoverMix * (1 - hv)\n                b *= 1 + H.brightness * hv\n\n                c.mat.color.setScalar(b)\n                if (c.frameMat) c.frameMat.opacity = b * G.edgeLight\n                c.glowMat.color.set(L.glowColor)\n                c.glowMat.opacity = Math.pow(k, 2.4) * L.glow * (1 + H.glow * hv)\n\n                const s = 1 + H.scale * hv\n                c.mesh.scale.set(c.baseScale[0] * s, c.baseScale[1] * s, 1)\n                if (hv > 0) {\n                    c.mesh.position.copy(c.basePos).multiplyScalar(1 - H.lift * hv)\n                    c.glow.position.copy(c.mesh.position).multiplyScalar(1.012)\n                    c.glow.scale.set(c.glowW * s, c.glowH * s, 1)\n                } else if (c.glow.scale.x !== c.glowW) {\n                    c.mesh.position.copy(c.basePos)\n                    c.glow.position.copy(c.basePos).multiplyScalar(1.012)\n                    c.glow.scale.set(c.glowW, c.glowH, 1)\n                }\n            }\n\n            const moved =\n                dragging ||\n                Math.abs(currentY - prevY) > 1e-6 ||\n                Math.abs(currentX - prevX) > 1e-6 ||\n                Math.abs(parX - wantX) > 1e-6 ||\n                Math.abs(hoverMix - prevMix) > 1e-4\n            if (moved || dirty || warmup > 0) {\n                renderer.render(scene, camera)\n                dirty = false\n                if (warmup > 0) warmup--\n            }\n        }\n        frame()\n\n        /* ---------------------------------------------------------------\n           RESIZE + CLEANUP\n        --------------------------------------------------------------- */\n        const ro = new ResizeObserver(() => {\n            const { w, h } = sizeOf()\n            camera.aspect = w / h\n            camera.updateProjectionMatrix()\n            renderer.setPixelRatio(\n                Math.min(window.devicePixelRatio, live.current.lens.maxPixelRatio)\n            )\n            renderer.setSize(w, h)\n            dirty = true\n            warmup = Math.max(warmup, 5)\n        })\n        ro.observe(host)\n\n        teardown = () => {\n            cancelAnimationFrame(raf)\n            ro.disconnect()\n            canvas.removeEventListener(\"pointerdown\", onPointerDown)\n            canvas.removeEventListener(\"pointermove\", onPointerMove)\n            canvas.removeEventListener(\"pointerup\", endDrag)\n            canvas.removeEventListener(\"pointercancel\", endDrag)\n            canvas.removeEventListener(\"pointerleave\", onPointerLeave)\n            canvas.removeEventListener(\"wheel\", onWheel)\n            disposables.forEach((d) => d.dispose && d.dispose())\n            renderer.dispose()\n            if (canvas.parentNode) canvas.parentNode.removeChild(canvas)\n        }\n        setError(null)\n        } catch (err: any) {\n            // surface the problem instead of leaving an empty black frame\n            console.error(\"[SphericalGallery]\", err)\n            setError(String(err?.message || err))\n        }\n        return () => { if (teardown) teardown() }\n    }, [structuralKey])\n\n    /* -------------------------------------------------------------------\n       DOM\n    ------------------------------------------------------------------- */\n    const O = overlay\n    return (\n        <div\n            style={{\n                position: \"relative\",\n                overflow: \"hidden\",\n                background: look.background,\n                userSelect: \"none\",\n                WebkitUserSelect: \"none\",\n                ...style,\n            }}\n        >\n            <div ref={hostRef} style={{ position: \"absolute\", inset: 0 }} />\n\n            {error && (\n                <div\n                    style={{\n                        position: \"absolute\",\n                        inset: 0,\n                        display: \"flex\",\n                        alignItems: \"center\",\n                        justifyContent: \"center\",\n                        padding: 24,\n                        textAlign: \"center\",\n                        font: \"500 13px/1.5 Inter, sans-serif\",\n                        color: \"#ff6b6b\",\n                        background: \"rgba(0,0,0,0.6)\",\n                    }}\n                >\n                    3D Gallery could not start: {error}\n                </div>\n            )}\n\n            {look.vignette > 0 && (\n                <div\n                    style={{\n                        position: \"absolute\",\n                        inset: 0,\n                        pointerEvents: \"none\",\n                        opacity: look.vignette,\n                        background: `radial-gradient(${look.vignetteSize}% ${\n                            look.vignetteSize * 0.68\n                        }% at 50% 50%, transparent 32%, ${look.vignetteColor} 100%)`,\n                    }}\n                />\n            )}\n\n            {O.showTitle && (\n                <div\n                    style={{\n                        position: \"absolute\",\n                        top: `calc(50% + ${O.offsetY}px)`,\n                        left: \"50%\",\n                        transform: \"translate(-50%, -50%)\",\n                        textAlign: \"center\",\n                        pointerEvents: \"none\",\n                        padding: \"8% 12%\",\n                        background: O.backdrop\n                            ? `radial-gradient(closest-side, rgba(0,0,0,${\n                                  0.85 * O.backdrop\n                              }) 0%, rgba(0,0,0,${0.55 * O.backdrop}) 45%, rgba(0,0,0,0) 100%)`\n                            : \"none\",\n                    }}\n                >\n                    <div\n                        style={{\n                            color: O.titleColor,\n                            whiteSpace: \"pre-line\",\n                            textShadow: `0 2px 18px rgba(0,0,0,${\n                                0.95 * O.textShadow\n                            }), 0 12px 60px rgba(0,0,0,${0.85 * O.textShadow})`,\n                            ...overlayFont,\n                        }}\n                    >\n                        {O.title}\n                    </div>\n                    {O.subtitle ? (\n                        <div\n                            style={{\n                                marginTop: O.subtitleGap,\n                                color: O.subtitleColor,\n                                fontSize: O.subtitleSize,\n                                letterSpacing: O.subtitleSpacing,\n                                textTransform: O.subtitleUppercase\n                                    ? \"uppercase\"\n                                    : \"none\",\n                                fontFamily: \"Inter, sans-serif\",\n                            }}\n                        >\n                            {O.subtitle}\n                        </div>\n                    ) : null}\n                </div>\n            )}\n        </div>\n    )\n}\n\nSphericalGallery.defaultProps = DEFAULTS\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "index.html"
+  }
+}

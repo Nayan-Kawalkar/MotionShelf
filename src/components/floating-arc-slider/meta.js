@@ -78,12 +78,12 @@ const meta = {
   variants,
   previewHeight: 620,
   views: 2600,
+  likes: 297,
   copies: 138,
   addedAt: "2026-08-29",
   pro: false,
   sources: {
     jsx: { name: "FloatingArcCardSlider.tsx", lang: "tsx", code: source },
-    framer: { name: "FloatingArcCardSlider.tsx", lang: "tsx", code: source },
   },
 };
 

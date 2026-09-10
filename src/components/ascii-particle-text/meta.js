@@ -1,5 +1,6 @@
 import ASCIIParticleText from "./ASCIIParticleText";
 import source from "./ASCIIParticleText.tsx?raw";
+import vanillaSource from "./ascii-particle-text.vanilla.js?raw";
 
 export const controls = [
   { key: "text", label: "Text", type: "text", default: "DIGITAL STUDIO" },
@@ -87,12 +88,13 @@ const meta = {
   previewHeight: 520,
   previewBox: [880, 550],
   views: 5200,
+  likes: 826,
   copies: 241,
   addedAt: "2026-08-29",
   pro: false,
   sources: {
     jsx: { name: "ASCIIParticleText.tsx", lang: "tsx", code: source },
-    framer: { name: "ASCIIParticleText.tsx", lang: "tsx", code: source },
+    vanilla: { name: "ascii-particle-text.vanilla.js", lang: "js", code: vanillaSource },
   },
 };
 

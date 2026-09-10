@@ -1,0 +1,201 @@
+{
+  "id": "sphere-album",
+  "name": "Sphere Album",
+  "description": "A sphere of image cards on a Fibonacci lattice. Scroll spins it, drag tumbles it in any direction with inertia, click opens the card's link.",
+  "category": "Image Gallery",
+  "tags": [
+    "3d",
+    "sphere",
+    "drag",
+    "gallery",
+    "inertia"
+  ],
+  "pro": false,
+  "dependencies": [],
+  "controls": [
+    {
+      "key": "radius",
+      "label": "Radius",
+      "type": "range",
+      "min": 20,
+      "max": 70,
+      "step": 1,
+      "unit": "%",
+      "default": 46
+    },
+    {
+      "key": "autoSpin",
+      "label": "Idle Spin",
+      "type": "range",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.11
+    },
+    {
+      "key": "dragSpeed",
+      "label": "Drag Speed",
+      "type": "range",
+      "min": 0.1,
+      "max": 2,
+      "step": 0.01,
+      "default": 0.58
+    },
+    {
+      "key": "wheelSpeed",
+      "label": "Scroll Speed",
+      "type": "range",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.26
+    },
+    {
+      "key": "damping",
+      "label": "Glide",
+      "type": "range",
+      "min": 0.85,
+      "max": 0.99,
+      "step": 0.005,
+      "default": 0.945
+    },
+    {
+      "key": "depthFade",
+      "label": "Depth Fade",
+      "type": "range",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.34
+    },
+    {
+      "key": "depthBlur",
+      "label": "Depth Blur",
+      "type": "range",
+      "min": 0,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": 2.2
+    },
+    {
+      "key": "hoverLift",
+      "label": "Hover Lift",
+      "type": "range",
+      "min": 0,
+      "max": 160,
+      "step": 1,
+      "unit": "px",
+      "default": 46
+    },
+    {
+      "key": "introMs",
+      "label": "Intro",
+      "type": "range",
+      "min": 0,
+      "max": 3000,
+      "step": 50,
+      "unit": "ms",
+      "default": 900
+    },
+    {
+      "key": "cardBackground",
+      "label": "Card Fill",
+      "type": "color",
+      "default": "#ffffff"
+    },
+    {
+      "key": "cardPadding",
+      "label": "Card Inset",
+      "type": "range",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "key": "cardRadius",
+      "label": "Card Radius",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "key": "shadow",
+      "label": "Shadow",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "captureWheel",
+      "label": "Scroll Spins",
+      "type": "toggle",
+      "on": "Spin",
+      "off": "Page",
+      "default": true
+    },
+    {
+      "key": "enableZoom",
+      "label": "Pinch Zoom",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Tight Ball",
+      "values": {
+        "radius": 30,
+        "hoverLift": 80,
+        "depthFade": 0.55,
+        "depthBlur": 3.6,
+        "cardPadding": 4
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Slow Drift",
+      "values": {
+        "autoSpin": 0.04,
+        "damping": 0.975,
+        "wheelSpeed": 0.12,
+        "introMs": 1800,
+        "radius": 58
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Dark Cards",
+      "values": {
+        "cardBackground": "#111113",
+        "cardRadius": 14,
+        "shadow": false,
+        "depthFade": 0.6
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "SphereAlbum.tsx",
+      "target": "component",
+      "content": "import { useEffect, useMemo, useRef } from \"react\"\n\n/* =====================================================================\n   ORIENTATION — a quaternion, not two Euler angles.\n\n   Two angles (yaw + pitch) cannot do this job. Yaw spins around the\n   OBJECT's own vertical axis, and once the sphere is tilted that axis no\n   longer points up the screen — so a sideways drag starts to roll it, and\n   past 90° of tilt it runs backwards. A quaternion has no preferred axis:\n   every drag builds its own rotation about the screen-space axis\n   perpendicular to the gesture, so the sphere always travels exactly the\n   way you pushed it, from any orientation.\n===================================================================== */\ntype Quat = { x: number; y: number; z: number; w: number }\n\nconst qMul = (a: Quat, b: Quat): Quat => ({\n    w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,\n    x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,\n    y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,\n    z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,\n})\nconst qNorm = (q: Quat): Quat => {\n    const l = Math.hypot(q.x, q.y, q.z, q.w) || 1\n    return { x: q.x / l, y: q.y / l, z: q.z / l, w: q.w / l }\n}\nconst qAxis = (ax: number, ay: number, az: number, ang: number): Quat => {\n    const h = ang / 2,\n        s = Math.sin(h)\n    return { x: ax * s, y: ay * s, z: az * s, w: Math.cos(h) }\n}\nconst qMatrix = (q: Quat) => {\n    const { x, y, z, w } = q\n    return [\n        1 - 2 * (y * y + z * z), 2 * (x * y - w * z), 2 * (x * z + w * y),\n        2 * (x * y + w * z), 1 - 2 * (x * x + z * z), 2 * (y * z - w * x),\n        2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y),\n    ]\n}\n\n/* A screen gesture -> the rotation it should produce.\n   right => spin about (0,1,0)   down => spin about (-1,0,0)\n   Anything between is the normalised blend, so diagonals work too. */\nconst gestureAxis = (dx: number, dy: number) => {\n    const h = Math.hypot(dx, dy)\n    return h < 1e-6 ? null : { x: -dy / h, y: dx / h, z: 0, len: h }\n}\n\n/* Fibonacci sphere — the even, non-clumping way to scatter N points.\n   Band MIDPOINTS (i + 0.5), never endpoints: a point landing exactly on a\n   pole would sit on the rotation axis and stay frozen while everything\n   around it moved. */\nfunction fibonacciSphere(n: number) {\n    const pts: { x: number; y: number; z: number }[] = []\n    const golden = Math.PI * (3 - Math.sqrt(5))\n    for (let i = 0; i < n; i++) {\n        const y = 1 - ((i + 0.5) / n) * 2\n        const r = Math.sqrt(Math.max(0, 1 - y * y))\n        const t = golden * i\n        pts.push({ x: Math.cos(t) * r, y, z: Math.sin(t) * r })\n    }\n    return pts\n}\n\nconst clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v)\nconst easeOut = (t: number) => 1 - Math.pow(1 - t, 3)\n\ninterface Item {\n    image?: { src: string; srcSet?: string; alt?: string }\n    title?: string\n    link?: string\n    width: number\n    height: number\n}\n\ninterface Props {\n    items: Item[]\n    radius: number\n    autoSpin: number\n    dragSpeed: number\n    wheelSpeed: number\n    damping: number\n    captureWheel: boolean\n    enableZoom: boolean\n    depthFade: number\n    depthBlur: number\n    hoverLift: number\n    cardPadding: number\n    cardRadius: number\n    cardBackground: string\n    shadow: boolean\n    openInNewTab: boolean\n    introMs: number\n    style?: React.CSSProperties\n}\n\n/**\n * Sphere Album — a 3D sphere of image cards. Scroll spins it, drag tumbles it\n * in any direction with inertia, click opens the card's link.\n *\n * @framerSupportedLayoutWidth any-prefer-fixed\n * @framerSupportedLayoutHeight any-prefer-fixed\n * @framerIntrinsicWidth 900\n * @framerIntrinsicHeight 700\n */\nexport default function SphereAlbum(props: Partial<Props>) {\n    const {\n        items = [],\n        radius = 46,\n        autoSpin = 0.11,\n        dragSpeed = 0.58,\n        wheelSpeed = 0.26,\n        damping = 0.945,\n        captureWheel = true,\n        enableZoom = true,\n        depthFade = 0.34,\n        depthBlur = 2.2,\n        hoverLift = 46,\n        cardPadding = 8,\n        cardRadius = 0,\n        cardBackground = \"#ffffff\",\n        shadow = true,\n        openInNewTab = false,\n        introMs = 900,\n        style,\n    } = props\n\n    const isStatic = useIsStaticRenderer()\n    const stageRef = useRef<HTMLDivElement>(null)\n    const cardRefs = useRef<(HTMLAnchorElement | null)[]>([])\n    const points = useMemo(() => fibonacciSphere(Math.max(1, items.length)), [items.length])\n\n    // live config — read by the loop each frame, so tweaking a slider in the\n    // properties panel never restarts the animation or resets the orientation\n    const cfg = useRef<any>({})\n    cfg.current = {\n        radius: radius / 100,          // panel is a percentage of the stage\n        autoSpin: autoSpin / 100,\n        dragSpeed: dragSpeed / 100,\n        wheelSpeed: wheelSpeed / 1000,\n        damping, captureWheel, enableZoom, depthFade, depthBlur, hoverLift, introMs,\n        maxSpin: 0.11, clickSlop: 6, zoomMin: 0.62, zoomMax: 1.7,\n    }\n\n    // orientation + motion survive re-renders\n    const st = useRef({\n        q: qNorm(qAxis(-1, 0, 0, 0.12)),\n        spin: { x: 0, y: 0.0011, z: 0 },\n        lift: [] as number[],\n        liftTarget: [] as number[],\n        blur: [] as number[],\n        pe: [] as (string | null)[],\n        zoom: 1,\n        dragging: false,\n        moved: 0,\n        introStart: 0,\n    }).current\n\n    useEffect(() => {\n        const stage = stageRef.current\n        if (!stage) return\n        const pts = points\n        const n = pts.length\n        st.lift = new Array(n).fill(0)\n        st.liftTarget = new Array(n).fill(0)\n        st.blur = new Array(n).fill(-1)\n        st.pe = new Array(n).fill(null)\n        st.introStart = performance.now()\n\n        let baseRadius = 300\n        const fit = () => {\n            const r = stage.getBoundingClientRect()\n            baseRadius = Math.max(80, Math.min(r.width, r.height) * cfg.current.radius)\n        }\n        fit()\n\n        const setCursor = (c: string) => {\n            if (stageRef.current) stageRef.current.style.cursor = c\n        }\n\n        /* ---------------- render ---------------- */\n        function render(now: number) {\n            const c = cfg.current\n            const m = qMatrix(st.q)\n            const t0 = c.introMs > 0 ? clamp((now - st.introStart) / c.introMs, 0, 1) : 1\n            const R = baseRadius * st.zoom\n\n            for (let k = 0; k < n; k++) {\n                const el = cardRefs.current[k]\n                if (!el) continue\n                const p = pts[k]\n                const intro = easeOut(clamp(t0 * 1.6 - (k / n) * 0.6, 0, 1))\n\n                const vx = m[0] * p.x + m[1] * p.y + m[2] * p.z\n                const vy = m[3] * p.x + m[4] * p.y + m[5] * p.z\n                const vz = m[6] * p.x + m[7] * p.y + m[8] * p.z\n\n                st.lift[k] += (st.liftTarget[k] - st.lift[k]) * 0.18\n\n                const rr = R * intro\n                const X = vx * rr,\n                    Y = vy * rr,\n                    Z = vz * rr + st.lift[k]\n\n                const depth = (vz + 1) / 2 // 0 far -> 1 near\n                el.style.transform = `translate3d(${X.toFixed(2)}px,${Y.toFixed(2)}px,${Z.toFixed(2)}px)`\n                el.style.opacity = ((1 - (1 - depth) * c.depthFade) * intro).toFixed(3)\n\n                // write-on-change only: blur and hit-testing are expensive\n                if (c.depthBlur > 0) {\n                    const far = Math.max(0, (0.55 - depth) / 0.55) // front 45% stays sharp\n                    const b = Math.round(far * far * c.depthBlur * 4) / 4\n                    if (b !== st.blur[k]) {\n                        st.blur[k] = b\n                        el.style.filter = b ? `blur(${b}px)` : \"\"\n                    }\n                } else if (st.blur[k] !== 0) {\n                    st.blur[k] = 0\n                    el.style.filter = \"\"\n                }\n                // don't let the back of the sphere swallow clicks meant for the front\n                const pe = vz > -0.15 ? \"auto\" : \"none\"\n                if (pe !== st.pe[k]) {\n                    st.pe[k] = pe\n                    el.style.pointerEvents = pe\n                }\n            }\n        }\n\n        /* ---------------- physics: delta-time, identical at 60/120/144Hz ---------------- */\n        let raf = 0\n        let last = performance.now()\n        function step(now: number) {\n            const c = cfg.current\n            const dt = Math.min(now - last, 50)\n            last = now\n            const f = dt / 16.667\n\n            if (!st.dragging) {\n                const mag = Math.hypot(st.spin.x, st.spin.y, st.spin.z)\n                if (mag > 1e-7) {\n                    st.q = qNorm(qMul(qAxis(st.spin.x / mag, st.spin.y / mag, st.spin.z / mag, mag * f), st.q))\n                }\n                const decay = Math.pow(c.damping, f)\n                st.spin.x *= decay\n                st.spin.z *= decay\n                st.spin.y = c.autoSpin + (st.spin.y - c.autoSpin) * decay // settle into the drift\n                if (Math.abs(st.spin.x) < 1e-6) st.spin.x = 0\n                if (Math.abs(st.spin.z) < 1e-6) st.spin.z = 0\n            }\n            render(now)\n            raf = requestAnimationFrame(step)\n        }\n\n        if (isStatic) {\n            // canvas / export: one finished frame, no loop\n            st.introStart = -1e7\n            render(performance.now())\n        } else {\n            raf = requestAnimationFrame(step)\n        }\n\n        /* ---------------- input ---------------- */\n        const pointers = new Map<number, { x: number; y: number }>()\n        let primaryId: number | null = null\n        let lastX = 0,\n            lastY = 0\n        let pinchDist = 0,\n            pinchZoom = 1\n        const samples: { t: number; x: number; y: number }[] = []\n\n        function rotateBy(dx: number, dy: number) {\n            const g = gestureAxis(dx, dy)\n            if (!g) return\n            st.q = qNorm(qMul(qAxis(g.x, g.y, g.z, g.len * cfg.current.dragSpeed), st.q))\n        }\n\n        function onDown(e: PointerEvent) {\n            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })\n            for (let k = 0; k < n; k++) st.liftTarget[k] = 0\n\n            if (pointers.size === 2) {\n                st.dragging = false\n                const [a, b] = [...pointers.values()]\n                pinchDist = Math.hypot(a.x - b.x, a.y - b.y)\n                pinchZoom = st.zoom\n                return\n            }\n            if (pointers.size > 2) return\n\n            st.dragging = true\n            st.moved = 0\n            primaryId = e.pointerId\n            lastX = e.clientX\n            lastY = e.clientY\n            samples.length = 0\n            samples.push({ t: e.timeStamp, x: e.clientX, y: e.clientY })\n            st.spin.x = st.spin.y = st.spin.z = 0\n            setCursor(\"grabbing\")\n            // NB: no setPointerCapture — it would retarget the click away from the\n            // <a>, breaking real link navigation. Window listeners instead.\n            window.addEventListener(\"pointermove\", onMove)\n            window.addEventListener(\"pointerup\", onUp)\n            window.addEventListener(\"pointercancel\", onUp)\n        }\n\n        function onMove(e: PointerEvent) {\n            if (!pointers.has(e.pointerId)) return\n            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })\n\n            if (pointers.size === 2) {\n                if (!cfg.current.enableZoom) return\n                const [a, b] = [...pointers.values()]\n                const d = Math.hypot(a.x - b.x, a.y - b.y)\n                if (pinchDist > 0)\n                    st.zoom = clamp(pinchZoom * (d / pinchDist), cfg.current.zoomMin, cfg.current.zoomMax)\n                return\n            }\n            if (!st.dragging || e.pointerId !== primaryId) return\n\n            const dx = e.clientX - lastX,\n                dy = e.clientY - lastY\n            lastX = e.clientX\n            lastY = e.clientY\n            st.moved += Math.abs(dx) + Math.abs(dy)\n            rotateBy(dx, dy)\n\n            // keep a short history so the throw uses real gesture speed, not just\n            // the last frame (which is 0 if you pause before letting go)\n            samples.push({ t: e.timeStamp, x: e.clientX, y: e.clientY })\n            while (samples.length > 2 && e.timeStamp - samples[0].t > 90) samples.shift()\n        }\n\n        function onUp(e: PointerEvent) {\n            pointers.delete(e.pointerId)\n            if (pointers.size < 2) pinchDist = 0\n            if (!st.dragging || e.pointerId !== primaryId) return\n            st.dragging = false\n            primaryId = null\n            setCursor(\"grab\")\n            window.removeEventListener(\"pointermove\", onMove)\n            window.removeEventListener(\"pointerup\", onUp)\n            window.removeEventListener(\"pointercancel\", onUp)\n\n            // throw\n            st.spin.x = st.spin.y = st.spin.z = 0\n            if (samples.length < 2) return\n            const a = samples[0],\n                b = samples[samples.length - 1]\n            if (e.timeStamp - b.t > 120) return // held still -> no throw\n            const dtms = Math.max(8, b.t - a.t)\n            const g = gestureAxis(b.x - a.x, b.y - a.y)\n            if (!g) return\n            const rate = clamp(g.len * cfg.current.dragSpeed * (16.667 / dtms), 0, cfg.current.maxSpin)\n            st.spin.x = g.x * rate\n            st.spin.y = g.y * rate\n        }\n\n        function onWheel(e: WheelEvent) {\n            const c = cfg.current\n            if (c.enableZoom && (e.ctrlKey || e.metaKey)) {\n                e.preventDefault()\n                st.zoom = clamp(st.zoom * (1 - e.deltaY * 0.01), c.zoomMin, c.zoomMax)\n                return\n            }\n            if (c.captureWheel) e.preventDefault()\n            const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX\n            st.spin.y = clamp(st.spin.y + d * c.wheelSpeed, -c.maxSpin, c.maxSpin)\n        }\n\n        // a drag that ends on a card must not follow the card's link\n        function onClickCapture(e: MouseEvent) {\n            if (st.moved > cfg.current.clickSlop) {\n                e.preventDefault()\n                e.stopPropagation()\n            }\n        }\n\n        function onOver(e: PointerEvent) {\n            const el = (e.target as HTMLElement)?.closest?.(\"[data-sa-index]\") as HTMLElement | null\n            if (el) st.liftTarget[+el.dataset.saIndex!] = cfg.current.hoverLift\n        }\n        function onOut(e: PointerEvent) {\n            const el = (e.target as HTMLElement)?.closest?.(\"[data-sa-index]\") as HTMLElement | null\n            if (el) st.liftTarget[+el.dataset.saIndex!] = 0\n        }\n\n        if (!isStatic) {\n            stage.addEventListener(\"pointerdown\", onDown)\n            stage.addEventListener(\"wheel\", onWheel, { passive: false })\n            stage.addEventListener(\"click\", onClickCapture, true)\n            stage.addEventListener(\"pointerover\", onOver)\n            stage.addEventListener(\"pointerout\", onOut)\n        }\n\n        const ro = typeof ResizeObserver !== \"undefined\" ? new ResizeObserver(fit) : null\n        ro?.observe(stage)\n\n        // pause when scrolled out of view or the tab is hidden\n        let inView = true\n        const io =\n            typeof IntersectionObserver !== \"undefined\"\n                ? new IntersectionObserver(([en]) => {\n                      const now = en.isIntersecting\n                      if (now === inView) return\n                      inView = now\n                      if (now && !isStatic) {\n                          last = performance.now()\n                          raf = requestAnimationFrame(step)\n                      } else {\n                          cancelAnimationFrame(raf)\n                      }\n                  })\n                : null\n        io?.observe(stage)\n\n        return () => {\n            cancelAnimationFrame(raf)\n            stage.removeEventListener(\"pointerdown\", onDown)\n            stage.removeEventListener(\"wheel\", onWheel)\n            stage.removeEventListener(\"click\", onClickCapture, true)\n            stage.removeEventListener(\"pointerover\", onOver)\n            stage.removeEventListener(\"pointerout\", onOut)\n            window.removeEventListener(\"pointermove\", onMove)\n            window.removeEventListener(\"pointerup\", onUp)\n            window.removeEventListener(\"pointercancel\", onUp)\n            ro?.disconnect()\n            io?.disconnect()\n        }\n    }, [points, isStatic])\n\n    return (\n        <div\n            ref={stageRef}\n            style={{\n                position: \"relative\",\n                width: \"100%\",\n                height: \"100%\",\n                overflow: \"hidden\",\n                perspective: 1400,\n                perspectiveOrigin: \"50% 50%\",\n                touchAction: \"none\",\n                cursor: \"grab\",\n                userSelect: \"none\",\n                WebkitUserSelect: \"none\",\n                ...style,\n            }}\n            onDragStart={(e) => e.preventDefault()}\n        >\n            <div\n                style={{\n                    position: \"absolute\",\n                    left: \"50%\",\n                    top: \"50%\",\n                    width: 0,\n                    height: 0,\n                    transformStyle: \"preserve-3d\",\n                }}\n            >\n                {items.map((item, i) => (\n                    <a\n                        key={i}\n                        data-sa-index={i}\n                        ref={(el) => {\n                            cardRefs.current[i] = el\n                        }}\n                        href={item.link || undefined}\n                        target={item.link && openInNewTab ? \"_blank\" : undefined}\n                        rel={item.link && openInNewTab ? \"noopener noreferrer\" : undefined}\n                        aria-label={item.title || undefined}\n                        style={{\n                            position: \"absolute\",\n                            left: 0,\n                            top: 0,\n                            display: \"block\",\n                            width: item.width,\n                            height: item.height,\n                            marginLeft: -item.width / 2,\n                            marginTop: -item.height / 2,\n                            padding: cardPadding,\n                            borderRadius: cardRadius,\n                            background: cardBackground,\n                            boxShadow: shadow ? \"0 6px 24px rgba(0,0,0,.08)\" : \"none\",\n                            backfaceVisibility: \"hidden\",\n                            willChange: \"transform, opacity, filter\",\n                            textDecoration: \"none\",\n                            cursor: item.link ? \"pointer\" : \"grab\",\n                            // gradient plate stands in until an image is chosen\n                            backgroundImage: item.image?.src\n                                ? undefined\n                                : `linear-gradient(150deg, hsl(${(i * 47) % 360} 10% 93%), hsl(${(i * 47) % 360} 12% 83%) 48%, hsl(${(i * 47) % 360} 8% 95%))`,\n                        }}\n                    >\n                        {item.image?.src ? (\n                            <img\n                                src={item.image.src}\n                                srcSet={item.image.srcSet}\n                                alt={item.image.alt || item.title || \"\"}\n                                draggable={false}\n                                style={{\n                                    display: \"block\",\n                                    width: \"100%\",\n                                    height: \"100%\",\n                                    objectFit: \"cover\",\n                                    borderRadius: Math.max(0, cardRadius - cardPadding),\n                                    pointerEvents: \"none\",\n                                }}\n                            />\n                        ) : null}\n                    </a>\n                ))}\n            </div>\n        </div>\n    )\n}\n\nSphereAlbum.displayName = \"Sphere Album\"\n\nconst defaultItems: Item[] = Array.from({ length: 20 }, (_, i) => {\n    const portrait = i % 3 !== 1\n    return {\n        title: `Card ${i + 1}`,\n        width: portrait ? 76 : 104,\n        height: portrait ? 100 : 79,\n    }\n})\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "index.html"
+  }
+}

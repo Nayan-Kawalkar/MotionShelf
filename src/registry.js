@@ -6,12 +6,22 @@ import snapDeck from "./components/snap-deck/meta";
 import asciiParticleText from "./components/ascii-particle-text/meta";
 import scrollAssembleImage from "./components/scroll-assemble-image/meta";
 import curvedCardMarquee from "./components/curved-card-marquee/meta";
+import sphericalGallery from "./components/spherical-gallery/meta";
+import sphereAlbum from "./components/sphere-album/meta";
+import imageQueue from "./components/image-queue/meta";
+import tarotCarousel from "./components/tarot-carousel/meta";
+import paintSpreadWordmark from "./components/paint-spread-wordmark/meta";
 
 // Every showcased component lives here. Each entry is the component folder's
 // `meta.js` — id, presentation copy, the control schema, variants and the raw
 // sources the export modal hands out. The `id` is what appears in the URL
 // (e.g. /component/carousel).
 const registry = [
+  tarotCarousel,
+  paintSpreadWordmark,
+  imageQueue,
+  sphereAlbum,
+  sphericalGallery,
   asciiParticleText,
   snapDeck,
   helicalScrollGallery,

@@ -1,5 +1,6 @@
 import HelicalScrollGallery from "./HelicalScrollGallery";
 import source from "./HelicalScrollGallery.tsx?raw";
+import vanillaSource from "./helical-scroll-gallery.vanilla.js?raw";
 
 export const controls = [
   { key: "background", label: "Background", type: "color", default: "#111111" },
@@ -50,13 +51,16 @@ const meta = {
   // Builds its own 100vh scroll track and pins itself, so the stage has to
   // scroll rather than clip.
   scroll: true,
+  // Three.js is pulled from a CDN at runtime by the component itself.
+  dependencies: ["framer-motion"],
   views: 3400,
+  likes: 604,
   copies: 96,
   addedAt: "2026-08-29",
   pro: true,
   sources: {
     jsx: { name: "HelicalScrollGallery.tsx", lang: "tsx", code: source },
-    framer: { name: "HelicalScrollGallery.tsx", lang: "tsx", code: source },
+    vanilla: { name: "helical-scroll-gallery.vanilla.js", lang: "js", code: vanillaSource },
   },
 };
 

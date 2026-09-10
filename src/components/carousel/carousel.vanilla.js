@@ -4,7 +4,8 @@
 //   const carousel = mount(document.getElementById("carousel"));
 //   carousel.destroy();
 //
-// Needs carousel.css alongside it.
+// Needs carousel.css alongside it. The single-file export inlines both, so
+// there the `export` below is stripped and `mount` is already in scope.
 
 const DEFAULT_SLIDES = [
   { id: 1, title: "Kyoto, Japan", subtitle: "Maples along the Philosopher's Path", image: "https://picsum.photos/seed/kyoto-path/900/1100" },

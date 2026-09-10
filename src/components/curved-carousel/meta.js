@@ -1,6 +1,5 @@
 import CurvedCarousel from "./CurvedCarousel";
 import jsxSource from "./CurvedCarousel.jsx?raw";
-import framerSource from "./CurvedCarousel.framer.tsx?raw";
 import vanillaSource from "./curved-carousel.vanilla.js?raw";
 
 export const controls = [
@@ -74,12 +73,12 @@ const meta = {
   variants,
   previewBox: [1100, 688],
   views: 1500,
+  likes: 268,
   copies: 74,
   addedAt: "2026-08-08",
   pro: false,
   sources: {
     jsx: { name: "CurvedCarousel.jsx", lang: "jsx", code: jsxSource },
-    framer: { name: "CurvedCarousel.tsx", lang: "tsx", code: framerSource },
     vanilla: { name: "curved-carousel.vanilla.js", lang: "js", code: vanillaSource },
   },
 };

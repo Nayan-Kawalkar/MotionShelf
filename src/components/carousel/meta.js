@@ -49,6 +49,7 @@ const meta = {
   variants,
   previewBox: [820, 512],
   views: 2900,
+  likes: 512,
   copies: 112,
   addedAt: "2026-08-08",
   pro: false,

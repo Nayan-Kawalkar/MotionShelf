@@ -116,12 +116,12 @@ const meta = {
   scroll: (values) => values.mode === "Pinned",
   previewHeight: 620,
   views: 2200,
+  likes: 341,
   copies: 84,
   addedAt: "2026-08-29",
   pro: false,
   sources: {
     jsx: { name: "CurvedCardMarquee.tsx", lang: "tsx", code: source },
-    framer: { name: "CurvedCardMarquee.tsx", lang: "tsx", code: source },
   },
 };
 

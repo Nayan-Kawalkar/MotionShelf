@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sphere Album</title>
+<style>
+  :root{
+    --bg:#f4f4f2;
+    --ink:#111;
+    --muted:#8a8a86;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font:400 14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===============================================================
+     SECTION
+  =============================================================== */
+  .album{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .album__bar{
+    position:relative; z-index:5;
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    padding:24px 20px 0;
+    pointer-events:none;
+  }
+  .album__logo{font-weight:700;letter-spacing:.02em;font-size:15px}
+  .album__pill{
+    pointer-events:auto;
+    background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:999px;
+    padding:9px 22px;
+    font-family:Georgia,"Times New Roman",serif; font-size:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .album__num{
+    pointer-events:auto;
+    width:30px;height:30px; display:grid;place-items:center;
+    border-radius:8px; font-size:12px; color:var(--muted);
+    background:#fff; border:1px solid rgba(0,0,0,.05); cursor:pointer;
+  }
+
+  /* ===============================================================
+     STAGE — the 3D viewport
+  =============================================================== */
+  .stage{
+    flex:1;
+    position:relative;
+    perspective:1400px;
+    perspective-origin:50% 50%;
+    touch-action:none;            /* lets pointer-drag work on touch */
+    cursor:grab;
+    outline:none;
+    -webkit-user-select:none; user-select:none;
+  }
+  .stage.is-dragging{cursor:grabbing}
+  .stage:focus-visible{box-shadow:inset 0 0 0 2px rgba(0,0,0,.18)}
+
+  .sphere{
+    position:absolute; left:50%; top:50%;
+    width:0; height:0;
+    transform-style:preserve-3d;
+  }
+
+  .tile{
+    position:absolute; left:0; top:0; margin:0;
+    background:#fff;
+    padding:8px;
+    box-shadow:0 6px 24px rgba(0,0,0,.08);
+    will-change:transform,opacity,filter;
+    backface-visibility:hidden;
+    transition:box-shadow .3s ease;
+    outline:none;
+  }
+  .tile img{
+    display:block; width:100%; height:100%;
+    object-fit:cover;
+    pointer-events:none; -webkit-user-drag:none;
+  }
+  .tile.is-hot{box-shadow:0 18px 50px rgba(0,0,0,.2)}
+  .tile:focus-visible{box-shadow:0 0 0 2px #111, 0 18px 50px rgba(0,0,0,.2)}
+
+  /* fallback plate when an image is missing or fails to load */
+  .tile.is-broken{
+    background:linear-gradient(150deg,
+      hsl(var(--h) 10% 93%), hsl(var(--h) 12% 83%) 48%, hsl(var(--h) 8% 95%));
+  }
+  .tile.is-broken img{opacity:0}
+
+  .hint{
+    position:relative; z-index:5;
+    text-align:center; color:var(--muted);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    padding:0 20px 26px;
+    pointer-events:none;
+  }
+
+  /* ===============================================================
+     LIGHTBOX
+  =============================================================== */
+  .lb{
+    position:fixed; inset:0; z-index:50;
+    display:grid; place-items:center;
+    background:rgba(240,240,238,.86);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    opacity:0; visibility:hidden;
+    transition:opacity .32s ease, visibility .32s;
+  }
+  .lb.is-open{opacity:1; visibility:visible}
+  .lb__inner{
+    background:#fff; padding:14px;
+    box-shadow:0 30px 90px rgba(0,0,0,.22);
+    transform:scale(.92); transition:transform .38s cubic-bezier(.2,.8,.25,1);
+    max-width:min(86vw,760px);
+  }
+  .lb.is-open .lb__inner{transform:scale(1)}
+  .lb__inner img{display:block; max-width:100%; max-height:70svh; object-fit:contain}
+  .lb__cap{
+    display:flex; justify-content:space-between; gap:20px; margin-top:12px;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  }
+  .lb__btn{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:44px;height:44px;border:0;border-radius:50%;
+    background:#fff;cursor:pointer;font-size:17px;line-height:1;
+    box-shadow:0 4px 18px rgba(0,0,0,.12);
+  }
+  .lb__prev{left:24px} .lb__next{right:24px}
+  .lb__close{
+    position:absolute; top:22px; right:24px;
+    width:40px;height:40px;border:0;border-radius:50%;
+    background:#fff;cursor:pointer;font-size:18px;line-height:1;
+    box-shadow:0 4px 18px rgba(0,0,0,.12);
+  }
+  @media (max-width:640px){ .lb__btn{display:none} }
+
+  @media (prefers-reduced-motion:reduce){
+    .lb,.lb__inner,.tile{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<section class="album" id="album">
+  <div class="album__bar">
+    <span class="album__logo">GN<span style="opacity:.4">.</span>D</span>
+    <span class="album__pill">Creative Space</span>
+    <span class="album__num">2</span>
+    <span class="album__num">3</span>
+  </div>
+
+  <div class="stage" id="stage" tabindex="0" role="application"
+       aria-label="Image sphere. Drag or use arrow keys to rotate.">
+    <div class="sphere" id="sphere"></div>
+  </div>
+
+  <p class="hint">Drag to spin &nbsp;·&nbsp; Scroll to rotate &nbsp;·&nbsp; Pinch to zoom &nbsp;·&nbsp; Click to open</p>
+</section>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb__close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb__btn lb__prev" id="lbPrev" aria-label="Previous">&#8249;</button>
+  <button class="lb__btn lb__next" id="lbNext" aria-label="Next">&#8250;</button>
+  <figure class="lb__inner">
+    <img id="lbImg" alt="">
+    <figcaption class="lb__cap"><span id="lbTitle"></span><span id="lbIndex"></span></figcaption>
+  </figure>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ==================================================================
+     1. CONFIG — the whole feel lives here
+  ================================================================== */
+  const CONFIG = {
+    radius       : 330,     // sphere radius in px (auto-fits smaller stages)
+    autoSpin     : 0.0011,  // idle drift in rad per 60fps-frame (0 = still)
+    dragSpeed    : 0.0058,  // rad per px dragged
+    wheelSpeed   : 0.00026, // rad per px of wheel delta
+    damping      : 0.945,   // inertia decay per 60fps-frame (.90 heavy, .98 slippery)
+    maxSpin      : 0.11,    // speed ceiling, rad/frame
+    depthFade    : 0.34,    // back-card transparency, 0 = flat
+    depthBlur    : 2.2,     // px of blur at the very back (front half stays sharp)
+    hoverLift    : 46,      // px a hovered card pulls toward the camera
+    zoomRange    : [0.62, 1.7],
+    captureWheel : true,    // wheel over the section spins instead of scrolling page
+    clickSlop    : 6,       // px of travel still counted as a tap
+    introMs      : 900      // entrance bloom duration
+  };
+
+  /* ==================================================================
+     2. CONTENT — swap for your own. w/h = card size in px.
+        Leave `src` empty for a plain placeholder plate.
+  ================================================================== */
+  const ITEMS = [
+    { src:'https://picsum.photos/seed/gnd01/600/800', w:76,  h:101, title:'Rose' },
+    { src:'https://picsum.photos/seed/gnd02/800/600', w:108, h:81,  title:'Terreno' },
+    { src:'https://picsum.photos/seed/gnd03/600/700', w:82,  h:95,  title:'Spray Gun' },
+    { src:'https://picsum.photos/seed/gnd04/800/560', w:103, h:72,  title:'Fern' },
+    { src:'https://picsum.photos/seed/gnd05/600/800', w:70,  h:93,  title:'Cylinder' },
+    { src:'https://picsum.photos/seed/gnd06/700/700', w:87,  h:87,  title:'Mineral' },
+    { src:'https://picsum.photos/seed/gnd07/800/520', w:107, h:70,  title:'Roadster' },
+    { src:'https://picsum.photos/seed/gnd08/600/760', w:73,  h:92,  title:'Palm Mark' },
+    { src:'https://picsum.photos/seed/gnd09/620/820', w:76,  h:100, title:'Bloom' },
+    { src:'https://picsum.photos/seed/gnd10/700/620', w:92,  h:81,  title:'Faucet' },
+    { src:'https://picsum.photos/seed/gnd11/560/760', w:68,  h:93,  title:'Kit 90' },
+    { src:'https://picsum.photos/seed/gnd12/760/620', w:99,  h:80,  title:'Rig' },
+    { src:'https://picsum.photos/seed/gnd13/600/800', w:71,  h:95,  title:'Handset' },
+    { src:'https://picsum.photos/seed/gnd14/700/540', w:95,  h:73,  title:'Studio' },
+    { src:'https://picsum.photos/seed/gnd15/600/720', w:78,  h:92,  title:'Index' },
+    { src:'https://picsum.photos/seed/gnd16/720/720', w:86,  h:86,  title:'Pebble' },
+    { src:'https://picsum.photos/seed/gnd17/560/800', w:70,  h:99,  title:'Cutout' },
+    { src:'https://picsum.photos/seed/gnd18/800/600', w:104, h:78,  title:'Plate' },
+    { src:'https://picsum.photos/seed/gnd19/620/780', w:75,  h:95,  title:'Cast' },
+    { src:'https://picsum.photos/seed/gnd20/700/580', w:93,  h:78,  title:'Sheet' }
+  ];
+
+  /* ==================================================================
+     3. ORIENTATION — a quaternion, not two Euler angles.
+     -----------------------------------------------------------------
+     Two angles (yaw + pitch) cannot do this job. Yaw spins around the
+     OBJECT's own vertical axis, and once you have tilted the sphere that
+     axis no longer points up the screen — so a sideways drag starts
+     rolling the sphere, and past 90 degrees of tilt it runs backwards.
+     A quaternion has no such preferred axis. Every drag builds its own
+     rotation about the screen-space axis perpendicular to the gesture,
+     so the sphere always travels exactly the way you pushed it.
+  ================================================================== */
+  const qMul = (a, b) => ({                       // a then b, i.e. apply b first
+    w: a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z,
+    x: a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y,
+    y: a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x,
+    z: a.w*b.z + a.x*b.y - a.y*b.x + a.z*b.w
+  });
+  const qNorm = q => {
+    const l = Math.hypot(q.x, q.y, q.z, q.w) || 1;
+    return { x:q.x/l, y:q.y/l, z:q.z/l, w:q.w/l };
+  };
+  const qAxis = (ax, ay, az, ang) => {            // axis must be unit length
+    const h = ang / 2, s = Math.sin(h);
+    return { x:ax*s, y:ay*s, z:az*s, w:Math.cos(h) };
+  };
+  /* shortest rotation carrying unit vector a onto unit vector b */
+  const qFromTo = (a, b) => {
+    const d = a.x*b.x + a.y*b.y + a.z*b.z;
+    if (d >  0.999999) return { x:0, y:0, z:0, w:1 };
+    if (d < -0.999999){                            // antiparallel: any perpendicular
+      let ax = Math.abs(a.x) < 0.9 ? {x:1,y:0,z:0} : {x:0,y:1,z:0};
+      const c = { x: a.y*ax.z - a.z*ax.y, y: a.z*ax.x - a.x*ax.z, z: a.x*ax.y - a.y*ax.x };
+      const l = Math.hypot(c.x, c.y, c.z) || 1;
+      return { x:c.x/l, y:c.y/l, z:c.z/l, w:0 };
+    }
+    return qNorm({ x: a.y*b.z - a.z*b.y, y: a.z*b.x - a.x*b.z, z: a.x*b.y - a.y*b.x, w: 1 + d });
+  };
+  const qLerp = (a, b, t) => {
+    let bx=b.x, by=b.y, bz=b.z, bw=b.w;
+    if (a.x*bx + a.y*by + a.z*bz + a.w*bw < 0){ bx=-bx; by=-by; bz=-bz; bw=-bw; }  // short way
+    return qNorm({ x:a.x+(bx-a.x)*t, y:a.y+(by-a.y)*t, z:a.z+(bz-a.z)*t, w:a.w+(bw-a.w)*t });
+  };
+  const qMatrix = q => {
+    const {x,y,z,w} = q;
+    return [
+      1-2*(y*y+z*z), 2*(x*y-w*z),   2*(x*z+w*y),
+      2*(x*y+w*z),   1-2*(x*x+z*z), 2*(y*z-w*x),
+      2*(x*z-w*y),   2*(y*z+w*x),   1-2*(x*x+y*y)
+    ];
+  };
+
+  /* A screen-space gesture -> the rotation it should produce.
+     Drag right  => spin about the screen's vertical axis  (0, 1, 0)
+     Drag down   => spin about the screen's horizontal axis (-1, 0, 0)
+     Anything in between is the normalised blend, so the sphere follows
+     the pointer along any diagonal. */
+  const gestureAxis = (dx, dy) => {
+    const h = Math.hypot(dx, dy);
+    return h < 1e-6 ? null : { x: -dy/h, y: dx/h, z: 0, len: h };
+  };
+
+  /* ==================================================================
+     4. SETUP
+  ================================================================== */
+  const stage  = document.getElementById('stage');
+  const sphere = document.getElementById('sphere');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+
+  let baseRadius = CONFIG.radius;
+  let zoom = 1;
+
+  function fitRadius(){
+    const r = stage.getBoundingClientRect();
+    baseRadius = Math.max(150, Math.min(CONFIG.radius, Math.min(r.width, r.height) * 0.46));
+  }
+
+  /* Fibonacci sphere — the even, non-clumping way to scatter N points.
+     We sample band MIDPOINTS (i + 0.5) rather than endpoints, so no card ever
+     lands exactly on a pole. A pole point sits on the rotation axis, which
+     would leave it frozen while everything around it moved. */
+  function fibonacciSphere(n){
+    const pts = [], golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < n; i++){
+      const y = 1 - ((i + 0.5) / n) * 2;          // (-1,1) exclusive — never a pole
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      const t = golden * i;
+      pts.push({ x: Math.cos(t) * r, y, z: Math.sin(t) * r });
+    }
+    return pts;
+  }
+
+  const points = fibonacciSphere(ITEMS.length);
+  const tiles  = [];
+
+  ITEMS.forEach((item, i) => {
+    const fig = document.createElement('figure');
+    fig.className = 'tile';
+    fig.style.width = item.w + 'px';
+    fig.style.height = item.h + 'px';
+    fig.style.marginLeft = (-item.w / 2) + 'px';
+    fig.style.marginTop  = (-item.h / 2) + 'px';
+    fig.style.setProperty('--h', (i * 47) % 360);
+    fig.dataset.index = i;
+    fig.tabIndex = 0;
+    fig.setAttribute('role','button');
+    fig.setAttribute('aria-label', (item.title || 'Image ') + ' — open');
+
+    const img = document.createElement('img');
+    img.alt = item.title || '';
+    img.decoding = 'async';
+    img.addEventListener('error', () => fig.classList.add('is-broken'));
+    if (item.src) img.src = item.src; else fig.classList.add('is-broken');
+
+    fig.appendChild(img);
+    sphere.appendChild(fig);
+
+    tiles.push({ el: fig, p: points[i], item, i,
+                 lift: 0, liftTarget: 0, blur: -1, pe: null,
+                 wx: 0, wy: 0, wz: 0 });     // last world position, for hit-order
+  });
+
+  /* ==================================================================
+     5. STATE
+  ================================================================== */
+  let q = qNorm(qAxis(-1, 0, 0, 0.12));      // orientation: a slight initial tilt
+  let spin = { x: 0, y: CONFIG.autoSpin, z: 0 };  // angular velocity, world axes, rad/frame
+  let dragging = false, paused = false, visible = true;
+  let targetQ = null;                        // set while easing a card to the front
+  let introStart = performance.now();
+  const pointers = new Map();
+  let pinchDist = 0, pinchZoom = 1;
+  let primaryId = null, lastX = 0, lastY = 0, moved = 0, downTile = null;
+  const samples = [];
+
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+  /* Rotate the sphere by a screen-space gesture.
+     The delta is expressed in world space, so it LEFT-multiplies the current
+     orientation — apply it after whatever rotation is already there. */
+  function rotateByGesture(dx, dy, scale){
+    const g = gestureAxis(dx, dy);
+    if (!g) return;
+    q = qNorm(qMul(qAxis(g.x, g.y, g.z, g.len * (scale === undefined ? CONFIG.dragSpeed : scale)), q));
+  }
+
+  /* ==================================================================
+     6. RENDER
+     The orientation matrix is built once per frame, then applied to every
+     point. Each card gets a plain translate3d and NO rotation of its own,
+     so it always faces the camera.
+  ================================================================== */
+  function render(now){
+    const m = qMatrix(q);
+    const t0 = reduced ? 1 : clamp((now - introStart) / CONFIG.introMs, 0, 1);
+    const R  = baseRadius * zoom;
+
+    for (let k = 0; k < tiles.length; k++){
+      const t = tiles[k], p = t.p;
+      const intro = reduced ? 1 : easeOut(clamp(t0 * 1.6 - (k / tiles.length) * 0.6, 0, 1));
+
+      const vx = m[0]*p.x + m[1]*p.y + m[2]*p.z;
+      const vy = m[3]*p.x + m[4]*p.y + m[5]*p.z;
+      const vz = m[6]*p.x + m[7]*p.y + m[8]*p.z;
+      t.wx = vx; t.wy = vy; t.wz = vz;
+
+      t.lift += (t.liftTarget - t.lift) * 0.18;
+
+      const rr = R * intro;
+      const X = vx * rr, Y = vy * rr, Z = vz * rr + t.lift;
+
+      const depth = (vz + 1) / 2;                        // 0 far -> 1 near
+      const opacity = (1 - (1 - depth) * CONFIG.depthFade) * intro;
+
+      t.el.style.transform = 'translate3d(' + X.toFixed(2) + 'px,' + Y.toFixed(2) + 'px,' + Z.toFixed(2) + 'px)';
+      t.el.style.opacity = opacity.toFixed(3);
+
+      // --- write-on-change only: blur and hit-testing are expensive ---
+      if (CONFIG.depthBlur > 0){
+        const far = Math.max(0, (0.55 - depth) / 0.55);  // front 45% stays sharp
+        const b = Math.round(far * far * CONFIG.depthBlur * 4) / 4;
+        if (b !== t.blur){ t.blur = b; t.el.style.filter = b ? 'blur(' + b + 'px)' : ''; }
+      }
+      const pe = vz > -0.15 ? 'auto' : 'none';           // don't let the back steal clicks
+      if (pe !== t.pe){ t.pe = pe; t.el.style.pointerEvents = pe; }
+    }
+  }
+
+  /* ==================================================================
+     7. PHYSICS — delta-time based, identical at 60 / 120 / 144Hz
+  ================================================================== */
+  let last = performance.now();
+
+  function step(now){
+    const dt = Math.min(now - last, 50);
+    last = now;
+    const f = dt / 16.667;
+
+    if (targetQ){
+      q = qLerp(q, targetQ, Math.min(1, 0.16 * f));
+      const d = Math.abs(q.x*targetQ.x + q.y*targetQ.y + q.z*targetQ.z + q.w*targetQ.w);
+      if (d > 0.99999){ targetQ = null; spin.x = spin.y = spin.z = 0; }
+    } else if (!dragging && !paused){
+      const mag = Math.hypot(spin.x, spin.y, spin.z);
+      if (mag > 1e-7){
+        q = qNorm(qMul(qAxis(spin.x/mag, spin.y/mag, spin.z/mag, mag * f), q));
+      }
+      const decay = Math.pow(CONFIG.damping, f);
+      const idleY = reduced ? 0 : CONFIG.autoSpin;
+      spin.x *= decay;                                  // settle into the drift,
+      spin.z *= decay;                                  // not into a dead stop
+      spin.y = idleY + (spin.y - idleY) * decay;
+      if (Math.abs(spin.x) < 1e-6) spin.x = 0;
+      if (Math.abs(spin.z) < 1e-6) spin.z = 0;
+    }
+
+    render(now);
+    if (visible) requestAnimationFrame(step);
+  }
+
+  /* ==================================================================
+     8. DRAG
+  ================================================================== */
+  stage.addEventListener('pointerdown', e => {
+    if (paused) return;
+    for (const id of [...pointers.keys()]){
+      if (id !== e.pointerId && typeof stage.hasPointerCapture === 'function'
+          && !stage.hasPointerCapture(id)) pointers.delete(id);
+    }
+    tiles.forEach(t => { t.liftTarget = 0; t.el.classList.remove('is-hot'); });
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.size === 2){
+      dragging = false;
+      const [a, b] = [...pointers.values()];
+      pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+      pinchZoom = zoom;
+      return;
+    }
+    if (pointers.size > 2) return;
+
+    targetQ = null;
+    dragging = true;
+    primaryId = e.pointerId;
+    lastX = e.clientX; lastY = e.clientY;
+    moved = 0;
+    samples.length = 0;
+    samples.push({ t: e.timeStamp, x: e.clientX, y: e.clientY });
+    spin.x = spin.y = spin.z = 0;
+    downTile = e.target.closest ? e.target.closest('.tile') : null;
+    stage.classList.add('is-dragging');
+    stage.setPointerCapture(e.pointerId);
+  });
+
+  stage.addEventListener('pointermove', e => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.size === 2){
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinchDist > 0) setZoom(pinchZoom * (d / pinchDist));
+      return;
+    }
+
+    if (!dragging || e.pointerId !== primaryId) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+
+    rotateByGesture(dx, dy);       // <- always about the screen axis, never the object's
+
+    samples.push({ t: e.timeStamp, x: e.clientX, y: e.clientY });
+    while (samples.length > 2 && e.timeStamp - samples[0].t > 90) samples.shift();
+  });
+
+  function releaseThrow(ts){
+    spin.x = spin.y = spin.z = 0;
+    if (samples.length < 2) return;
+    const a = samples[0], b = samples[samples.length - 1];
+    if (ts - b.t > 120) return;                       // held still -> no throw
+    const dtms = Math.max(8, b.t - a.t);
+    const g = gestureAxis(b.x - a.x, b.y - a.y);
+    if (!g) return;
+    const rate = clamp(g.len * CONFIG.dragSpeed * (16.667 / dtms), 0, CONFIG.maxSpin);
+    spin.x = g.x * rate; spin.y = g.y * rate; spin.z = 0;
+  }
+
+  function endPointer(e, isTap){
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinchDist = 0;
+    if (!dragging || e.pointerId !== primaryId) return;
+
+    dragging = false;
+    stage.classList.remove('is-dragging');
+    try { stage.releasePointerCapture(e.pointerId); } catch(_){}
+    primaryId = null;
+
+    if (isTap && downTile && moved <= CONFIG.clickSlop){
+      openLightbox(+downTile.dataset.index);
+    } else if (isTap){
+      releaseThrow(e.timeStamp);
+    }
+    downTile = null;
+  }
+  addEventListener('pointerup',     e => { if (!stage.contains(e.target)) pointers.delete(e.pointerId); });
+  addEventListener('pointercancel', e => pointers.delete(e.pointerId));
+  stage.addEventListener('pointerup',          e => endPointer(e, true));
+  stage.addEventListener('pointercancel',      e => endPointer(e, false));
+  stage.addEventListener('lostpointercapture', e => endPointer(e, false));
+
+  /* ==================================================================
+     9. WHEEL — spin, or zoom with ctrl / cmd
+  ================================================================== */
+  function setZoom(z){ zoom = clamp(z, CONFIG.zoomRange[0], CONFIG.zoomRange[1]); }
+
+  stage.addEventListener('wheel', e => {
+    if (paused) return;
+    if (e.ctrlKey || e.metaKey){                 // trackpad pinch arrives as ctrl+wheel
+      e.preventDefault();
+      setZoom(zoom * (1 - e.deltaY * 0.01));
+      return;
+    }
+    if (CONFIG.captureWheel) e.preventDefault();
+    targetQ = null;
+    const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    spin.y = clamp(spin.y + d * CONFIG.wheelSpeed, -CONFIG.maxSpin, CONFIG.maxSpin);
+  }, { passive: false });
+
+  /* ==================================================================
+     10. HOVER + FOCUS
+  ================================================================== */
+  stage.addEventListener('pointerover', e => {
+    const el = e.target.closest && e.target.closest('.tile');
+    if (!el) return;
+    el.classList.add('is-hot');
+    tiles[+el.dataset.index].liftTarget = CONFIG.hoverLift;
+  });
+  stage.addEventListener('pointerout', e => {
+    const el = e.target.closest && e.target.closest('.tile');
+    if (!el) return;
+    el.classList.remove('is-hot');
+    tiles[+el.dataset.index].liftTarget = 0;
+  });
+
+  /* Spin a card to the front: find the rotation carrying its current world
+     position onto (0,0,1), and apply that on top of where we already are. */
+  function faceTile(i){
+    const t = tiles[i];
+    const l = Math.hypot(t.wx, t.wy, t.wz) || 1;
+    const v = { x: t.wx/l, y: t.wy/l, z: t.wz/l };
+    targetQ = qNorm(qMul(qFromTo(v, { x:0, y:0, z:1 }), q));
+  }
+
+  /* Only recentre on KEYBOARD focus. A mouse press focuses the card too, and
+     letting that steer the sphere fought the drag you were in the middle of. */
+  let keyboardNav = false, restoringFocus = false;
+  addEventListener('keydown', e => { if (e.key === 'Tab') keyboardNav = true; }, true);
+  addEventListener('pointerdown', () => { keyboardNav = false; }, true);
+
+  sphere.addEventListener('focusin', e => {
+    if (dragging || restoringFocus) return;
+    const el = e.target.closest && e.target.closest('.tile');
+    if (!el) return;
+    let vis = keyboardNav;
+    try { vis = el.matches(':focus-visible'); } catch(_){}
+    if (vis) faceTile(+el.dataset.index);
+  });
+
+  /* ==================================================================
+     11. KEYBOARD — arrows push the sphere the way the arrow points
+  ================================================================== */
+  addEventListener('keydown', e => {
+    if (lb.classList.contains('is-open')){
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowRight') openLightbox((current + 1) % ITEMS.length);
+      if (e.key === 'ArrowLeft')  openLightbox((current - 1 + ITEMS.length) % ITEMS.length);
+      return;
+    }
+    const tile = document.activeElement && document.activeElement.closest
+               ? document.activeElement.closest('.tile') : null;
+    if (tile && (e.key === 'Enter' || e.key === ' ')){
+      e.preventDefault(); openLightbox(+tile.dataset.index); return;
+    }
+    if (document.activeElement !== stage && !tile) return;
+
+    const n = 0.045;
+    const push = (ax, ay) => { targetQ = null; spin.x = ax; spin.y = ay; spin.z = 0; e.preventDefault(); };
+    if (e.key === 'ArrowLeft')  push( 0, -n);
+    if (e.key === 'ArrowRight') push( 0,  n);
+    if (e.key === 'ArrowUp')    push( n,  0);
+    if (e.key === 'ArrowDown')  push(-n,  0);
+  });
+
+  /* ==================================================================
+     12. LIGHTBOX
+  ================================================================== */
+  const lb      = document.getElementById('lb');
+  const lbImg   = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbIndex = document.getElementById('lbIndex');
+  let current = 0;
+
+  function openLightbox(i){
+    current = i;
+    const item = ITEMS[i];
+    lbImg.src = item.src || '';
+    lbImg.alt = item.title || '';
+    lbTitle.textContent = item.title || '';
+    lbIndex.textContent = String(i + 1).padStart(2,'0') + ' / ' + String(ITEMS.length).padStart(2,'0');
+    lb.classList.add('is-open');
+    lb.setAttribute('aria-hidden','false');
+    paused = true;
+    faceTile(i);
+  }
+  function closeLightbox(){
+    lb.classList.remove('is-open');
+    lb.setAttribute('aria-hidden','true');
+    paused = false;
+    restoringFocus = true;
+    tiles[current].el.focus({ preventScroll:true });
+    restoringFocus = false;
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click',
+    () => openLightbox((current - 1 + ITEMS.length) % ITEMS.length));
+  document.getElementById('lbNext').addEventListener('click',
+    () => openLightbox((current + 1) % ITEMS.length));
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+  /* ==================================================================
+     13. LIFECYCLE — don't burn battery when nobody's looking
+  ================================================================== */
+  function resume(){
+    if (visible) return;
+    visible = true; last = performance.now();
+    requestAnimationFrame(step);
+  }
+  function suspend(){ visible = false; }
+
+  document.addEventListener('visibilitychange',
+    () => document.hidden ? suspend() : resume());
+
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(([en]) => en.isIntersecting ? resume() : suspend(),
+      { threshold: 0 }).observe(document.getElementById('album'));
+  }
+
+  addEventListener('resize', fitRadius);
+  fitRadius();
+  render(performance.now());
+  requestAnimationFrame(step);
+
+  // handy for tuning from the console
+  window.SphereAlbum = {
+    CONFIG,
+    get orientation(){ return { ...q }; },
+    get zoom(){ return zoom; },
+    setZoom, faceTile, openLightbox, closeLightbox,
+    worldOf: i => ({ x: tiles[i].wx, y: tiles[i].wy, z: tiles[i].wz })
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+{
+  "id": "tarot-carousel",
+  "name": "Tarot Carousel",
+  "description": "A fanned deck of tarot-style cards in 3D. Stepping through turns the active card face-up mid-flight while the fan re-deals around it.",
+  "category": "Interactive Elements",
+  "tags": [
+    "3d",
+    "cards",
+    "carousel",
+    "flip",
+    "deck"
+  ],
+  "pro": true,
+  "dependencies": [],
+  "controls": [
+    {
+      "key": "cream",
+      "label": "Frame",
+      "type": "color",
+      "default": "#f7f1e6"
+    },
+    {
+      "key": "backField",
+      "label": "Card Back",
+      "type": "color",
+      "default": "#1f0308"
+    },
+    {
+      "key": "patternRed",
+      "label": "Lattice",
+      "type": "color",
+      "default": "rgba(168,48,42,.46)"
+    },
+    {
+      "key": "patternInner",
+      "label": "Lattice Dot",
+      "type": "color",
+      "default": "rgba(126,32,28,.34)"
+    },
+    {
+      "key": "cardSize",
+      "label": "Card Size",
+      "type": "range",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 84
+    },
+    {
+      "key": "aspect",
+      "label": "Aspect",
+      "type": "range",
+      "min": 0.6,
+      "max": 2.2,
+      "step": 0.005,
+      "default": 1.535
+    },
+    {
+      "key": "spread",
+      "label": "Spread",
+      "type": "range",
+      "min": 0.2,
+      "max": 1,
+      "step": 0.001,
+      "default": 0.494
+    },
+    {
+      "key": "perspective",
+      "label": "Camera",
+      "type": "range",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.01,
+      "default": 1.147
+    },
+    {
+      "key": "restYaw",
+      "label": "Rest Yaw",
+      "type": "range",
+      "min": 0,
+      "max": 30,
+      "step": 0.5,
+      "unit": "°",
+      "default": 9
+    },
+    {
+      "key": "push",
+      "label": "Push",
+      "type": "range",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "default": 170
+    },
+    {
+      "key": "bump",
+      "label": "Bump",
+      "type": "range",
+      "min": 0,
+      "max": 400,
+      "step": 5,
+      "default": 90
+    },
+    {
+      "key": "lean",
+      "label": "Lean",
+      "type": "range",
+      "min": 0,
+      "max": 10,
+      "step": 0.25,
+      "unit": "°",
+      "default": 2
+    },
+    {
+      "key": "duration",
+      "label": "Turn Duration",
+      "type": "range",
+      "min": 200,
+      "max": 2400,
+      "step": 20,
+      "unit": "ms",
+      "default": 1000
+    },
+    {
+      "key": "tiltMin",
+      "label": "Deal Tilt Min",
+      "type": "range",
+      "min": 0,
+      "max": 20,
+      "step": 0.5,
+      "unit": "°",
+      "default": 2.5
+    },
+    {
+      "key": "tiltMax",
+      "label": "Deal Tilt Max",
+      "type": "range",
+      "min": 0,
+      "max": 20,
+      "step": 0.5,
+      "unit": "°",
+      "default": 10
+    },
+    {
+      "key": "alternate",
+      "label": "Alternate Deal",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "headerTitle",
+      "label": "Title",
+      "type": "text",
+      "default": "The Eight"
+    },
+    {
+      "key": "membersLabel",
+      "label": "Link Label",
+      "type": "text",
+      "default": "Members"
+    },
+    {
+      "key": "showHeader",
+      "label": "Header",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "showArrows",
+      "label": "Arrows",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "showCounter",
+      "label": "Counter",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "wheelControl",
+      "label": "Scroll Steps",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "autoPlay",
+      "label": "Autoplay",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": false
+    },
+    {
+      "key": "autoPlayDelay",
+      "label": "Every",
+      "type": "range",
+      "min": 800,
+      "max": 12000,
+      "step": 100,
+      "unit": "ms",
+      "default": 3600,
+      "dependent": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Tight Fan",
+      "values": {
+        "spread": 0.28,
+        "cardSize": 68,
+        "restYaw": 18,
+        "push": 260,
+        "bump": 140
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Flat Deck",
+      "values": {
+        "perspective": 0.7,
+        "restYaw": 0,
+        "lean": 0,
+        "tiltMin": 0,
+        "tiltMax": 0,
+        "aspect": 1.4
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Auto Turn",
+      "values": {
+        "autoPlay": true,
+        "autoPlayDelay": 2200,
+        "duration": 700,
+        "showHeader": false
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "TarotCarousel.tsx",
+      "target": "component",
+      "content": "import * as React from \"react\"\n\n// Framer's render-target switch, stubbed for use outside Framer.\nconst RenderTarget = {\n    canvas: \"CANVAS\",\n    thumbnail: \"THUMBNAIL\",\n    preview: \"PREVIEW\",\n    current: () => \"PREVIEW\",\n}\n\n/**\n * THE EIGHT — 3D card carousel\n *\n * Cards sit on one shared rotation. As the deck advances every card's\n * angle moves the same way — like cards on a single drum, at different\n * points in the same turn. Passing 90 degrees is what swaps the face,\n * so there is no separate flip to fall out of sync.\n *\n * @framerSupportedLayoutWidth any\n * @framerSupportedLayoutHeight any\n * @framerIntrinsicWidth 1200\n * @framerIntrinsicHeight 760\n * @framerDisableUnlink\n */\n\n// ---------------------------------------------------------------- types\n\ninterface CardItem {\n    image?: { src: string; srcSet?: string; alt?: string } | string\n    title?: string\n    pip?: string\n    /** leave 0 to let the deck deal this card an angle */\n    tilt?: number\n}\n\ninterface Geometry {\n    cardSize: number\n    aspect: number\n    spread: number\n    perspective: number\n    restYaw: number\n    push: number\n    bump: number\n    lean: number\n}\n\ninterface Motion {\n    duration: number\n    flipFrom: number\n    flipTo: number\n}\n\ninterface Deal {\n    tiltMin: number\n    tiltMax: number\n    seed: number\n    alternate: boolean\n}\n\nconst GEOMETRY: Geometry = {\n    cardSize: 84,\n    aspect: 1.535,\n    spread: 0.494,\n    perspective: 1.147,\n    restYaw: 9,\n    push: 170,\n    bump: 90,\n    lean: 2,\n}\nconst MOTION: Motion = { duration: 1000, flipFrom: 0.1, flipTo: 0.9 }\nconst DEAL: Deal = { tiltMin: 2.5, tiltMax: 10, seed: 20260908, alternate: true }\nconst CARDS: CardItem[] = [\n    { title: \"The Waterfall\", pip: \"8\", tilt: 0 },\n    { title: \"The Rearing\", pip: \"8\", tilt: 0 },\n    { title: \"The Gallop\", pip: \"8\", tilt: 0 },\n    { title: \"The Crossing\", pip: \"8\", tilt: 0 },\n    { title: \"The Watchers\", pip: \"8\", tilt: 0 },\n    { title: \"The Return\", pip: \"8\", tilt: 0 },\n]\nconst BACKDROP =\n    \"radial-gradient(115% 80% at 50% 46%, #240409 0%, #1b0206 38%, #140004 72%, #0f0003 100%)\"\n\ninterface Props {\n    cards: CardItem[]\n    background: string\n    cream: string\n    backField: string\n    patternRed: string\n    patternInner: string\n    responsive: boolean\n    wheelControl: boolean\n    showHeader: boolean\n    headerTitle: string\n    headerFont: string\n    membersLabel: string\n    showArrows: boolean\n    showCounter: boolean\n    autoPlay: boolean\n    autoPlayDelay: number\n    geometry: Geometry\n    motion: Motion\n    deal: Deal\n    style?: React.CSSProperties\n}\n\n// ------------------------------------------------------------- helpers\n\n/** 6t^5-15t^4+10t^3 — zero velocity AND acceleration at both ends */\nfunction smootherstep(edge0: number, edge1: number, x: number) {\n    const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)))\n    return t * t * t * (t * (t * 6 - 15) + 10)\n}\n\nconst easeInOut = (t: number) =>\n    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2\n\n/** Merge that ignores holes. Object spread copies `undefined` straight over\n    a default, so a control that hands back an untouched field would wipe the\n    value it was meant to fall back to. */\nfunction merge<T extends object>(base: T, patch?: Partial<T>): T {\n    const out = { ...base }\n    if (!patch) return out\n    for (const k in patch) {\n        const v = patch[k] as unknown\n        if (v === undefined || v === null) continue\n        if (typeof v === \"number\" && !isFinite(v)) continue\n        out[k] = v as T[Extract<keyof T, string>]\n    }\n    return out\n}\n\n/** splitmix32 — a good spread, unlike a bare xorshift on small seeds */\nfunction hashed(seed: number, i: number) {\n    let h = (seed + (i + 1) * 0x9e3779b9) >>> 0\n    h = Math.imul(h ^ (h >>> 16), 0x21f0aaad) >>> 0\n    h = Math.imul(h ^ (h >>> 15), 0x735a2d97) >>> 0\n    h = (h ^ (h >>> 15)) >>> 0\n    return h / 0xffffffff\n}\n\nfunction srcOf(image: CardItem[\"image\"]) {\n    if (!image) return \"\"\n    return typeof image === \"string\" ? image : image.src || \"\"\n}\n\n/** stand-in plate so the component never renders empty in the panel */\nfunction placeholder(i: number) {\n    const S = [\n        [0.3, 0.62, 0.2],\n        [0.52, 0.44, 0.34],\n        [0.18, 0.7, 0.26],\n        [0.66, 0.38, 0.44],\n        [0.42, 0.56, 0.15],\n        [0.24, 0.5, 0.38],\n    ][i % 6]\n    const [a, b, c] = S\n    const R = Math.round\n    const ridge = (y: number, amp: number, fill: string) =>\n        `<path d=\"M0 ${R(y)} L${R(58 + a * 70)} ${R(y - amp)} L${R(132 + b * 46)} ${R(\n            y - amp * 0.34\n        )} L${R(214 + c * 70)} ${R(y - amp * 1.15)} L${R(312 + a * 40)} ${R(\n            y - amp * 0.42\n        )} L400 ${R(y - amp * 0.86)} L400 470 L0 470Z\" fill=\"${fill}\"/>`\n    const water = Array.from(\n        { length: 12 },\n        (_, k) =>\n            `<path d=\"M${R(18 + k * 34)} ${R(474 + ((k * 43) % 50))} q ${R(\n                26 + a * 20\n            )} -10 60 2\"/>`\n    ).join(\"\")\n    const fall = Array.from(\n        { length: 6 },\n        (_, k) =>\n            `<path d=\"M${R(44 + c * 170 + k * 6)} ${R(298 + a * 40)} v ${R(\n                80 + k * 10\n            )}\"/>`\n    ).join(\"\")\n\n    const svg =\n        `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 614\" preserveAspectRatio=\"xMidYMid slice\">` +\n        `<defs><linearGradient id=\"s\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">` +\n        `<stop offset=\"0\" stop-color=\"#faf5ec\"/><stop offset=\"1\" stop-color=\"#dcccb9\"/></linearGradient>` +\n        `<pattern id=\"h\" width=\"5\" height=\"5\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(${R(\n            24 + a * 38\n        )})\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"5\" stroke=\"#1a0206\" stroke-width=\"1\" opacity=\".2\"/></pattern>` +\n        `<pattern id=\"h2\" width=\"4\" height=\"4\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(${R(\n            -30 - b * 30\n        )})\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"4\" stroke=\"#1a0206\" stroke-width=\"1\" opacity=\".32\"/></pattern></defs>` +\n        `<rect width=\"400\" height=\"614\" fill=\"url(#s)\"/>` +\n        `<g fill=\"#a4907e\" opacity=\".5\">` +\n        `<ellipse cx=\"${R(88 + a * 150)}\" cy=\"${R(80 + b * 34)}\" rx=\"88\" ry=\"26\"/>` +\n        `<ellipse cx=\"${R(206 + b * 110)}\" cy=\"${R(112 + a * 26)}\" rx=\"106\" ry=\"30\"/>` +\n        `<ellipse cx=\"${R(52 + c * 190)}\" cy=\"${R(136 + c * 26)}\" rx=\"72\" ry=\"21\"/></g>` +\n        ridge(318 + a * 44, 122, \"#8e261b\") +\n        ridge(318 + a * 44, 122, \"url(#h)\") +\n        ridge(358 + b * 30, 60, \"#6d1c14\") +\n        `<path d=\"M0 ${R(408 + b * 22)} L118 ${R(378 + a * 24)} L258 ${R(\n            418 + c * 20\n        )} L400 ${R(386 + b * 18)} L400 614 L0 614Z\" fill=\"#1a0206\"/>` +\n        `<path d=\"M0 ${R(408 + b * 22)} L118 ${R(378 + a * 24)} L258 ${R(\n            418 + c * 20\n        )} L400 ${R(386 + b * 18)} L400 614 L0 614Z\" fill=\"url(#h2)\" opacity=\".55\"/>` +\n        `<path d=\"M${R(\n            176 + a * 44\n        )} 108 l6 -44 6 44 44 6 -44 6 -6 44 -6 -44 -44 -6z\" fill=\"#1a0206\"/>` +\n        `<g stroke=\"#f7f1e6\" stroke-width=\"1.6\" fill=\"none\" opacity=\".8\">${fall}</g>` +\n        `<g stroke=\"#f7f1e6\" stroke-width=\"1.1\" fill=\"none\" opacity=\".5\">${water}</g>` +\n        `</svg>`\n\n    return \"data:image/svg+xml;charset=utf-8,\" + encodeURIComponent(svg)\n}\n\n// ----------------------------------------------------------- component\n\nexport default function TarotCarousel(props: Partial<Props>) {\n    const {\n        cards = CARDS,\n        background = BACKDROP,\n        cream = \"#f7f1e6\",\n        backField = \"#1f0308\",\n        patternRed = \"rgba(168,48,42,.46)\",\n        patternInner = \"rgba(126,32,28,.34)\",\n        responsive = true,\n        wheelControl = true,\n        showHeader = true,\n        headerTitle = \"The Eight\",\n        headerFont = \"Italianno, 'Snell Roundhand', cursive\",\n        membersLabel = \"Members\",\n        showArrows = true,\n        showCounter = true,\n        autoPlay = false,\n        autoPlayDelay = 3600,\n        style,\n    } = props\n\n    /* Merged field by field. A grouped control can hand back an object whose\n       untouched fields are undefined, and a plain spread would let those\n       holes overwrite the defaults. */\n    const geometry = merge(GEOMETRY, props.geometry)\n    const motion = merge(MOTION, props.motion)\n    const deal = merge(DEAL, props.deal)\n\n    const onCanvas = RenderTarget.current() === RenderTarget.canvas\n    const N = Math.max(1, cards.length)\n\n    const rootRef = React.useRef<HTMLDivElement>(null)\n    const stageRef = React.useRef<HTMLDivElement>(null)\n    const cardRefs = React.useRef<(HTMLDivElement | null)[]>([])\n    const innerRefs = React.useRef<(HTMLDivElement | null)[]>([])\n\n    const [active, setActive] = React.useState(0)\n    const lastActive = React.useRef(0)\n    const [box, setBox] = React.useState({ w: 1200, h: 760 })\n\n    // live values the rAF loop reads without re-subscribing\n    const pos = React.useRef(0)\n    const tween = React.useRef({ from: 0, to: 0, t0: 0, dur: 0, running: false })\n    const drag = React.useRef({\n        active: false,\n        startX: 0,\n        startPos: 0,\n        moved: 0,\n        lastX: 0,\n        lastT: 0,\n        vel: 0,\n    })\n    const cfg = React.useRef({ geometry, motion, deal, N, spreadPx: 0 })\n\n    // resting angles: direction alternates, only the amount is dealt\n    const tilts = React.useMemo(() => {\n        const out: number[] = []\n        for (let i = 0; i < N; i++) {\n            const given = cards[i]?.tilt\n            if (typeof given === \"number\" && given !== 0) {\n                out.push(given)\n                continue\n            }\n            const amount =\n                deal.tiltMin + hashed(deal.seed, i) * (deal.tiltMax - deal.tiltMin)\n            const dir = deal.alternate ? (i % 2 ? -1 : 1) : hashed(deal.seed, i + 99) < 0.5 ? -1 : 1\n            out.push(dir * amount)\n        }\n        // an odd deck wraps two same-leaning cards together — break the tie\n        if (deal.alternate && N % 2 === 1 && !cards[N - 1]?.tilt) out[N - 1] *= -1\n        return out\n    }, [cards, N, deal.tiltMin, deal.tiltMax, deal.seed, deal.alternate])\n\n    const tiltsRef = React.useRef(tilts)\n    tiltsRef.current = tilts\n\n    // ---- measure the container (Framer resizes freely) ----\n    React.useEffect(() => {\n        const el = rootRef.current\n        if (!el || typeof ResizeObserver === \"undefined\") return\n        const ro = new ResizeObserver(() => {\n            const r = el.getBoundingClientRect()\n            if (r.width && r.height) setBox({ w: r.width, h: r.height })\n        })\n        ro.observe(el)\n        const r = el.getBoundingClientRect()\n        if (r.width && r.height) setBox({ w: r.width, h: r.height })\n        return () => ro.disconnect()\n    }, [])\n\n    /* ---------------- RESPONSIVE SIZING ----------------------------\n       Two things break when the frame is not a wide desktop rectangle:\n\n       1. `spread` is a fraction of FRAME width, but so is the card. On a\n          portrait frame the card outgrows the gap and the neighbours land\n          ON TOP of it — measured at -110px on a 390-wide phone. So the\n          spread also gets a floor expressed in CARD widths, which is the\n          only reference that guarantees clearance at any frame shape.\n\n       2. On a very short frame the counter collides with the card, so the\n          card height is capped to leave that strip alone.\n\n       Each guard is a max()/min() against the existing value, so a normal\n       desktop frame is completely unaffected and still matches the HTML\n       build pixel for pixel.                                            */\n\n    const narrow = responsive && box.w <= 820\n    const geo = narrow\n        ? { ...geometry, cardSize: 64, spread: 0.6, push: 120, bump: 60 }\n        : geometry\n\n    /* the same clamps the stylesheet spells in vh / vw */\n    const clamp = (lo: number, v: number, hi: number) =>\n        Math.max(lo, Math.min(hi, v))\n    const barY = clamp(16, 0.03 * box.h, 32)\n    const barX = clamp(20, 0.034 * box.w, 52)\n    const wordSize = clamp(30, 0.029 * box.w, 48)\n    const countB = clamp(18, 0.04 * box.h, 40)\n\n    /* keep the counter's strip clear at the top and bottom of the card */\n    const countZone = showCounter ? countB + 26 : 0\n\n    /* A portrait frame must not let the card eat the whole width, or the\n       neighbours get pushed clean off screen and the three-card\n       composition is lost. 0.86 leaves a visible sliver either side. */\n    const widthCap = narrow ? 0.86 : 0.72\n\n    const cardH = Math.max(\n        120,\n        Math.min(\n            (geo.cardSize / 100) * box.h,\n            widthCap * box.w,\n            box.h - 2 * countZone\n        )\n    )\n    const cardW = cardH / Math.max(0.5, geometry.aspect)\n\n    /* The floor that stops neighbours overlapping the centre card.\n       It has to use the card's INFLATED width: a resting lean of up to\n       --tilt-max widens a tall card's footprint by about a quarter\n       (w·cos + h·sin), and ignoring that still left a ~20px overlap on\n       every portrait frame. */\n    const tiltRad = (deal.tiltMax * Math.PI) / 180\n    const effW = cardW * Math.cos(tiltRad) + cardH * Math.sin(tiltRad)\n    const spreadPx = Math.max(geo.spread * box.w, effW * 0.99 + 18)\n\n    /* prefers-reduced-motion: the HTML shortens the move and drops the bump */\n    const [reduced, setReduced] = React.useState(false)\n    React.useEffect(() => {\n        if (typeof matchMedia === \"undefined\") return\n        const mq = matchMedia(\"(prefers-reduced-motion: reduce)\")\n        const on = () => setReduced(mq.matches)\n        on()\n        mq.addEventListener?.(\"change\", on)\n        return () => mq.removeEventListener?.(\"change\", on)\n    }, [])\n\n    const mot = reduced\n        ? { duration: 200, flipFrom: 0.42, flipTo: 0.58 }\n        : motion\n    const geoActive = reduced ? { ...geo, bump: 0 } : geo\n\n    cfg.current = { geometry: geoActive, motion: mot, deal, N, spreadPx }\n\n    // ---- the render loop ----\n    React.useEffect(() => {\n        let raf = 0\n        let stopped = false\n\n        const offsetOf = (i: number, p: number, n: number) => {\n            let d = i - p\n            d -= Math.round(d / n) * n\n            return d\n        }\n\n        const paint = () => {\n            const { geometry: g, motion: m, N: n, spreadPx: sp } = cfg.current\n            const W = rootRef.current?.clientWidth || 1200\n            const p = pos.current\n\n            if (stageRef.current) {\n                stageRef.current.style.perspective = g.perspective * W + \"px\"\n            }\n\n            for (let i = 0; i < n; i++) {\n                const el = cardRefs.current[i]\n                const inner = innerRefs.current[i]\n                if (!el || !inner) continue\n\n                const off = offsetOf(i, p, n)\n                const A = Math.abs(off)\n\n                // ONE angle, odd in `off`, so every card turns the same way\n                const turn = smootherstep(m.flipFrom, m.flipTo, A)\n                const face = -180 * (off < 0 ? -1 : 1) * turn\n\n                if (A > 1.5) {\n                    if (el.style.visibility !== \"hidden\") {\n                        el.style.visibility = \"hidden\"\n                        el.style.opacity = \"0\"\n                    }\n                    continue\n                }\n                el.style.visibility = \"visible\"\n                el.style.opacity = (\n                    A > 1.12 ? Math.max(0, 1 - (A - 1.12) / 0.38) : 1\n                ).toFixed(3)\n\n                const arch = Math.sin(Math.PI * A)\n                const x = sp * off\n                const z = (g.push * A + g.bump * arch) * (W / 1918)\n                const ry = face - g.restYaw * off\n                const rz = (tiltsRef.current[i] || 0) - g.lean * off\n\n                el.style.setProperty(\n                    \"--tc-shade\",\n                    (Math.abs(Math.sin((ry * Math.PI) / 180)) * 0.42).toFixed(3)\n                )\n                // rotateZ stays outside the turn: the resting lean is a\n                // screen-space angle and must not invert past 90 degrees\n                el.style.transform =\n                    `translate3d(${x.toFixed(1)}px,0,${z.toFixed(1)}px) ` +\n                    `rotateZ(${rz.toFixed(2)}deg)`\n                // the turn goes INSIDE — .card carries opacity, which groups\n                // and would stop a rotation above it counting toward\n                // backface-visibility\n                inner.style.transform = `rotateY(${ry.toFixed(2)}deg)`\n            }\n\n            const a = ((Math.round(p) % n) + n) % n\n            if (a !== lastActive.current) {\n                lastActive.current = a\n                setActive(a)\n            }\n        }\n\n        const tick = (now: number) => {\n            if (stopped) return\n            const t = tween.current\n            if (t.running && !drag.current.active) {\n                const u = Math.min(1, (now - t.t0) / t.dur)\n                pos.current = t.from + (t.to - t.from) * easeInOut(u)\n                if (u === 1) {\n                    pos.current = t.to\n                    t.running = false\n                }\n            }\n            paint()\n            raf = requestAnimationFrame(tick)\n        }\n\n        paint()\n        raf = requestAnimationFrame(tick)\n        return () => {\n            stopped = true\n            cancelAnimationFrame(raf)\n        }\n    }, [N, cardW, cardH, spreadPx])\n\n    // ---- navigation ----\n    const goTo = React.useCallback((next: number) => {\n        const t = tween.current\n        t.from = pos.current\n        t.to = next\n        const span = Math.max(1, Math.abs(t.to - t.from))\n        t.dur = cfg.current.motion.duration * (1 + (span - 1) * 0.4)\n        t.t0 = performance.now()\n        t.running = true\n    }, [])\n\n    const go = React.useCallback(\n        (d: number) => {\n            const t = tween.current\n            goTo(Math.round(t.running ? t.to : pos.current) + d)\n        },\n        [goTo]\n    )\n\n    // ---- autoplay ----\n    React.useEffect(() => {\n        if (!autoPlay || onCanvas || N < 2) return\n        const id = setInterval(() => {\n            if (!drag.current.active) go(1)\n        }, Math.max(600, autoPlayDelay))\n        return () => clearInterval(id)\n    }, [autoPlay, autoPlayDelay, onCanvas, N, go])\n\n    // ---- keyboard ----\n    React.useEffect(() => {\n        if (onCanvas) return\n        const onKey = (e: KeyboardEvent) => {\n            if (e.key === \"ArrowRight\") go(1)\n            if (e.key === \"ArrowLeft\") go(-1)\n        }\n        window.addEventListener(\"keydown\", onKey)\n        return () => window.removeEventListener(\"keydown\", onKey)\n    }, [onCanvas, go])\n\n    // ---- pointer drag ----\n    const DRAG_PER_CARD = 430   /* px of drag that equals one card */\n\n    const onPointerDown = (e: React.PointerEvent) => {\n        if (onCanvas) return\n        const d = drag.current\n        d.active = true\n        d.moved = 0\n        d.vel = 0\n        d.startX = d.lastX = e.clientX\n        d.startPos = pos.current\n        d.lastT = performance.now()\n        tween.current.running = false\n        const node = e.currentTarget as HTMLElement\n        node.dataset.drag = \"1\"\n        node.setPointerCapture(e.pointerId)\n    }\n\n    const onPointerMove = (e: React.PointerEvent) => {\n        const d = drag.current\n        if (!d.active) return\n        const dx = e.clientX - d.startX\n        d.moved = Math.abs(dx)\n        pos.current = d.startPos - dx / DRAG_PER_CARD\n        const now = performance.now()\n        const dt = now - d.lastT\n        if (dt > 8) {\n            d.vel = -(e.clientX - d.lastX) / DRAG_PER_CARD / dt\n            d.lastX = e.clientX\n            d.lastT = now\n        }\n    }\n\n    const endDrag = () => {\n        const d = drag.current\n        if (stageRef.current) stageRef.current.dataset.drag = \"0\"\n        if (!d.active) return\n        d.active = false\n        const nearest = Math.round(pos.current)\n        // a quick flick always carries at least one card\n        if (Math.abs(d.vel) > 0.0012 && nearest === Math.round(d.startPos)) {\n            goTo(nearest + Math.sign(d.vel))\n        } else {\n            goTo(nearest)\n        }\n    }\n\n    /* WHEEL.\n       Deltas accumulate into a gesture, and the next turn cannot start\n       until the current one has finished easing. Re-arming sooner than the\n       tween duration restarts the animation from its own midpoint, which\n       is what makes a trackpad scroll lurch and skip the card angles. */\n    const wheel = React.useRef({ accum: 0, last: 0, until: 0 })\n    const WHEEL_STEP = 90 /* delta that adds up to one card  */\n    const WHEEL_GAP = 220 /* ms of quiet that ends a gesture */\n\n    const onWheel = (e: React.WheelEvent) => {\n        if (onCanvas || !wheelControl) return\n        const w = wheel.current\n        const now = performance.now()\n        const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY\n\n        /* a pause starts a fresh count, so a momentum tail cannot chain */\n        if (now - w.last > WHEEL_GAP) w.accum = 0\n        w.last = now\n\n        if (now < w.until) return // a turn is still easing\n\n        w.accum += d\n        if (Math.abs(w.accum) < WHEEL_STEP) return\n\n        const dir = Math.sign(w.accum)\n        w.accum = 0\n        w.until = now + cfg.current.motion.duration\n        go(dir)\n    }\n\n    // ---- per-instance CSS variables ----\n    const vars = {\n        \"--tc-cream\": cream,\n        \"--tc-back\": backField,\n        \"--tc-red\": patternRed,\n        \"--tc-red2\": patternInner,\n        \"--tc-bar-y\": barY + \"px\",\n        \"--tc-bar-x\": barX + \"px\",\n        \"--tc-count-b\": countB + \"px\",\n        \"--tc-card-w\": cardW + \"px\",\n        \"--tc-card-h\": cardH + \"px\",\n    } as React.CSSProperties\n\n    const css = `\n.tc-root,.tc-root *{box-sizing:border-box}\n.tc-root{position:relative;overflow:hidden;isolation:isolate;\n  -webkit-font-smoothing:antialiased;}\n.tc-root::after{content:\"\";position:absolute;inset:0;z-index:5;pointer-events:none;\n  background:radial-gradient(80% 66% at 50% 50%, transparent 38%, rgba(6,0,2,.72) 100%);}\n.tc-bar{position:absolute;inset:0 0 auto 0;z-index:8;display:grid;\n  grid-template-columns:1fr auto 1fr;align-items:center;\n  padding:var(--tc-bar-y) var(--tc-bar-x);pointer-events:none;}\n.tc-bar>*{pointer-events:auto}\n.tc-menu{justify-self:start;width:30px;height:14px;padding:0;border:0;background:none;\n  cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;}\n.tc-menu span{display:block;height:1px;background:var(--tc-cream);opacity:.85;\n  transition:width .35s cubic-bezier(.22,.61,.24,1);}\n.tc-menu span:last-child{width:60%}\n.tc-menu:hover span:last-child{width:100%}\n.tc-word{margin:0;justify-self:center;font-weight:400;line-height:1;letter-spacing:.01em;\n  color:var(--tc-cream);white-space:nowrap;user-select:none;\n  text-shadow:0 0 30px rgba(247,241,230,.16);}\n.tc-members{justify-self:end;font-size:11px;letter-spacing:.36em;\n  text-transform:uppercase;color:var(--tc-cream);text-decoration:none;opacity:.9;\n  transition:opacity .3s;font-family:ui-sans-serif,system-ui,Arial,sans-serif;}\n.tc-members:hover{opacity:.55}\n.tc-stage{position:absolute;inset:0;z-index:2;perspective-origin:50% 50%;\n  cursor:grab;touch-action:pan-y;}\n.tc-stage[data-drag=\"1\"]{cursor:grabbing}\n.tc-ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;}\n.tc-card{position:absolute;width:var(--tc-card-w);height:var(--tc-card-h);\n  margin-left:calc(var(--tc-card-w) / -2);margin-top:calc(var(--tc-card-h) / -2);\n  transform-style:preserve-3d;will-change:transform;}\n.tc-inner{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}\n.tc-face{position:absolute;inset:0;backface-visibility:hidden;\n  -webkit-backface-visibility:hidden;border-radius:calc(var(--tc-card-w) * .045);\n  background:var(--tc-cream);padding:calc(var(--tc-card-w) * .033);\n  box-shadow:0 1px 1px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6);}\n.tc-back{transform:rotateY(180deg)}\n.tc-face::before{content:\"\";position:absolute;inset:0;z-index:4;pointer-events:none;\n  border-radius:inherit;background:#0b0002;opacity:var(--tc-shade,0);}\n.tc-plate{position:relative;width:100%;height:100%;overflow:hidden;background:#2a0407;\n  border-radius:calc(var(--tc-card-w) * .018);box-shadow:0 0 0 1px rgba(30,3,7,.55);}\n.tc-plate img{display:block;width:100%;height:100%;object-fit:cover}\n.tc-plate::after{content:\"\";position:absolute;inset:0;pointer-events:none;opacity:.34;\n  mix-blend-mode:multiply;background-size:140px 140px, cover;\n  background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E\"),\n    radial-gradient(120% 92% at 50% 32%, transparent 52%, rgba(26,1,5,.34));}\n.tc-pip{position:absolute;z-index:2;display:grid;place-items:center;\n  width:calc(var(--tc-card-w) * .095);height:calc(var(--tc-card-w) * .125);\n  background:var(--tc-cream);border:1px solid rgba(26,2,6,.55);\n  border-radius:calc(var(--tc-card-w) * .008);\n  font-size:calc(var(--tc-card-w) * .09);line-height:1;color:#1a0206;\n  padding-bottom:.1em;}\n.tc-pip-tr{top:calc(var(--tc-card-w) * .058);right:calc(var(--tc-card-w) * .058)}\n.tc-pip-bl{bottom:calc(var(--tc-card-w) * .058);left:calc(var(--tc-card-w) * .058)}\n.tc-weave{--t:calc(var(--tc-card-w) * .175);position:relative;width:100%;height:100%;\n  overflow:hidden;border-radius:calc(var(--tc-card-w) * .018);\n  background-color:var(--tc-back);\n  background-image:\n    radial-gradient(circle, transparent 45%, var(--tc-red) 45.6%, var(--tc-red) 47.6%, transparent 48.2%),\n    radial-gradient(circle, transparent 45%, var(--tc-red) 45.6%, var(--tc-red) 47.6%, transparent 48.2%),\n    radial-gradient(circle, transparent 26%, var(--tc-red2) 26.6%, var(--tc-red2) 28.2%, transparent 28.8%);\n  background-size:var(--t) var(--t), var(--t) var(--t), var(--t) var(--t);\n  background-position:0 0, calc(var(--t)/2) calc(var(--t)/2), calc(var(--t)/2) calc(var(--t)/2);}\n.tc-weave::after{content:\"\";position:absolute;inset:0;\n  background:radial-gradient(72% 58% at 50% 44%, rgba(132,30,26,.18), transparent 72%);}\n.tc-nav{position:absolute;top:50%;z-index:9;width:24px;height:24px;margin-top:-12px;\n  padding:0;display:grid;place-items:center;border:0;border-radius:50%;\n  background:var(--tc-cream);color:#1a0206;cursor:pointer;opacity:.88;\n  transition:transform .35s cubic-bezier(.22,.61,.24,1),opacity .3s;}\n.tc-nav:hover{transform:scale(1.2);opacity:1}\n.tc-nav:active{transform:scale(.92)}\n.tc-nav svg{width:8px;height:8px}\n.tc-count{position:absolute;left:0;right:0;bottom:var(--tc-count-b);z-index:8;text-align:center;\n  pointer-events:none;font-size:10px;letter-spacing:.32em;opacity:.28;\n  color:var(--tc-cream);font-family:ui-sans-serif,system-ui,Arial,sans-serif;}\n@media (prefers-reduced-motion:reduce){.tc-nav{transition:none}}\n`\n\n    return (\n        <div\n            ref={rootRef}\n            className=\"tc-root\"\n            style={{\n                width: \"100%\",\n                height: \"100%\",\n                background,\n                ...vars,\n                ...style,\n            }}\n        >\n            <style>{css}</style>\n\n            {showHeader && (\n                <header className=\"tc-bar\">\n                    <button className=\"tc-menu\" aria-label=\"Menu\" type=\"button\">\n                        <span />\n                        <span />\n                    </button>\n                    <h1\n                        className=\"tc-word\"\n                        style={{\n                            fontFamily: headerFont,\n                            fontSize: wordSize,\n                        }}\n                    >\n                        {headerTitle}\n                    </h1>\n                    <span className=\"tc-members\">{membersLabel}</span>\n                </header>\n            )}\n\n            <div\n                ref={stageRef}\n                className=\"tc-stage\"\n                onPointerDown={onPointerDown}\n                onPointerMove={onPointerMove}\n                onPointerUp={endDrag}\n                onPointerCancel={endDrag}\n                onLostPointerCapture={endDrag}\n                onWheel={onWheel}\n            >\n                <div className=\"tc-ring\">\n                    {cards.map((c, i) => {\n                        const src = srcOf(c.image) || placeholder(i)\n                        return (\n                            <div\n                                key={i}\n                                className=\"tc-card\"\n                                ref={(el) => {\n                                    cardRefs.current[i] = el\n                                }}\n                                onClick={() => {\n                                    if (drag.current.moved > 6) return\n                                    let d = i - pos.current\n                                    d -= Math.round(d / N) * N\n                                    if (Math.abs(d) > 0.5) go(Math.sign(d))\n                                }}\n                            >\n                                <div\n                                    className=\"tc-inner\"\n                                    ref={(el) => {\n                                        innerRefs.current[i] = el\n                                    }}\n                                >\n                                    <div className=\"tc-face\">\n                                        <div className=\"tc-plate\">\n                                            <img\n                                                src={src}\n                                                alt={c.title || \"\"}\n                                                draggable={false}\n                                            />\n                                            <span\n                                                className=\"tc-pip tc-pip-tr\"\n                                                style={{ fontFamily: headerFont }}\n                                            >\n                                                {c.pip}\n                                            </span>\n                                            <span\n                                                className=\"tc-pip tc-pip-bl\"\n                                                style={{ fontFamily: headerFont }}\n                                            >\n                                                {c.pip}\n                                            </span>\n                                        </div>\n                                    </div>\n                                    <div className=\"tc-face tc-back\">\n                                        <div className=\"tc-weave\" />\n                                    </div>\n                                </div>\n                            </div>\n                        )\n                    })}\n                </div>\n            </div>\n\n            {showArrows && (\n                <>\n                    <button\n                        type=\"button\"\n                        className=\"tc-nav\"\n                        aria-label=\"Previous card\"\n                        style={\n                            narrow\n                                ? { left: 16 }\n                                : { left: `calc(50% - ${cardW * 0.62}px)` }\n                        }\n                        onClick={() => go(-1)}\n                    >\n                        <svg\n                            viewBox=\"0 0 10 10\"\n                            fill=\"none\"\n                            stroke=\"currentColor\"\n                            strokeWidth={1.5}\n                            strokeLinecap=\"round\"\n                        >\n                            <path d=\"M6.3 1.4 2.9 5l3.4 3.6\" />\n                        </svg>\n                    </button>\n                    <button\n                        type=\"button\"\n                        className=\"tc-nav\"\n                        aria-label=\"Next card\"\n                        style={\n                            narrow\n                                ? { left: \"auto\", right: 16 }\n                                : { left: `calc(50% + ${cardW * 0.62}px)` }\n                        }\n                        onClick={() => go(1)}\n                    >\n                        <svg\n                            viewBox=\"0 0 10 10\"\n                            fill=\"none\"\n                            stroke=\"currentColor\"\n                            strokeWidth={1.5}\n                            strokeLinecap=\"round\"\n                        >\n                            <path d=\"M3.7 1.4 7.1 5l-3.4 3.6\" />\n                        </svg>\n                    </button>\n                </>\n            )}\n\n            {showCounter && (\n                <div className=\"tc-count\">\n                    {String(active + 1).padStart(2, \"0\")} /{\" \"}\n                    {String(N).padStart(2, \"0\")}\n                </div>\n            )}\n        </div>\n    )\n}\n\n// ---------------------------------------------------- property controls\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "index.html"
+  }
+}

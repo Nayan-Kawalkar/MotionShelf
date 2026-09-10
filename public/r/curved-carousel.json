@@ -1,0 +1,178 @@
+{
+  "id": "curved-carousel",
+  "name": "Curved Carousel",
+  "description": "3D curved carousel with drag momentum and auto-play rotation.",
+  "category": "Image Gallery",
+  "tags": [
+    "carousel",
+    "3d",
+    "drag",
+    "ring"
+  ],
+  "pro": false,
+  "dependencies": [],
+  "controls": [
+    {
+      "key": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "#ffffff"
+    },
+    {
+      "key": "textColor",
+      "label": "Text",
+      "type": "color",
+      "default": "#1c1a16"
+    },
+    {
+      "key": "accent",
+      "label": "Accent",
+      "type": "color",
+      "default": "#8b7f6e"
+    },
+    {
+      "key": "autoSpeed",
+      "label": "Auto Speed",
+      "type": "range",
+      "min": 0,
+      "max": 30,
+      "step": 0.5,
+      "unit": "°/s",
+      "default": 5
+    },
+    {
+      "key": "dragSensitivity",
+      "label": "Drag",
+      "type": "range",
+      "min": 0.05,
+      "max": 1.2,
+      "step": 0.05,
+      "unit": "°/px",
+      "default": 0.35
+    },
+    {
+      "key": "panelWidth",
+      "label": "Panel Width",
+      "type": "range",
+      "min": 120,
+      "max": 520,
+      "step": 4,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "key": "panelAspect",
+      "label": "Panel Ratio",
+      "type": "range",
+      "min": 0.4,
+      "max": 1.6,
+      "step": 0.02,
+      "default": 0.72
+    },
+    {
+      "key": "panelRadius",
+      "label": "Radius",
+      "type": "range",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "key": "showKicker",
+      "label": "Kicker",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "kicker",
+      "label": "Kicker Text",
+      "type": "text",
+      "default": "Studio Editions — Architecture & Interiors",
+      "dependent": true
+    },
+    {
+      "key": "showHeading",
+      "label": "Heading",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "heading",
+      "label": "Heading Text",
+      "type": "text",
+      "default": "The space you imagined",
+      "dependent": true
+    },
+    {
+      "key": "headingEmphasis",
+      "label": "Emphasis",
+      "type": "text",
+      "default": "has never been built before.",
+      "dependent": true
+    },
+    {
+      "key": "showHint",
+      "label": "Hint",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Variant 2 — Noir",
+      "values": {
+        "background": "#0a0a0b",
+        "textColor": "#f4f4f5",
+        "accent": "#ec5228",
+        "panelRadius": 2,
+        "autoSpeed": 8
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Variant 3 — Wide",
+      "values": {
+        "panelWidth": 460,
+        "panelAspect": 0.56,
+        "panelRadius": 0,
+        "autoSpeed": 3,
+        "showKicker": false
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Variant 4 — Bare",
+      "values": {
+        "showKicker": false,
+        "showHeading": false,
+        "showHint": false,
+        "autoSpeed": 12,
+        "panelRadius": 20
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "CurvedCarousel.jsx",
+      "target": "component",
+      "content": "import { useEffect, useRef } from \"react\";\n\nconst DEFAULT_IMAGES = [\n  \"https://picsum.photos/id/1080/900/650\",\n  \"https://picsum.photos/id/1074/900/650\",\n  \"https://picsum.photos/id/1048/900/650\",\n  \"https://picsum.photos/id/1039/900/650\",\n  \"https://picsum.photos/id/106/900/650\",\n  \"https://picsum.photos/id/1043/900/650\",\n  \"https://picsum.photos/id/1076/900/650\",\n  \"https://picsum.photos/id/1069/900/650\",\n  \"https://picsum.photos/id/1044/900/650\",\n  \"https://picsum.photos/id/1015/900/650\",\n];\n\n/* @controls:start */\nconst DEFAULTS = {\n  autoSpeed: 5,\n  dragSensitivity: 0.35,\n  panelWidth: 320,\n  panelAspect: 0.72,\n  panelRadius: 6,\n  background: \"#ffffff\",\n  textColor: \"#1c1a16\",\n  accent: \"#8b7f6e\",\n  kicker: \"Studio Editions — Architecture & Interiors\",\n  heading: \"The space you imagined\",\n  headingEmphasis: \"has never been built before.\",\n  showKicker: true,\n  showHeading: true,\n  showHint: true,\n};\n/* @controls:end */\n\nexport default function CurvedCarousel({\n  images = DEFAULT_IMAGES,\n  autoSpeed = DEFAULTS.autoSpeed,\n  dragSensitivity = DEFAULTS.dragSensitivity,\n  panelWidth = DEFAULTS.panelWidth,\n  panelAspect = DEFAULTS.panelAspect,\n  panelRadius = DEFAULTS.panelRadius,\n  background = DEFAULTS.background,\n  textColor = DEFAULTS.textColor,\n  accent = DEFAULTS.accent,\n  kicker = DEFAULTS.kicker,\n  heading = DEFAULTS.heading,\n  headingEmphasis = DEFAULTS.headingEmphasis,\n  showKicker = DEFAULTS.showKicker,\n  showHeading = DEFAULTS.showHeading,\n  showHint = DEFAULTS.showHint,\n}) {\n  const stageRef = useRef(null);\n  const ringRef = useRef(null);\n  const panelRefs = useRef([]);\n\n  const N = images.length;\n\n  // Live tunables read by the animation loop, so dragging a slider retunes the\n  // running carousel instead of tearing it down and restarting the rotation.\n  const opts = useRef(null);\n  opts.current = { autoSpeed, dragSensitivity, panelWidth, panelAspect };\n\n  useEffect(() => {\n    const stage = stageRef.current;\n    const ring = ringRef.current;\n    if (!stage || !ring) return;\n\n    const ANGLE_STEP = 360 / N;\n    let pw = 0;\n    let ph = 0;\n    let radius = 0;\n\n    function panelSize() {\n      const w = stage.clientWidth;\n      const frac = w < 640 ? 0.34 : w < 1024 ? 0.3 : 0.26;\n      const width = Math.min(opts.current.panelWidth, w * frac);\n      const height = width * opts.current.panelAspect;\n      return { width, height };\n    }\n\n    function layout() {\n      const size = panelSize();\n      pw = size.width;\n      ph = size.height;\n      radius = pw / 2 / Math.tan(Math.PI / N);\n\n      panelRefs.current.forEach((panel, i) => {\n        if (!panel) return;\n        panel.style.width = pw + \"px\";\n        panel.style.height = ph + \"px\";\n        panel.style.marginTop = -ph / 2 + \"px\";\n        panel.style.marginLeft = -pw / 2 + \"px\";\n        const angle = i * ANGLE_STEP;\n        panel.style.transform = \"rotateY(\" + angle + \"deg) translateZ(\" + radius + \"px)\";\n      });\n    }\n\n    layout();\n\n    // ---- rotation state ----\n    let rotation = 0;\n    let dragging = false;\n    let dragStartX = 0;\n    let dragStartRotation = 0;\n    let velocity = 0;\n    let lastMoveTime = 0;\n    let lastMoveX = 0;\n    let resumeAutoAt = 0;\n    let lastTs = performance.now();\n    let rafId = null;\n    let lastGeometry = \"\";\n\n    function render() {\n      ring.style.transform = \"translateX(-50%) rotateY(\" + rotation + \"deg)\";\n    }\n\n    function tick(ts) {\n      const dt = Math.min(0.05, (ts - lastTs) / 1000);\n      lastTs = ts;\n\n      // Re-layout when a sizing control changes underneath us.\n      const geometry = opts.current.panelWidth + \"|\" + opts.current.panelAspect;\n      if (geometry !== lastGeometry) {\n        lastGeometry = geometry;\n        layout();\n      }\n\n      if (dragging) {\n        // handled directly in pointermove\n      } else if (Math.abs(velocity) > 0.5) {\n        rotation -= velocity * dt;\n        velocity *= 1 - Math.min(1, dt * 3.2);\n        if (Math.abs(velocity) < 0.5) velocity = 0;\n      } else if (ts > resumeAutoAt) {\n        rotation -= opts.current.autoSpeed * dt;\n      }\n\n      render();\n      rafId = requestAnimationFrame(tick);\n    }\n    rafId = requestAnimationFrame(tick);\n\n    function getX(e) {\n      return e.touches ? e.touches[0].clientX : e.clientX;\n    }\n\n    function onMove(e) {\n      if (!dragging) return;\n      const sensitivity = opts.current.dragSensitivity;\n      const x = getX(e);\n      const dx = x - dragStartX;\n      rotation = dragStartRotation + dx * sensitivity;\n\n      const now = performance.now();\n      const dt = Math.max(1, now - lastMoveTime);\n      const instV = ((x - lastMoveX) * sensitivity) / (dt / 1000);\n      velocity = velocity * 0.7 + -instV * 0.3;\n      lastMoveX = x;\n      lastMoveTime = now;\n    }\n\n    function onUp() {\n      if (!dragging) return;\n      dragging = false;\n      stage.classList.remove(\"dragging\");\n      resumeAutoAt = performance.now() + 1400;\n      window.removeEventListener(\"pointermove\", onMove);\n      window.removeEventListener(\"pointerup\", onUp);\n      window.removeEventListener(\"pointercancel\", onUp);\n    }\n\n    function onDown(e) {\n      dragging = true;\n      velocity = 0;\n      stage.classList.add(\"dragging\");\n      const x = getX(e);\n      dragStartX = x;\n      dragStartRotation = rotation;\n      lastMoveX = x;\n      lastMoveTime = performance.now();\n      window.addEventListener(\"pointermove\", onMove);\n      window.addEventListener(\"pointerup\", onUp);\n      window.addEventListener(\"pointercancel\", onUp);\n    }\n\n    stage.addEventListener(\"pointerdown\", onDown);\n\n    function onResize() {\n      layout();\n    }\n    window.addEventListener(\"resize\", onResize);\n\n    render();\n\n    return () => {\n      cancelAnimationFrame(rafId);\n      stage.removeEventListener(\"pointerdown\", onDown);\n      window.removeEventListener(\"resize\", onResize);\n      window.removeEventListener(\"pointermove\", onMove);\n      window.removeEventListener(\"pointerup\", onUp);\n      window.removeEventListener(\"pointercancel\", onUp);\n    };\n  }, [N]);\n\n  const styles = makeStyles({ background, textColor, accent, panelRadius });\n\n  return (\n    <div className=\"curved-carousel\" style={styles.wrap}>\n      <style>{edgeStyles(background)}</style>\n\n      {showKicker && <div style={styles.kicker}>{kicker}</div>}\n\n      {showHeading && (\n        <h1 style={styles.heading}>\n          {heading}\n          <br />\n          <em style={styles.emphasis}>{headingEmphasis}</em>\n        </h1>\n      )}\n\n      <div ref={stageRef} className=\"curved-carousel-stage\" style={styles.stage}>\n        <div ref={ringRef} style={styles.ring}>\n          {images.map((src, i) => (\n            <div\n              key={i}\n              ref={(el) => (panelRefs.current[i] = el)}\n              style={styles.panel}\n            >\n              <img src={src} alt=\"\" draggable={false} style={styles.img} />\n              <div style={styles.sheen} />\n            </div>\n          ))}\n        </div>\n      </div>\n\n      {showHint && (\n        <div style={styles.hint}>\n          Drag to explore <span style={styles.dot} /> Auto-playing\n        </div>\n      )}\n    </div>\n  );\n}\n\n// The fading side edges have to match the surrounding background, so they are\n// generated rather than living in a static stylesheet.\nfunction edgeStyles(background) {\n  return `\n    .curved-carousel {\n      padding: 40px 0;\n      gap: 38px;\n      min-height: 600px;\n    }\n    .curved-carousel-stage::before,\n    .curved-carousel-stage::after {\n      content: \"\";\n      position: absolute;\n      top: 0;\n      bottom: 0;\n      width: 14%;\n      z-index: 5;\n      pointer-events: none;\n    }\n    .curved-carousel-stage::before {\n      left: 0;\n      background: linear-gradient(90deg, ${background} 12%, transparent);\n    }\n    .curved-carousel-stage::after {\n      right: 0;\n      background: linear-gradient(270deg, ${background} 12%, transparent);\n    }\n    .curved-carousel-stage.dragging { cursor: grabbing; }\n\n    @media (max-width: 640px) {\n      .curved-carousel {\n        padding: 20px 8px;\n        gap: 20px;\n        min-height: 540px;\n      }\n      .curved-carousel-stage::before,\n      .curved-carousel-stage::after { width: 8%; }\n      .curved-carousel-stage::before {\n        background: linear-gradient(90deg, ${background} 30%, transparent);\n      }\n      .curved-carousel-stage::after {\n        background: linear-gradient(270deg, ${background} 30%, transparent);\n      }\n    }\n    @media (min-width: 641px) and (max-width: 1024px) {\n      .curved-carousel {\n        padding: 28px 12px;\n        gap: 28px;\n      }\n      .curved-carousel-stage::before,\n      .curved-carousel-stage::after { width: 11%; }\n    }\n  `;\n}\n\nfunction makeStyles({ background, textColor, accent, panelRadius }) {\n  return {\n    wrap: {\n      display: \"flex\",\n      flexDirection: \"column\",\n      alignItems: \"center\",\n      justifyContent: \"center\",\n      background,\n      color: textColor,\n      fontFamily: '\"Iowan Old Style\",\"Georgia\",serif',\n      userSelect: \"none\",\n      WebkitUserSelect: \"none\",\n      overflow: \"hidden\",\n    },\n    kicker: {\n      fontFamily: '\"Helvetica Neue\",Arial,sans-serif',\n      fontSize: \"11px\",\n      letterSpacing: \"0.28em\",\n      textTransform: \"uppercase\",\n      color: accent,\n      textAlign: \"center\",\n    },\n    heading: {\n      margin: 0,\n      fontWeight: 400,\n      fontSize: \"clamp(22px, 3.4vw, 40px)\",\n      textAlign: \"center\",\n      letterSpacing: \"0.01em\",\n      maxWidth: \"820px\",\n      lineHeight: 1.15,\n    },\n    emphasis: {\n      fontStyle: \"italic\",\n      color: accent,\n    },\n    stage: {\n      width: \"100%\",\n      height: \"clamp(260px, 52vh, 480px)\",\n      perspective: \"clamp(720px, 120vw, 1700px)\",\n      perspectiveOrigin: \"50% 38%\",\n      cursor: \"grab\",\n      position: \"relative\",\n      touchAction: \"pan-y\",\n      WebkitTapHighlightColor: \"transparent\",\n    },\n    ring: {\n      position: \"absolute\",\n      top: 0,\n      left: \"50%\",\n      width: 0,\n      height: \"100%\",\n      transformStyle: \"preserve-3d\",\n      willChange: \"transform\",\n    },\n    panel: {\n      position: \"absolute\",\n      top: \"50%\",\n      left: 0,\n      backfaceVisibility: \"hidden\",\n      borderRadius: `${panelRadius}px`,\n      overflow: \"hidden\",\n      boxShadow: \"0 30px 60px -20px rgba(20,16,8,0.35)\",\n      background: \"#111\",\n    },\n    img: {\n      width: \"100%\",\n      height: \"100%\",\n      objectFit: \"cover\",\n      display: \"block\",\n      pointerEvents: \"none\",\n    },\n    sheen: {\n      position: \"absolute\",\n      inset: 0,\n      background: \"linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%)\",\n    },\n    hint: {\n      fontFamily: '\"Helvetica Neue\",Arial,sans-serif',\n      fontSize: \"11px\",\n      letterSpacing: \"0.14em\",\n      textTransform: \"uppercase\",\n      color: accent,\n      display: \"flex\",\n      alignItems: \"center\",\n      gap: \"10px\",\n    },\n    dot: {\n      width: \"4px\",\n      height: \"4px\",\n      borderRadius: \"50%\",\n      background: accent,\n      display: \"inline-block\",\n    },\n  };\n}\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "curved-carousel.vanilla.js"
+  }
+}

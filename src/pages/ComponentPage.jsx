@@ -41,14 +41,22 @@ function Workbench({ item }) {
             <h2 className="rail__title">Similar Components</h2>
             <div className="rail__list">
               {similar.map((other) => (
-                <Link key={other.id} to={`/component/${other.id}`} className="rail__card">
+                // Container plus a stretched link, not a link wrapping the
+                // preview: some components render their own anchors, and an
+                // <a> inside an <a> is invalid HTML React refuses to hydrate.
+                <div key={other.id} className="rail__card">
+                  <Link
+                    to={`/component/${other.id}`}
+                    className="rail__hit"
+                    aria-label={other.name}
+                  />
                   <div className="rail__preview" style={previewVars(other)}>
                     <div className="rail__scale">
                       <other.component />
                     </div>
                   </div>
                   <span className="rail__name">{other.name}</span>
-                </Link>
+                </div>
               ))}
             </div>
           </>
