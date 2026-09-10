@@ -1,4 +1,4 @@
-import { bakeDefaults, describeValues, serialize } from "./bake";
+import { bakeDefaults, describeValues, toReactSource } from "./bake";
 
 /**
  * Every export flavour produces the same shape:
@@ -8,7 +8,9 @@ import { bakeDefaults, describeValues, serialize } from "./bake";
 
 export function generateCode(item, values) {
   const { jsx, css } = item.sources;
-  const files = [{ ...jsx, code: bakeDefaults(jsx.code, values) }];
+  // Framer code components must be de-Framered here, or the file will not
+  // compile in the React project the visitor pastes it into.
+  const files = [{ ...jsx, code: toReactSource(bakeDefaults(jsx.code, values)) }];
   if (css) files.push(css);
   return {
     id: "code",
@@ -18,32 +20,24 @@ export function generateCode(item, values) {
   };
 }
 
-export function generateFramer(item, values) {
-  const { framer, jsx } = item.sources;
-  const source = framer ?? jsx;
-  const name = framer ? source.name : source.name.replace(/\.jsx$/, ".tsx");
-  const files = [{ name, lang: "tsx", code: bakeDefaults(source.code, values) }];
+export function generateVanilla(item, values) {
+  const { vanilla, css, html } = item.sources;
 
-  // A hand-written Framer flavour already declares its own property controls;
-  // only the React fallback needs them generated.
-  if (!framer) {
-    files.push({
-      name: "propertyControls.ts",
-      lang: "ts",
-      code: framerPropertyControls(item, values),
-    });
+  // Some components are authored as a standalone page rather than a mountable
+  // module. There is nothing to assemble — hand the page over as it stands.
+  //
+  // Deliberately not baked: a hand-written page keeps its own config block,
+  // whose names and units are its own, so writing the panel's values into it
+  // by key would land some settings in the wrong place and miss the rest.
+  if (html) {
+    return {
+      id: "vanilla",
+      label: "Vanilla JS",
+      files: [html],
+      note: "One file — HTML, CSS and JS combined. Save it and open it in a browser. Its own config block sits at the top of the script; the panel's settings are not baked in.",
+    };
   }
 
-  return {
-    id: "framer",
-    label: "Framer",
-    files,
-    note: "Paste into a Framer code component. The property controls expose the same settings in Framer's UI.",
-  };
-}
-
-export function generateVanilla(item, values) {
-  const { vanilla, css } = item.sources;
   if (!vanilla) {
     return {
       id: "vanilla",
@@ -52,16 +46,14 @@ export function generateVanilla(item, values) {
       note: "No vanilla build for this component yet.",
     };
   }
-  const files = [
-    { name: "index.html", lang: "html", code: vanillaHtml(item, css) },
-    { ...vanilla, code: bakeDefaults(vanilla.code, values) },
-  ];
-  if (css) files.push(css);
+  // One self-contained page: the stylesheet inlined into <style>, the module
+  // inlined into <script>. Nothing to unzip, nothing to serve.
+  const code = vanillaHtml(item, css, bakeDefaults(vanilla.code, values));
   return {
     id: "vanilla",
     label: "Vanilla JS",
-    files,
-    note: "No framework required — open index.html and it runs.",
+    files: [{ name: "index.html", lang: "html", code }],
+    note: "One file — HTML, CSS and JS combined. Save it and open it in a browser.",
   };
 }
 
@@ -110,40 +102,15 @@ export function generatePrompt(item, values) {
   };
 }
 
-function framerPropertyControls(item, values) {
-  const entries = item.controls
-    .map((c) => `  ${c.key}: ${framerControl(c, values[c.key])},`)
-    .join("\n");
-
-  return [
-    'import { ControlType, addPropertyControls } from "framer"',
-    `import ${componentName(item)} from "./${componentName(item)}"`,
-    "",
-    `addPropertyControls(${componentName(item)}, {`,
-    entries,
-    "})",
-    "",
-  ].join("\n");
-}
-
-function framerControl(control, value) {
-  const defaultValue = serialize(value);
-  switch (control.type) {
-    case "color":
-      return `{ type: ControlType.Color, title: ${JSON.stringify(control.label)}, defaultValue: ${defaultValue} }`;
-    case "range":
-      return `{ type: ControlType.Number, title: ${JSON.stringify(control.label)}, min: ${control.min}, max: ${control.max}, step: ${control.step}, defaultValue: ${defaultValue} }`;
-    case "toggle":
-      return `{ type: ControlType.Boolean, title: ${JSON.stringify(control.label)}, enabledTitle: ${JSON.stringify(control.on ?? "On")}, disabledTitle: ${JSON.stringify(control.off ?? "Off")}, defaultValue: ${defaultValue} }`;
-    case "select":
-      return `{ type: ControlType.Enum, title: ${JSON.stringify(control.label)}, options: ${JSON.stringify(control.options.map((o) => o.value))}, optionTitles: ${JSON.stringify(control.options.map((o) => o.label))}, defaultValue: ${defaultValue} }`;
-    case "text":
-    default:
-      return `{ type: ControlType.String, title: ${JSON.stringify(control.label)}, defaultValue: ${defaultValue} }`;
-  }
-}
-
-function vanillaHtml(item, css) {
+/**
+ * The whole component as one HTML file: page chrome, the component's
+ * stylesheet (when it has one) and its mount module, all inlined.
+ *
+ * Embedded CSS and JS are written flush left rather than indented to match the
+ * surrounding markup — re-indenting would rewrite the inside of any template
+ * literal the source uses to inject its own styles.
+ */
+function vanillaHtml(item, css, js) {
   return [
     "<!doctype html>",
     '<html lang="en">',
@@ -151,13 +118,18 @@ function vanillaHtml(item, css) {
     '    <meta charset="UTF-8" />',
     '    <meta name="viewport" content="width=device-width, initial-scale=1" />',
     `    <title>${item.name}</title>`,
-    css ? `    <link rel="stylesheet" href="./${css.name}" />` : "",
+    "    <style>",
+    PAGE_CSS,
+    css ? `/* ${css.name} */\n${css.code}` : "",
+    "    </style>",
     "  </head>",
     "  <body>",
     `    <div id="${item.id}"></div>`,
     `    <script type="module">`,
-    `      import mount from "./${item.sources.vanilla.name}";`,
-    `      mount(document.getElementById("${item.id}"));`,
+    `/* ${item.sources.vanilla.name} */`,
+    inlineModule(js),
+    "",
+    `mount(document.getElementById(${JSON.stringify(item.id)}));`,
     "    </script>",
     "  </body>",
     "</html>",
@@ -167,16 +139,38 @@ function vanillaHtml(item, css) {
     .join("\n");
 }
 
-function componentName(item) {
-  return item.sources.jsx.name.replace(/\.\w+$/, "");
+// Enough to make the standalone file look deliberate rather than unstyled.
+const PAGE_CSS = `/* page */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f4f4f5;
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
+body > div { width: 100%; }`;
+
+/**
+ * Strips ES module exports so the source can live inside an inline
+ * `<script type="module">`, where an `export` is a syntax error. The mount
+ * function stays a plain declaration the trailing call can reach.
+ */
+function inlineModule(code) {
+  return code
+    .replace(/^export default (?=(async )?function\b|class\b)/m, "")
+    .replace(/^export (?=(const|let|var|function|class|async)\b)/gm, "");
+}
+
 
 /** All file-based flavours, in the order the modal lists them. */
 export function buildExports(item, values, variantName) {
   return {
     cli: generateCli(item, variantName),
     code: generateCode(item, values),
-    framer: generateFramer(item, values),
     vanilla: generateVanilla(item, values),
     prompt: generatePrompt(item, values),
   };

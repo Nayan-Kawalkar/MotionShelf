@@ -21,6 +21,13 @@ export default function PreviewPage() {
     item ? variantValues(item, item.variants[0].id) : null
   );
 
+  // Marks this document as a preview so preview-page.css's resets apply here
+  // and nowhere else — the app shell shares the same injected stylesheet.
+  useEffect(() => {
+    document.documentElement.classList.add("preview-doc");
+    return () => document.documentElement.classList.remove("preview-doc");
+  }, []);
+
   useEffect(() => {
     if (!item) return;
 

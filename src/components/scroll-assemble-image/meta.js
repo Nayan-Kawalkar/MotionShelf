@@ -1,5 +1,6 @@
 import ScrollAssembleImage from "./ScrollAssembleImage";
 import source from "./ScrollAssembleImage.tsx?raw";
+import vanillaSource from "./scroll-assemble-image.vanilla.js?raw";
 
 const STYLES = ["scatter", "depth", "edges", "spiral", "wave", "glitch", "iris"];
 const STYLE_LABELS = ["Scatter", "Depth (3D)", "Edges", "Spiral", "Wave", "Glitch", "Iris"];
@@ -76,13 +77,15 @@ const meta = {
   controls,
   variants,
   scroll: true,
+  dependencies: ["framer-motion"],
   views: 3800,
+  likes: 452,
   copies: 152,
   addedAt: "2026-08-29",
   pro: false,
   sources: {
     jsx: { name: "ScrollAssembleImage.tsx", lang: "tsx", code: source },
-    framer: { name: "ScrollAssembleImage.tsx", lang: "tsx", code: source },
+    vanilla: { name: "scroll-assemble-image.vanilla.js", lang: "js", code: vanillaSource },
   },
 };
 

@@ -1,0 +1,252 @@
+{
+  "id": "image-queue",
+  "name": "Image Queue",
+  "description": "A stack of cards you can throw away by dragging, or step through with arrows. Each release drops the card and pulls the queue forward.",
+  "category": "Image Gallery",
+  "tags": [
+    "drag",
+    "deck",
+    "queue",
+    "cards",
+    "throw"
+  ],
+  "pro": false,
+  "dependencies": [
+    "framer-motion"
+  ],
+  "controls": [
+    {
+      "key": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "#C9C9C9"
+    },
+    {
+      "key": "accent",
+      "label": "Text",
+      "type": "color",
+      "default": "#111111"
+    },
+    {
+      "key": "aspect",
+      "label": "Ratio",
+      "type": "range",
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.01,
+      "default": 1
+    },
+    {
+      "key": "scale",
+      "label": "Size",
+      "type": "range",
+      "min": 0.2,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.86
+    },
+    {
+      "key": "band",
+      "label": "Peek",
+      "type": "range",
+      "min": 0,
+      "max": 0.4,
+      "step": 0.005,
+      "default": 0.082
+    },
+    {
+      "key": "shrink",
+      "label": "Shrink",
+      "type": "range",
+      "min": 0.5,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.79
+    },
+    {
+      "key": "fade",
+      "label": "Fade",
+      "type": "range",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.01,
+      "default": 0.2
+    },
+    {
+      "key": "radius",
+      "label": "Radius",
+      "type": "range",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "key": "tilt",
+      "label": "Tilt",
+      "type": "range",
+      "min": 0,
+      "max": 0.2,
+      "step": 0.005,
+      "default": 0.05
+    },
+    {
+      "key": "threshold",
+      "label": "Throw At",
+      "type": "range",
+      "min": 10,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "key": "fallSpeed",
+      "label": "Fall Speed",
+      "type": "range",
+      "min": 0.4,
+      "max": 3,
+      "step": 0.05,
+      "default": 1
+    },
+    {
+      "key": "grayscale",
+      "label": "B&W",
+      "type": "toggle",
+      "on": "Mono",
+      "off": "Colour",
+      "default": true
+    },
+    {
+      "key": "showNav",
+      "label": "Arrows",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "navPlacement",
+      "label": "Arrows At",
+      "type": "select",
+      "options": [
+        {
+          "value": "bottomCenter",
+          "label": "Bottom center"
+        },
+        {
+          "value": "bottomLeft",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottomRight",
+          "label": "Bottom right"
+        },
+        {
+          "value": "sides",
+          "label": "Sides"
+        }
+      ],
+      "default": "bottomCenter",
+      "dependent": true
+    },
+    {
+      "key": "navSize",
+      "label": "Arrow Size",
+      "type": "range",
+      "min": 28,
+      "max": 88,
+      "step": 1,
+      "unit": "px",
+      "default": 46,
+      "dependent": true
+    },
+    {
+      "key": "showCounter",
+      "label": "Counter",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    },
+    {
+      "key": "counterPlacement",
+      "label": "Counter At",
+      "type": "select",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "topLeft",
+          "label": "Top left"
+        },
+        {
+          "value": "bottomLeft",
+          "label": "Bottom left"
+        }
+      ],
+      "default": "left",
+      "dependent": true
+    },
+    {
+      "key": "showCaption",
+      "label": "Captions",
+      "type": "toggle",
+      "on": "Show",
+      "off": "Hide",
+      "default": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Wide Colour",
+      "values": {
+        "aspect": 1.6,
+        "grayscale": false,
+        "radius": 14,
+        "scale": 0.92,
+        "band": 0.05
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Tall Stack",
+      "values": {
+        "aspect": 0.7,
+        "band": 0.18,
+        "shrink": 0.66,
+        "fade": 0.34,
+        "navPlacement": "sides"
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Bare",
+      "values": {
+        "showNav": false,
+        "showCounter": false,
+        "showCaption": false,
+        "background": "#111113"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "ImageQueue.tsx",
+      "target": "component",
+      "content": "import * as React from \"react\"\nimport { motion, animate, useMotionValue, useTransform } from \"framer-motion\"\n\n// Framer's render-target switch, stubbed for use outside Framer.\nconst RenderTarget = {\n    canvas: \"CANVAS\",\n    thumbnail: \"THUMBNAIL\",\n    preview: \"PREVIEW\",\n    current: () => \"PREVIEW\",\n}\n\n/**\n * IMAGE QUEUE — drag to throw, or step with Next / Prev\n *\n * A stack of image cards queued behind each other. Drag the front card in any\n * direction and release: it keeps your momentum, falls out of frame and rejoins\n * the back of the queue while the next card steps forward. Next does the same\n * without a drag; Prev pulls the last card back up into the front.\n *\n * @framerSupportedLayoutWidth any\n * @framerSupportedLayoutHeight any\n * @framerIntrinsicWidth 900\n * @framerIntrinsicHeight 760\n */\n\n// ---------------------------------------------------------------- types\n\ninterface Slide {\n    image?: { src: string; srcSet?: string; alt?: string }\n    caption?: string\n}\n\ninterface Props {\n    slides: Slide[]\n    background: string\n    accent: string\n    font: any\n    aspect: number\n    scale: number\n    band: number\n    shrink: number\n    fade: number\n    radius: number\n    grayscale: boolean\n    tilt: number\n    threshold: number\n    fallSpeed: number\n    showNav: boolean\n    navPlacement: \"bottomLeft\" | \"bottomCenter\" | \"bottomRight\" | \"sides\"\n    navSize: number\n    showCounter: boolean\n    counterPlacement: \"left\" | \"topLeft\" | \"bottomLeft\"\n    showCaption: boolean\n    style?: React.CSSProperties\n}\n\n// ---------------------------------------------------------------- helpers\n\nconst clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))\nconst EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1]\nconst EASE_FALL: [number, number, number, number] = [0.42, 0, 1, 1] // accelerating = gravity\nconst SPRING = { type: \"spring\" as const, stiffness: 260, damping: 34, mass: 0.9 }\n\n/** Measures the component frame so the stack can size itself to it. */\nfunction useSize() {\n    const ref = React.useRef<HTMLDivElement>(null)\n    const [size, setSize] = React.useState({ w: 0, h: 0 })\n    React.useEffect(() => {\n        const el = ref.current\n        if (!el) return\n        const ro = new ResizeObserver(([entry]) => {\n            const r = entry.contentRect\n            setSize({ w: r.width, h: r.height })\n        })\n        ro.observe(el)\n        return () => ro.disconnect()\n    }, [])\n    return [ref, size] as const\n}\n\n// ---------------------------------------------------------------- card\n\nfunction Card({\n    slide,\n    index,\n    depth,\n    count,\n    cardH,\n    band,\n    shrink,\n    fade,\n    radius,\n    grayscale,\n    tilt,\n    threshold,\n    fallSpeed,\n    interactive,\n    isFlying,\n    isReturning,\n    nextSeq,\n    onThrow,\n    onLanded,\n    onReturned,\n    showCaption,\n    font,\n}: any) {\n    const x = useMotionValue(0)\n    const y = useMotionValue(0)\n    const spin = useMotionValue(0)\n    const opacity = useMotionValue(1)\n    const rotate = useTransform([x, spin] as any, ([xv, s]: number[]) => xv * tilt + s)\n\n    const wasFlying = React.useRef(false)\n    const wasReturning = React.useRef(false)\n    const seenSeq = React.useRef(nextSeq)\n    const [snap, setSnap] = React.useState(false)\n\n    /* Every animation this card starts is tracked so it can be stopped.\n       Without this, a tween that finishes a frame late overwrites the reset\n       below and the card is stranded at its fall target for good. */\n    const dragRef = React.useRef(false)\n    const running = React.useRef<any[]>([])\n    const stopAll = React.useCallback(() => {\n        running.current.forEach((a) => a && typeof a.stop === \"function\" && a.stop())\n        running.current = []\n    }, [])\n    const track = React.useCallback((a: any) => {\n        running.current.push(a)\n        return a\n    }, [])\n    React.useEffect(() => stopAll, [stopAll])\n\n    /* Resting pose for this depth. Every card behind peeks out by exactly one\n       `band` above the one in front of it, and shrinks by `shrink` per step. */\n    const s = Math.pow(shrink, depth)\n    const restY = (cardH * (s - 1)) / 2 - depth * band * cardH\n    const restOpacity = Math.max(0, 1 - depth * fade)\n\n    // mid-animation the pose stays frozen at the front; the inner layer moves\n    const busy = isFlying || isReturning\n    const poseY = busy ? 0 : restY\n    const poseScale = busy ? 1 : s\n    const poseOpacity = busy ? 1 : restOpacity\n\n    const dur = clamp(0.95 / fallSpeed, 0.3, 2)\n    const dropDistance = () =>\n        (typeof window !== \"undefined\" ? window.innerHeight : 900) + cardH * 1.4\n\n    /* ---- the drop: momentum out, gravity down, then rejoin at the back ---- */\n    const release = React.useCallback(\n        (offset: { x: number; y: number }, velocity: { x: number; y: number }) => {\n            const dist = Math.hypot(offset.x, offset.y)\n\n            stopAll()\n\n            // not thrown far enough — settle back into the queue\n            if (dist < threshold) {\n                track(animate(x, 0, SPRING))\n                track(animate(y, 0, SPRING))\n                track(animate(spin, 0, SPRING))\n                return\n            }\n\n            const dir = offset.x >= 0 ? 1 : -1\n            const vx = clamp(velocity.x, -1800, 1800)\n\n            onThrow() // the rest of the queue steps forward straight away\n\n            track(animate(x, x.get() + vx * 0.42, { duration: dur, ease: [0.22, 0.5, 0.6, 1] }))\n            track(animate(spin, spin.get() + dir * 42 + vx * 0.015, { duration: dur, ease: \"linear\" }))\n            track(animate(opacity, 0, { duration: dur * 0.62, delay: dur * 0.3, ease: \"easeIn\" }))\n            const fall = track(animate(y, dropDistance(), { duration: dur, ease: EASE_FALL }))\n\n            // land off the fall itself, never off a timer racing it\n            const done = fall && fall.finished ? fall.finished : fall\n            Promise.resolve(done)\n                .catch(() => {})\n                .then(() => {\n                    stopAll() // kill anything still ticking before we reset\n                    x.set(0)\n                    y.set(0)\n                    spin.set(0)\n                    setSnap(true) // outer jumps to the back pose without animating\n                    onLanded(index)\n                })\n        },\n        [threshold, dur, cardH, index, onThrow, onLanded, x, y, spin, opacity, stopAll, track]\n    )\n\n    /* ---- Next: throw the front card without a drag ---- */\n    React.useEffect(() => {\n        if (nextSeq === seenSeq.current) return\n        seenSeq.current = nextSeq\n        if (depth !== 0 || busy) return\n        const dir = nextSeq % 2 ? 1 : -1\n        release({ x: dir * 90, y: 16 }, { x: dir * 380, y: 160 })\n    }, [nextSeq, depth, busy, release])\n\n    /* ---- Prev: the last card climbs back up into the front ---- */\n    React.useLayoutEffect(() => {\n        const was = wasReturning.current\n        wasReturning.current = isReturning\n        if (isReturning && !was) {\n            stopAll()\n            const dir = index % 2 ? 1 : -1\n            x.set(dir * 70)\n            y.set(dropDistance())\n            spin.set(dir * 34)\n            opacity.set(0)\n            const raf = requestAnimationFrame(() => {\n                const t = { duration: dur * 1.05, ease: EASE_OUT }\n                track(animate(x, 0, t))\n                track(animate(spin, 0, t))\n                track(animate(opacity, 1, { duration: dur * 0.45, ease: \"easeOut\" }))\n                const rise = track(animate(y, 0, t))\n                const done = rise && rise.finished ? rise.finished : rise\n                Promise.resolve(done)\n                    .catch(() => {})\n                    .then(() => {\n                        stopAll()\n                        x.set(0)\n                        y.set(0)\n                        spin.set(0)\n                        opacity.set(1)\n                        onReturned(index)\n                    })\n            })\n            return () => cancelAnimationFrame(raf)\n        }\n    }, [isReturning, dur, index, x, y, spin, opacity, onReturned, stopAll, track])\n\n    /* ---- fade back in once a thrown card has rejoined the tail ---- */\n    React.useEffect(() => {\n        const was = wasFlying.current\n        wasFlying.current = isFlying\n        if (was && !isFlying) {\n            const t = window.setTimeout(() => setSnap(false), 50)\n            track(animate(opacity, 1, { duration: 0.5, delay: 0.12, ease: \"easeOut\" }))\n            return () => window.clearTimeout(t)\n        }\n    }, [isFlying, opacity, track])\n\n    /* ---- safety net ----\n       Whenever a card is at rest in the queue its drag layer must be neutral.\n       This catches any transform a cancelled or late animation left behind, so\n       a card can never come back round to the front already thrown. */\n    React.useEffect(() => {\n        if (busy || dragRef.current) return\n        if (x.get() !== 0) x.set(0)\n        if (y.get() !== 0) y.set(0)\n        if (spin.get() !== 0) spin.set(0)\n    }, [busy, depth, x, y, spin])\n\n    const src = slide?.image?.src\n    const label = slide?.caption\n\n    return (\n        <motion.div\n            style={{\n                position: \"absolute\",\n                left: 0,\n                top: 0,\n                width: \"100%\",\n                height: cardH,\n                zIndex: busy ? count + 5 : count - depth,\n                transformOrigin: \"50% 50%\",\n                pointerEvents: interactive && depth === 0 && !busy ? \"auto\" : \"none\",\n            }}\n            animate={{ y: poseY, scale: poseScale, opacity: poseOpacity }}\n            transition={busy || snap ? { duration: 0 } : SPRING}\n        >\n            <motion.div\n                drag={interactive && depth === 0 && !busy}\n                dragMomentum={false}\n                dragElastic={1}\n                onDragStart={() => { dragRef.current = true; stopAll() }}\n                onDragEnd={(_, info) => {\n                    dragRef.current = false\n                    release(info.offset, info.velocity)\n                }}\n                style={{\n                    width: \"100%\",\n                    height: \"100%\",\n                    x,\n                    y,\n                    rotate,\n                    opacity,\n                    cursor: interactive && depth === 0 && !busy ? \"grab\" : \"default\",\n                    touchAction: \"pan-y\",\n                }}\n                whileDrag={{ cursor: \"grabbing\", scale: 1.015 }}\n            >\n                {src ? (\n                    <img\n                        src={src}\n                        srcSet={slide?.image?.srcSet}\n                        alt={slide?.image?.alt || label || \"\"}\n                        draggable={false}\n                        style={{\n                            width: \"100%\",\n                            height: \"100%\",\n                            objectFit: \"cover\",\n                            borderRadius: radius,\n                            display: \"block\",\n                            filter: grayscale ? \"grayscale(1) contrast(1.02)\" : \"none\",\n                            userSelect: \"none\",\n                            pointerEvents: \"none\",\n                        }}\n                    />\n                ) : (\n                    <div\n                        style={{\n                            width: \"100%\",\n                            height: \"100%\",\n                            borderRadius: radius,\n                            background: `hsl(0 0% ${72 - index * 9}%)`,\n                            display: \"grid\",\n                            placeItems: \"center\",\n                            color: \"rgba(0,0,0,.35)\",\n                            ...font,\n                            fontSize: 13,\n                            letterSpacing: \"0.14em\",\n                        }}\n                    >\n                        {String(index + 1).padStart(2, \"0\")}\n                    </div>\n                )}\n\n                {showCaption && label && depth === 0 && !busy && (\n                    <div\n                        style={{\n                            position: \"absolute\",\n                            left: 0,\n                            top: \"100%\",\n                            marginTop: 14,\n                            fontSize: 11,\n                            letterSpacing: \"0.14em\",\n                            textTransform: \"uppercase\",\n                            opacity: 0.6,\n                            whiteSpace: \"nowrap\",\n                            ...font,\n                        }}\n                    >\n                        {label}\n                    </div>\n                )}\n            </motion.div>\n        </motion.div>\n    )\n}\n\n// ---------------------------------------------------------------- nav button\n\nfunction NavButton({ dir, onClick, size, accent, disabled }: any) {\n    return (\n        <motion.button\n            type=\"button\"\n            onClick={onClick}\n            disabled={disabled}\n            aria-label={dir === -1 ? \"Previous image\" : \"Next image\"}\n            whileHover={disabled ? undefined : { backgroundColor: accent, color: \"#fff\" }}\n            whileTap={disabled ? undefined : { scale: 0.94 }}\n            transition={{ duration: 0.18 }}\n            style={{\n                width: size,\n                height: size,\n                display: \"grid\",\n                placeItems: \"center\",\n                padding: 0,\n                border: `1px solid ${accent}`,\n                borderRadius: size,\n                background: \"transparent\",\n                color: accent,\n                cursor: disabled ? \"default\" : \"pointer\",\n                opacity: disabled ? 0.3 : 1,\n                WebkitTapHighlightColor: \"transparent\",\n            }}\n        >\n            <svg\n                width={size * 0.34}\n                height={size * 0.34}\n                viewBox=\"0 0 16 16\"\n                fill=\"none\"\n                style={{ transform: dir === -1 ? \"scaleX(-1)\" : \"none\" }}\n            >\n                <path\n                    d=\"M2 8h12M9.5 3.5 14 8l-4.5 4.5\"\n                    stroke=\"currentColor\"\n                    strokeWidth=\"1.4\"\n                    strokeLinecap=\"square\"\n                />\n            </svg>\n        </motion.button>\n    )\n}\n\n// ---------------------------------------------------------------- component\n\nexport default function ImageQueue(props: Props) {\n    const {\n        slides,\n        background,\n        accent,\n        font,\n        aspect,\n        scale,\n        band,\n        shrink,\n        fade,\n        radius,\n        grayscale,\n        tilt,\n        threshold,\n        fallSpeed,\n        showNav,\n        navPlacement,\n        navSize,\n        showCounter,\n        counterPlacement,\n        showCaption,\n        style,\n    } = props\n\n    const onCanvas = RenderTarget.current() === RenderTarget.canvas\n    const interactive = !onCanvas\n\n    const list: Slide[] = slides && slides.length ? slides : [{}, {}, {}, {}]\n    const count = list.length\n\n    const [ref, size] = useSize()\n    const [order, setOrder] = React.useState<number[]>(() => list.map((_, i) => i))\n    const [flying, setFlying] = React.useState<number[]>([])\n    const [returning, setReturning] = React.useState<number[]>([])\n    const [nextSeq, setNextSeq] = React.useState(0)\n\n    // refs mirror the queue so the move handlers stay identity-stable\n    const orderRef = React.useRef(order)\n    const flyingRef = React.useRef(flying)\n    const returningRef = React.useRef(returning)\n    flyingRef.current = flying\n    returningRef.current = returning\n\n    // keep the queue in sync if slides are added/removed in the panel\n    React.useEffect(() => {\n        const fresh = list.map((_, i) => i)\n        orderRef.current = fresh\n        setOrder(fresh)\n        setFlying([])\n        setReturning([])\n        setNextSeq(0)\n    }, [count])\n\n    /* card box: fits the frame, leaving room for the cards peeking above,\n       for the caption under the front card, and for the arrows below it */\n    const stackTop = band * (count - 1)\n    const navBelow = showNav && count > 1 && navPlacement !== \"sides\"\n    const reserve = (showCaption ? 42 : 0) + (navBelow ? navSize + 30 : 0)\n    const cardH = Math.max(\n        40,\n        Math.min(\n            Math.max(0, size.h * 0.94 - reserve) / (1 + stackTop),\n            (size.w * 0.92) / aspect\n        ) * scale\n    )\n    const cardW = cardH * aspect\n    const stageH = cardH * (1 + stackTop)\n\n    /* ---- queue moves ---- */\n\n    /** front card leaves; everyone steps forward; it rejoins the tail */\n    const throwFront = React.useCallback(() => {\n        const o = orderRef.current\n        if (o.length < 1) return\n        const id = o[0]\n        orderRef.current = [...o.slice(1), id]\n        setOrder(orderRef.current)\n        setFlying((f) => [...f, id])\n    }, [])\n\n    /* remove by id, not by position — flights can finish out of order */\n    const landed = React.useCallback(\n        (id: number) => setFlying((f) => f.filter((v) => v !== id)),\n        []\n    )\n\n    /** Next — same throw, no drag needed */\n    const goNext = React.useCallback(() => setNextSeq((n) => n + 1), [])\n\n    /** Prev — the tail card climbs back up into the front */\n    const goPrev = React.useCallback(() => {\n        const o = orderRef.current\n        if (o.length < 2) return\n        const last = o[o.length - 1]\n        if (flyingRef.current.includes(last) || returningRef.current.includes(last)) return\n        orderRef.current = [last, ...o.slice(0, -1)]\n        setOrder(orderRef.current)\n        setReturning((r) => [...r, last])\n    }, [])\n\n    const returned = React.useCallback(\n        (id: number) => setReturning((r) => r.filter((v) => v !== id)),\n        []\n    )\n\n    /* keyboard: ← / → step the queue */\n    const onKeyDown = (e: React.KeyboardEvent) => {\n        if (e.key === \"ArrowLeft\") { e.preventDefault(); goPrev() }\n        if (e.key === \"ArrowRight\" || e.key === \" \") { e.preventDefault(); goNext() }\n    }\n\n    const current = (order[0] ?? 0) + 1\n    const tail = order[order.length - 1]\n    const prevBusy = flying.includes(tail) || returning.includes(tail)\n\n    /* ---- chrome positioning ---- */\n    const edge = \"clamp(16px, 4%, 56px)\"\n    const counterStyle: React.CSSProperties =\n        counterPlacement === \"topLeft\"\n            ? { left: edge, top: edge }\n            : counterPlacement === \"bottomLeft\"\n            ? { left: edge, bottom: edge }\n            : { left: edge, top: \"50%\", transform: \"translateY(-50%)\" }\n\n    const navWrapStyle: React.CSSProperties =\n        navPlacement === \"sides\"\n            ? {\n                  left: edge, right: edge, top: \"50%\",\n                  transform: \"translateY(-50%)\",\n                  display: \"flex\", justifyContent: \"space-between\",\n              }\n            : navPlacement === \"bottomLeft\"\n            ? { left: edge, bottom: edge, display: \"flex\", gap: 10 }\n            : navPlacement === \"bottomRight\"\n            ? { right: edge, bottom: edge, display: \"flex\", gap: 10 }\n            : {\n                  left: \"50%\", bottom: edge,\n                  transform: \"translateX(-50%)\",\n                  display: \"flex\", gap: 10,\n              }\n\n    return (\n        <div\n            ref={ref}\n            tabIndex={interactive ? 0 : -1}\n            onKeyDown={onKeyDown}\n            style={{\n                position: \"relative\",\n                width: \"100%\",\n                height: \"100%\",\n                background,\n                overflow: \"hidden\",\n                display: \"flex\",\n                alignItems: \"center\",\n                justifyContent: \"center\",\n                userSelect: \"none\",\n                WebkitUserSelect: \"none\",\n                outline: \"none\",\n                color: accent,\n                ...font,\n                ...style,\n            }}\n        >\n            {showCounter && (\n                <div\n                    style={{\n                        position: \"absolute\",\n                        fontSize: 13,\n                        fontWeight: 600,\n                        fontVariantNumeric: \"tabular-nums\",\n                        letterSpacing: \"0.04em\",\n                        zIndex: 20,\n                        ...counterStyle,\n                    }}\n                >\n                    {String(current).padStart(2, \"0\")}\n                    <span style={{ opacity: 0.4 }}>/{String(count).padStart(2, \"0\")}</span>\n                </div>\n            )}\n\n            <div\n                style={{\n                    position: \"relative\",\n                    width: cardW,\n                    height: stageH,\n                    marginBottom: reserve, // lifts the stack to clear the caption + arrows\n                }}\n            >\n                <div style={{ position: \"absolute\", left: 0, top: cardH * stackTop, width: \"100%\" }}>\n                    {list.map((slide, i) => {\n                        const d = order.indexOf(i)\n                        return (\n                            <Card\n                                key={i}\n                                index={i}\n                                slide={slide}\n                                depth={d < 0 ? count - 1 : d}\n                                count={count}\n                                cardH={cardH}\n                                band={band}\n                                shrink={shrink}\n                                fade={fade}\n                                radius={radius}\n                                grayscale={grayscale}\n                                tilt={tilt}\n                                threshold={threshold}\n                                fallSpeed={fallSpeed}\n                                interactive={interactive}\n                                isFlying={flying.includes(i)}\n                                isReturning={returning.includes(i)}\n                                nextSeq={nextSeq}\n                                onThrow={throwFront}\n                                onLanded={landed}\n                                onReturned={returned}\n                                showCaption={showCaption}\n                                font={font}\n                            />\n                        )\n                    })}\n                </div>\n            </div>\n\n            {showNav && count > 1 && (\n                <div style={{ position: \"absolute\", zIndex: 20, ...navWrapStyle }}>\n                    <NavButton\n                        dir={-1}\n                        onClick={goPrev}\n                        size={navSize}\n                        accent={accent}\n                        disabled={!interactive || prevBusy}\n                    />\n                    <NavButton\n                        dir={1}\n                        onClick={goNext}\n                        size={navSize}\n                        accent={accent}\n                        disabled={!interactive}\n                    />\n                </div>\n            )}\n        </div>\n    )\n}\n\n// ---------------------------------------------------------------- controls\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": "index.html"
+  }
+}

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How it works — fanned card deck</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet" />
+
+<style>
+  /* ============================================================
+     1. TOKENS
+     ============================================================ */
+  :root{
+    --bg:            #fbe4f7;
+    --bg-blob:       #fdf1fb;
+    --ink:           #0d0d0d;
+
+    --c-cyan:        #23dfe7;
+    --c-magenta:     #f81fd4;
+    --c-yellow:      #fdc845;
+    --c-purple:      #9e8ce9;
+
+    --pill:          #f4ef9a;
+    --orange:        #f79b1f;
+    --hot:           #f5147f;
+
+    --card-w:        320px;
+    --card-h:        486px;
+    --card-overlap:  82px;    /* how far each card tucks under the next one */
+    --radius:        26px;
+
+    --font-ui:       "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-marker:   "Gloria Hallelujah", "Comic Sans MS", cursive;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+
+  html,body{ margin:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-ui);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ============================================================
+     2. SECTION SHELL
+     ============================================================ */
+  .hiw{
+    position:relative;
+    overflow:hidden;
+    padding:clamp(40px,6vw,90px) clamp(20px,5vw,90px) clamp(60px,9vw,120px);
+    isolation:isolate;
+  }
+  .hiw__blob{
+    position:absolute; inset:auto -12% -30% -20%;
+    height:120%; z-index:-1; pointer-events:none;
+  }
+  .hiw__blob svg{ width:100%; height:100%; display:block; }
+
+  /* ============================================================
+     3. THE DECK
+     ============================================================ */
+  .deck{
+    display:flex; justify-content:center; align-items:flex-start;
+        padding:46px 0 76px;              /* room for the lift + the deep shadow */
+    perspective:1500px;               /* gives the hover tilt real depth      */
+  }
+
+  .card{
+    position:relative;
+    flex:0 0 var(--card-w);
+    width:var(--card-w);
+    min-height:var(--card-h);
+    padding:26px 26px 32px;
+    border-radius:var(--radius);
+    background:var(--card-color);
+    box-shadow:0 14px 30px rgba(50,10,50,.15);
+    cursor:pointer;
+    transform-origin:50% 62%;
+    transform-style:preserve-3d;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .card + .card{ margin-left:calc(var(--card-overlap) * -1); }
+  .card > *{ position:relative; z-index:1; }
+
+  /* deep shadow that fades in only while a card is raised */
+  .card::after{
+    content:""; position:absolute; inset:6px 10px 0;
+    border-radius:inherit; z-index:-1;
+    box-shadow:0 40px 60px rgba(58,6,64,.34);
+    opacity:0; transition:opacity .32s ease;
+    pointer-events:none;
+  }
+  .card.is-active::after{ opacity:1; }
+
+  /* the cards that step aside recede a touch */
+  .card::before{
+    content:""; position:absolute; inset:0; z-index:2;
+    border-radius:inherit; background:#1b0a1b;
+    opacity:0; transition:opacity .3s ease; pointer-events:none;
+  }
+  .card.is-aside::before{ opacity:.09; }
+
+  .card:focus-visible{ outline:3px solid var(--ink); outline-offset:5px; }
+
+  .card:nth-child(1){ --card-color:var(--c-cyan);    z-index:1; }
+  .card:nth-child(2){ --card-color:var(--c-magenta); z-index:2; }
+  .card:nth-child(3){ --card-color:var(--c-yellow);  z-index:3; }
+  .card:nth-child(4){ --card-color:var(--c-purple);  z-index:4; }
+
+  .card__step{ font-family:var(--font-marker); font-size:20px; text-align:center; margin:0 0 4px; }
+  .card__art{ display:block; width:100%; height:210px; margin:6px 0 18px; }
+  .card__art svg{ width:100%; height:100%; display:block; overflow:visible; }
+  .card__title{ font-size:34px; font-weight:800; letter-spacing:-.022em; line-height:1.03; margin:0 0 12px; }
+  .card__copy{ font-size:15px; font-weight:400; line-height:1.5; margin:0; }
+
+  /* ============================================================
+     4. RESPONSIVE — under 1100px the deck unstacks into a grid
+     ============================================================ */
+  @media (max-width:1100px){
+    .deck{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+      gap:22px; padding:10px 0 20px; perspective:none;
+    }
+    .card{ width:auto; flex:initial; min-height:0; transform:none !important; }
+    .card + .card{ margin-left:0; }
+    .card::after,.card::before{ display:none; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hiw">
+  <div class="hiw__blob" aria-hidden="true">
+    <svg viewBox="0 0 1200 700" preserveAspectRatio="none">
+      <path fill="var(--bg-blob)" d="M-40 300C120 140 330 60 560 120c230 60 300 250 520 210 130-24 190-90 210-150v520H-40z"/>
+    </svg>
+  </div>
+
+  <!-- ============ THE CARD DECK ============ -->
+  <div class="deck" id="deck">
+
+    <!-- ---------- CARD 1 ---------- -->
+    <article class="card">
+      <p class="card__step">Step #1</p>
+      <div class="card__art">
+        <svg viewBox="0 0 200 150" fill="none" stroke="#0d0d0d" stroke-width="3.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- wall calendar -->
+          <rect x="108" y="30" width="76" height="62" rx="4"/>
+          <path d="M108 48h76M108 70h76M133 48v44M159 48v44"/>
+          <path d="M116 30v-8M128 30v-8M140 30v-8M152 30v-8M164 30v-8M176 30v-8"/>
+          <!-- head + hair -->
+          <circle cx="52" cy="38" r="11"/>
+          <path d="M41 38c-3-13 5-21 13-20 9 1 14 9 12 18-2-7-8-11-14-10-6 1-9 6-11 12z" fill="#0d0d0d" stroke="none"/>
+          <path d="M40 26c-8-4-13 4-9 10 2 4 6 5 8 3" fill="#0d0d0d" stroke="none"/>
+          <!-- coat -->
+          <path d="M44 50c-9 3-15 11-15 21l2 26h42l2-26c0-10-6-18-15-21"/>
+          <circle cx="41" cy="66" r="1.9" fill="#0d0d0d" stroke="none"/>
+          <circle cx="54" cy="76" r="1.9" fill="#0d0d0d" stroke="none"/>
+          <circle cx="65" cy="62" r="1.9" fill="#0d0d0d" stroke="none"/>
+          <circle cx="47" cy="86" r="1.9" fill="#0d0d0d" stroke="none"/>
+          <circle cx="63" cy="86" r="1.9" fill="#0d0d0d" stroke="none"/>
+          <!-- raised arm to the calendar + resting arm -->
+          <path d="M63 56c14-2 28-9 45-18"/>
+          <path d="M33 60c-4 8-5 17-3 26"/>
+          <!-- legs -->
+          <path d="M41 97l-3 28M63 97l6 28"/>
+          <path d="M38 125l-11 4M69 125l12 2"/>
+        </svg>
+      </div>
+      <h3 class="card__title">Explore our books</h3>
+      <p class="card__copy">The first of every month we reveal 6-7 new books. Follow us on socials to keep an eye on any hints we may post.</p>
+    </article>
+
+    <!-- ---------- CARD 2 ---------- -->
+    <article class="card">
+      <p class="card__step">Step #2</p>
+      <div class="card__art">
+        <svg viewBox="0 0 200 150" fill="none" stroke="#0d0d0d" stroke-width="3.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- lounge chair -->
+          <path d="M30 52 96 104h74"/>
+          <path d="M42 44 106 96"/>
+          <path d="M50 70l10 52M164 104l-8 24"/>
+          <path d="M60 118l96-12"/>
+          <!-- reclining figure -->
+          <circle cx="46" cy="34" r="10"/>
+          <path d="M28 30h34M32 28c3-9 16-10 21-3"/>
+          <path d="M54 44c7 0 13 4 17 9l26 33c4 5 3 11-2 13"/>
+          <path d="M60 52c-5 3-7 9-4 14"/>
+          <path d="M97 99c16-6 33-7 50-3"/>
+          <path d="M147 96l14-7M143 104l16-4"/>
+          <!-- raised arm with phone -->
+          <path d="M62 50c12-6 20-16 22-28"/>
+          <rect x="78" y="8" width="13" height="19" rx="3" transform="rotate(16 84 17)"/>
+          <path d="M96 20c4-3 5-7 4-11M104 26c6-4 8-11 6-18" stroke-width="2.6"/>
+        </svg>
+      </div>
+      <h3 class="card__title">Build your box</h3>
+      <p class="card__copy">Members can order up to 3 books per box. At least one title must be from the current month's selections.</p>
+    </article>
+
+    <!-- ---------- CARD 3 ---------- -->
+    <article class="card">
+      <p class="card__step">Step #3</p>
+      <div class="card__art">
+        <svg viewBox="0 0 200 150" fill="none" stroke="#0d0d0d" stroke-width="3.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- clouds -->
+          <path d="M22 34c4-7 13-6 15 1M152 18c5-7 15-6 17 2M170 62c5-7 14-6 16 1M30 84c5-7 14-6 16 1"/>
+          <!-- plane -->
+          <path d="M64 44c22-12 62-14 92-4 9 3 12 8 4 11-26 10-70 12-96 3-6-2-6-7 0-10z" fill="#0d0d0d" stroke="none"/>
+          <path d="M74 40 64 18l10 1 16 18z" fill="#0d0d0d" stroke="none"/>
+          <path d="M104 55 92 78l30-20z" fill="#0d0d0d" stroke="none"/>
+          <circle cx="146" cy="44" r="3.4" fill="var(--card-color)" stroke="none"/>
+          <!-- parachuted parcels -->
+          <path d="M58 76a17 17 0 0 1 34 0"/>
+          <path d="M58 76l12 12M92 76 80 88M75 76v12"/>
+          <rect x="62" y="88" width="26" height="22" rx="2.5"/>
+          <path d="M62 97h26M75 88v22"/>
+          <path d="M110 88a12.5 12.5 0 0 1 25 0"/>
+          <path d="M110 88l9 10M135 88l-8 10M122.5 88v10"/>
+          <rect x="112" y="98" width="20" height="17" rx="2.5"/>
+          <path d="M112 105h20M122 98v17"/>
+          <rect x="44" y="112" width="22" height="19" rx="2.5"/>
+          <path d="M44 119h22M55 112v19"/>
+        </svg>
+      </div>
+      <h3 class="card__title">Check your doorstop</h3>
+      <p class="card__copy">Your box is delivered right to your doorstep. This is the best excuse to cancel your Friday night plans.</p>
+    </article>
+
+    <!-- ---------- CARD 4 ---------- -->
+    <article class="card">
+      <p class="card__step">Step #4</p>
+      <div class="card__art">
+        <svg viewBox="0 0 200 150" fill="none" stroke="#0d0d0d" stroke-width="3.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- speech bubbles -->
+          <path d="M128 8h48a9 9 0 0 1 9 9v22a9 9 0 0 1-9 9h-36l-14 10 3-10a9 9 0 0 1-9-9V17a9 9 0 0 1 8-9z" fill="#0d0d0d" stroke="none"/>
+          <circle cx="142" cy="28" r="3.5" fill="#fff" stroke="none"/>
+          <circle cx="155" cy="28" r="3.5" fill="#fff" stroke="none"/>
+          <circle cx="168" cy="28" r="3.5" fill="#fff" stroke="none"/>
+          <path d="M16 58h38a8 8 0 0 1 8 8v13a8 8 0 0 1-8 8H36l-12 9 3-9h-11a8 8 0 0 1-8-8V66a8 8 0 0 1 8-8z" fill="#0d0d0d" stroke="none"/>
+          <circle cx="28" cy="72" r="2.8" fill="#fff" stroke="none"/>
+          <circle cx="39" cy="72" r="2.8" fill="#fff" stroke="none"/>
+          <circle cx="50" cy="72" r="2.8" fill="#fff" stroke="none"/>
+          <!-- left friend, waving -->
+          <circle cx="82" cy="36" r="10.5"/>
+          <path d="M71.5 35c-2-12 6-19 13-18 8 1 13 8 11 16-2-6-7-9-12-8-6 1-10 5-12 10z" fill="#0d0d0d" stroke="none"/>
+          <path d="M74 47c-8 4-13 11-13 20v32h38V67c0-9-5-16-13-20"/>
+          <path d="M94 53c6-4 10-9 12-15"/>
+          <path d="M106 38l-1-7M106 38l7-2" stroke-width="2.4"/>
+          <path d="M71 52 60 62"/>
+          <path d="M70 99l-2 24M92 99l3 24"/>
+          <path d="M67 123l-11 3M95 123l11 3"/>
+          <!-- right friend, reading -->
+          <circle cx="147" cy="76" r="10.5"/>
+          <path d="M136.5 75c-2-12 6-19 13-18 8 1 13 8 11 16-2-6-7-9-12-8-6 1-10 5-12 10z" fill="#0d0d0d" stroke="none"/>
+          <path d="M139 87c-8 4-13 11-13 20v29h42v-29c0-9-5-16-13-20"/>
+          <path d="M132 96c-4 7-5 14-4 20M162 96c4 7 5 14 4 20"/>
+          <path d="M127 118c7-5 14-5 20-1 6-4 13-4 20 1v10c-7-5-14-5-20-1-6-4-13-4-20 1z" fill="var(--card-color)"/>
+          <path d="M147 117v10"/>
+        </svg>
+      </div>
+      <h3 class="card__title">Share your reads</h3>
+      <p class="card__copy">Share your box and tag us @aardvarkbook or participate in the Club discussions in-app!</p>
+    </article>
+  </div><!-- /.deck -->
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ============================================================
+   TUNING — the whole feel of the deck lives in this object
+   ============================================================ */
+const CONFIG = {
+  /* resting angle + vertical offset of each card, left to right */
+  base: [
+    { rot: -6.0, y:  0 },
+    { rot: -4.5, y: 16 },
+    { rot: -7.0, y: 30 },
+    { rot: -3.0, y: 12 }
+  ],
+  push:       168,   // px the first neighbour clears out — breathing room around the open card
+  bunch:       40,   // px each FURTHER card gives back, so the aside cards pile up tighter
+  tiltAside:  3.2,   // extra degrees the pushed-aside cards fan out by (grows with distance)
+  sinkAside:   12,   // px the pushed-aside cards drop (grows with distance)
+  lift:       -30,   // px the open card rises
+  scaleUp:   1.065,
+  scaleDown: 0.952,
+  dur:        0.42,   // snappy — the deck reacts almost as fast as the pointer
+  cascade:    0.02,  // per-card delay — gives the deck a rippling feel
+  easeOpen:  'back.out(1.6)',    // small overshoot as a card straightens up
+  easeMove:  'power3.out',
+  maxTilt:    7,     // deg of pointer-driven 3D tilt on the open card
+  artShift:  14      // px the illustration parallaxes inside the open card
+};
+
+const deck  = document.getElementById('deck');
+const cards = gsap.utils.toArray('#deck .card');
+cards.forEach(c => c.setAttribute('tabindex', '0'));   // keyboard reachable
+
+const mm = gsap.matchMedia();
+
+mm.add({
+  isDesk:  '(min-width: 1101px)',
+  reduced: '(prefers-reduced-motion: reduce)'
+}, (ctx) => {
+  const { isDesk, reduced } = ctx.conditions;
+  if (!isDesk) return;                       // plain grid below 1100px
+
+  let active = null;
+
+  /* ---- resting pose ---------------------------------------- */
+  cards.forEach((card, i) => {
+    gsap.set(card, {
+      x: 0, y: CONFIG.base[i].y, rotation: CONFIG.base[i].rot,
+      rotationX: 0, rotationY: 0, scale: 1, zIndex: i + 1,
+      transformOrigin: '50% 62%', transformPerspective: 1200
+    });
+  });
+
+  if (reduced) return;                       // static fan, no motion at all
+
+  /* per-card pointer-driven tilt + illustration parallax */
+  const fx = cards.map(card => ({
+    ry: gsap.quickTo(card, 'rotationY', { duration: .35, ease: 'power3' }),
+    rx: gsap.quickTo(card, 'rotationX', { duration: .35, ease: 'power3' }),
+    ax: gsap.quickTo(card.querySelector('.card__art'), 'x', { duration: .45, ease: 'power3' }),
+    ay: gsap.quickTo(card.querySelector('.card__art'), 'y', { duration: .45, ease: 'power3' })
+  }));
+
+  /* ---- pose the whole deck relative to one card ------------- */
+  function pose(hovered) {
+    if (hovered === active) return;
+    active = hovered;
+
+    cards.forEach((card, i) => {
+      const b = CONFIG.base[i];
+      let vars, ease = CONFIG.easeMove;
+
+      if (hovered === null) {                            // back to rest
+        vars = { x: 0, y: b.y, rotation: b.rot, scale: 1, zIndex: i + 1, delay: 0 };
+      } else if (i === hovered) {                        // the open card
+        vars  = { x: 0, y: b.y + CONFIG.lift, rotation: 0,
+                  scale: CONFIG.scaleUp, zIndex: 60, delay: 0 };
+        ease  = CONFIG.easeOpen;
+      } else {                                           // everyone else steps aside
+        const dir  = i < hovered ? -1 : 1;
+        const dist = Math.abs(i - hovered);
+        const step = dist - 1;                           // 0 for the direct neighbour
+
+        /* The neighbour clears a big gap; every card behind it travels a little
+           LESS, so the leftovers close ranks and overlap each other more.
+           Clamped so a far card can never crawl back over the open one.       */
+        const shift = Math.max(CONFIG.push - step * CONFIG.bunch, CONFIG.push * 0.45);
+
+        vars = {
+          x: dir * shift,
+          y: b.y + CONFIG.sinkAside + step * 5,
+          rotation: b.rot + dir * CONFIG.tiltAside * (1 + step * 0.45),
+          scale: CONFIG.scaleDown - step * 0.014,
+          zIndex: i + 1,
+          delay: step * CONFIG.cascade
+        };
+      }
+
+      card.classList.toggle('is-active', i === hovered);
+      card.classList.toggle('is-aside',  hovered !== null && i !== hovered);
+
+      if (i !== hovered) { fx[i].ry(0); fx[i].rx(0); fx[i].ax(0); fx[i].ay(0); }
+
+      gsap.to(card, {
+        ...vars, duration: CONFIG.dur, ease,
+        overwrite: 'auto',
+        onStart()    { card.style.willChange = 'transform'; },
+        onComplete() { card.style.willChange = 'auto'; }
+      });
+    });
+  }
+
+  /* ---- wiring ---------------------------------------------- */
+  cards.forEach((card, i) => {
+    card.addEventListener('mouseenter', () => pose(i));
+    card.addEventListener('focus',      () => pose(i));
+
+    /* touch: tap opens, tapping the open card closes it */
+    card.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch') pose(active === i ? null : i);
+    });
+
+    /* pointer-driven tilt while this card is the open one */
+    card.addEventListener('pointermove', (e) => {
+      if (active !== i || e.pointerType === 'touch') return;
+      const r  = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width  - .5;   // -0.5 … 0.5
+      const py = (e.clientY - r.top)  / r.height - .5;
+      fx[i].ry( px * CONFIG.maxTilt * 2);
+      fx[i].rx(-py * CONFIG.maxTilt * 1.4);
+      fx[i].ax( px * CONFIG.artShift);
+      fx[i].ay( py * CONFIG.artShift * .7);
+    });
+  });
+
+  deck.addEventListener('mouseleave', () => pose(null));
+  deck.addEventListener('focusout', (e) => { if (!deck.contains(e.relatedTarget)) pose(null); });
+  document.addEventListener('pointerdown', (e) => { if (!deck.contains(e.target)) pose(null); });
+
+  /* ---- gentle idle float on the illustrations ---------------- */
+  const idle = cards.map((card, i) =>
+    gsap.to(card.querySelector('.card__art svg'), {
+      y: -7, duration: 2.4 + i * .35, repeat: -1, yoyo: true,
+      ease: 'sine.inOut', delay: i * .25
+    })
+  );
+
+  /* ---- deal the cards in when the section scrolls up --------- */
+  const deal = gsap.timeline({
+    scrollTrigger: { trigger: deck, start: 'top 82%', once: true }
+  });
+  cards.forEach((card, i) => {
+    deal.from(card, {
+      x: -70 - i * 30, y: CONFIG.base[i].y + 110,
+      rotation: CONFIG.base[i].rot - 16,
+      scale: .92, opacity: 0,
+      duration: .7, ease: 'power3.out'
+    }, i * 0.07);
+  });
+
+  /* ---- teardown when the breakpoint stops matching ----------- */
+  return () => {
+    idle.forEach(t => t.kill());
+    cards.forEach(c => {
+      c.classList.remove('is-active', 'is-aside');
+      gsap.set([c, c.querySelector('.card__art'), c.querySelector('.card__art svg')], { clearProps: 'all' });
+    });
+  };
+});
+</script>
+</body>
+</html>

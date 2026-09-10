@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "id": "tarot-carousel",
+      "name": "Tarot Carousel",
+      "category": "Interactive Elements",
+      "description": "A fanned deck of tarot-style cards in 3D. Stepping through turns the active card face-up mid-flight while the fan re-deals around it.",
+      "pro": true,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "paint-spread-wordmark",
+      "name": "Paint Spread Wordmark",
+      "category": "Text",
+      "description": "A blueprint wordmark that floods with wet paint as the cursor passes, bleeding outward from the stroke with drips and a drying stain behind it.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "image-queue",
+      "name": "Image Queue",
+      "category": "Image Gallery",
+      "description": "A stack of cards you can throw away by dragging, or step through with arrows. Each release drops the card and pulls the queue forward.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "sphere-album",
+      "name": "Sphere Album",
+      "category": "Image Gallery",
+      "description": "A sphere of image cards on a Fibonacci lattice. Scroll spins it, drag tumbles it in any direction with inertia, click opens the card's link.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "spherical-gallery",
+      "name": "Spherical Gallery",
+      "category": "Image Gallery",
+      "description": "A room of cards wrapped around the viewer. Drag to look around, hover a card to bring it forward.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "ascii-particle-text",
+      "name": "ASCII Particle Text",
+      "category": "Text",
+      "description": "Headline text sampled into a field of ASCII characters that pile, assemble and scatter, scrambling and recoiling from the cursor.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "snap-deck",
+      "name": "Snap Deck",
+      "category": "Interactive Elements",
+      "description": "An infinite card deck that snaps to a focal anchor and interpolates between row and column layouts, blooming the focused card back to full colour.",
+      "pro": true,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "helical-scroll-gallery",
+      "name": "Helical Scroll Gallery",
+      "category": "Scroll",
+      "description": "Cards ride a 3D helix driven by scroll position, rendered in WebGL with depth fog and focal scaling.",
+      "pro": true,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "scroll-assemble-image",
+      "name": "Scroll Assemble Image",
+      "category": "Scroll",
+      "description": "An image shatters into tiles that reassemble as you scroll, across seven assembly styles and seven arrival orders.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "floating-arc-slider",
+      "name": "Floating Arc Card Slider",
+      "category": "Interactive Elements",
+      "description": "Two infinite card rows riding an inverted parabola, with drag momentum, hover drift and a cursor-tracking spotlight border.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "curved-card-marquee",
+      "name": "Curved Card Marquee",
+      "category": "Interactive Elements",
+      "description": "A card river bent along a real curve — arc, valley, wave, tilt or cross — running as a ticker or as a pinned scroll section.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "carousel",
+      "name": "Coverflow Carousel",
+      "category": "Image Gallery",
+      "description": "3D coverflow-style image carousel with keyboard and dot navigation.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    {
+      "id": "curved-carousel",
+      "name": "Curved Carousel",
+      "category": "Image Gallery",
+      "description": "3D curved carousel with drag momentum and auto-play rotation.",
+      "pro": false,
+      "variants": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    }
+  ]
+}

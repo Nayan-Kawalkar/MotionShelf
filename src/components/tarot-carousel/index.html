@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Eight — Card Carousel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italianno&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+/* ==================================================================
+   THE EIGHT — 3D tarot card carousel
+   Single file. Drop it in, swap the CARDS array for your artwork.
+
+   The motion: each card's place is authored as a function of its
+   signed distance from the face-up card. At rest the deck reads
+   flat-on with two neighbours swelling past the viewport edges;
+   during a move both cards swing open like doors, clearing the
+   middle of the frame, and trade faces out at the extremes.
+
+   Everything is tunable from the custom properties below.
+   ================================================================== */
+:root{
+  /* palette */
+  --ink:      #170104;   /* stage ground     */
+  --ink-2:    #1f0308;   /* card-back field  */
+  --cream:    #f7f1e6;   /* frame + UI       */
+  --blood:    #8e261b;   /* engraving red    */
+
+  /* card — sized off viewport height */
+  /* the third term keeps the counter's strip clear on short viewports */
+  --count-b:  clamp(18px, 4vh, 40px);
+  --card-h:   min(84vh, 72vw, calc(100vh - 2 * (var(--count-b) + 26px)));
+  --card-w:   calc(var(--card-h) / 1.535);
+
+  /* --- the sweep. lengths marked (xW) are fractions of stage width --- */
+  --persp:    1.147;     /* camera distance                      (xW) */
+  --spread:   0.494;     /* how far a neighbour parks             (xW) */
+  --rest-yaw: 9deg;      /* residual yaw on a card sitting at rest     */
+  --push:     170px;     /* neighbour's lean toward the lens           */
+  --bump:     90px;      /* extra lens-ward push mid-sweep             */
+  --lean:     2deg;      /* in-plane lean, per card of offset          */
+  --tilt-max: 10deg;     /* biggest resting lean a card may be dealt   */
+  --tilt-min: 2.5deg;    /* smallest — nothing sits bolt upright       */
+  --dur:      1000;      /* ms for one card                            */
+  --flip-from:0.10;      /* offset where the turn begins               */
+  --flip-to:  0.90;      /* offset where it has fully turned over      */
+
+  --ease:     cubic-bezier(.22,.61,.24,1);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ink);color:var(--cream);
+  font-family:"Cormorant Garamond",Georgia,serif;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* ---------------- section shell ---------------- */
+.deck{
+  position:relative;height:100vh;height:100svh;overflow:hidden;
+  background:
+    radial-gradient(115% 80% at 50% 46%, #240409 0%, #1b0206 38%, #140004 72%, #0f0003 100%);
+  isolation:isolate;
+}
+.deck::after{                       /* vignette */
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:radial-gradient(80% 66% at 50% 50%, transparent 38%, rgba(6,0,2,.72) 100%);
+}
+
+/* ---------------- top bar ---------------- */
+.bar{
+  position:absolute;inset:0 0 auto 0;z-index:8;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:clamp(16px,3vh,32px) clamp(20px,3.4vw,52px);
+  pointer-events:none;
+}
+.bar>*{pointer-events:auto}
+
+.menu{
+  justify-self:start;width:30px;height:14px;padding:0;border:0;
+  background:none;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.menu span{display:block;height:1px;background:var(--cream);opacity:.85;transition:width .35s var(--ease)}
+.menu span:last-child{width:60%}
+.menu:hover span:last-child{width:100%}
+
+.wordmark{
+  margin:0;justify-self:center;
+  font-family:"Italianno",'Snell Roundhand','Brush Script MT',cursive;
+  font-weight:400;font-size:clamp(30px,2.9vw,48px);line-height:1;
+  letter-spacing:.01em;color:var(--cream);
+  text-shadow:0 0 30px rgba(247,241,230,.16);
+  user-select:none;white-space:nowrap;
+}
+.members{
+  justify-self:end;
+  font-family:ui-sans-serif,system-ui,"Helvetica Neue",Arial,sans-serif;
+  font-size:11px;letter-spacing:.36em;text-transform:uppercase;
+  color:var(--cream);text-decoration:none;opacity:.9;transition:opacity .3s;
+}
+.members:hover{opacity:.55}
+
+/* ---------------- 3D stage ---------------- */
+.stage{
+  position:absolute;inset:0;z-index:2;
+  perspective:2200px;               /* replaced in px by the script */
+  perspective-origin:50% 50%;
+  cursor:grab;touch-action:pan-y;
+}
+.stage.is-dragging{cursor:grabbing}
+
+.ring{
+  position:absolute;left:50%;top:50%;width:0;height:0;
+  transform-style:preserve-3d;
+}
+
+/* ---------------- card ---------------- */
+.card{
+  position:absolute;
+  width:var(--card-w);height:var(--card-h);
+  margin-left:calc(var(--card-w) / -2);
+  margin-top:calc(var(--card-h) / -2);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+/* The turn lives HERE, not on .card. Anything that groups (opacity, filter,
+   will-change:opacity) flattens its subtree, and a rotation above such a
+   boundary stops counting toward backface-visibility — every card would
+   show its front. Inside the wrapper it is always counted. */
+.card__inner{
+  position:absolute;inset:0;transform-style:preserve-3d;
+  transform:rotateY(0deg);
+  will-change:transform;
+}
+
+.face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:calc(var(--card-w) * .045);
+  background:var(--cream);
+  padding:calc(var(--card-w) * .033);
+  box-shadow:0 1px 1px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6);
+}
+.face--back{transform:rotateY(180deg)}
+/* darkens as the card rolls edge-on — this is what sells it as an object
+   turning over rather than one picture cross-fading into another */
+.face::before{
+  content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+  border-radius:inherit;
+  background:#0b0002;
+  opacity:var(--shade,0);
+}
+
+/* --- front --- */
+.plate{
+  position:relative;width:100%;height:100%;
+  border-radius:calc(var(--card-w) * .018);
+  overflow:hidden;background:#2a0407;
+  box-shadow:0 0 0 1px rgba(30,3,7,.55);
+}
+.plate img{display:block;width:100%;height:100%;object-fit:cover}
+.plate::after{                       /* printed-plate warmth + grain */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E"),
+    radial-gradient(120% 92% at 50% 32%, transparent 52%, rgba(26,1,5,.34));
+  background-size:140px 140px, cover;
+  opacity:.34;mix-blend-mode:multiply;
+}
+
+.pip{
+  position:absolute;z-index:2;
+  width:calc(var(--card-w) * .095);height:calc(var(--card-w) * .125);
+  display:grid;place-items:center;
+  background:var(--cream);border:1px solid rgba(26,2,6,.55);
+  border-radius:calc(var(--card-w) * .008);
+  font-family:"Italianno",'Snell Roundhand',cursive;
+  font-size:calc(var(--card-w) * .09);line-height:1;color:#1a0206;
+  padding-bottom:.1em;
+}
+.pip--tr{top:calc(var(--card-w) * .058);right:calc(var(--card-w) * .058)}
+.pip--bl{bottom:calc(var(--card-w) * .058);left:calc(var(--card-w) * .058)}
+
+/* --- back: interlocking circle lattice --- */
+.weave{
+  --t:calc(var(--card-w) * .175);
+  position:relative;width:100%;height:100%;
+  border-radius:calc(var(--card-w) * .018);
+  overflow:hidden;
+  background-color:var(--ink-2);
+  background-image:
+    radial-gradient(circle, transparent 45%, rgba(168,48,42,.46) 45.6%, rgba(168,48,42,.46) 47.6%, transparent 48.2%),
+    radial-gradient(circle, transparent 45%, rgba(168,48,42,.46) 45.6%, rgba(168,48,42,.46) 47.6%, transparent 48.2%),
+    radial-gradient(circle, transparent 26%, rgba(126,32,28,.34) 26.6%, rgba(126,32,28,.34) 28.2%, transparent 28.8%);
+  background-size:var(--t) var(--t), var(--t) var(--t), var(--t) var(--t);
+  background-position:0 0, calc(var(--t)/2) calc(var(--t)/2), calc(var(--t)/2) calc(var(--t)/2);
+}
+.weave::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(72% 58% at 50% 44%, rgba(132,30,26,.18), transparent 72%);
+}
+
+/* ---------------- nav ---------------- */
+.nav{
+  position:absolute;top:50%;z-index:9;
+  width:24px;height:24px;margin-top:-12px;padding:0;
+  display:grid;place-items:center;border:0;border-radius:50%;
+  background:var(--cream);color:#1a0206;cursor:pointer;opacity:.88;
+  transition:transform .35s var(--ease),opacity .3s;
+}
+.nav:hover{transform:scale(1.2);opacity:1}
+.nav:active{transform:scale(.92)}
+.nav svg{width:8px;height:8px}
+.nav--prev{left:calc(50% - (var(--card-w) * .62))}
+.nav--next{left:calc(50% + (var(--card-w) * .62))}
+
+/* ------- optional counter — delete the element to lose it -------- */
+.counter{
+  position:absolute;left:0;right:0;bottom:clamp(18px,4vh,40px);z-index:8;
+  text-align:center;pointer-events:none;
+  font-family:ui-sans-serif,system-ui,Arial,sans-serif;
+  font-size:10px;letter-spacing:.32em;opacity:.28;
+}
+
+@media (max-width:820px){
+  :root{
+    --card-h:min(64vh, 86vw, calc(100vh - 2 * (var(--count-b) + 26px)));
+    --spread:.60;--push:120px;--bump:60px;
+  }
+  .nav--prev{left:16px}
+  .nav--next{left:auto;right:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  :root{--dur:200;--flip-from:.42;--flip-to:.58;--bump:0px}
+}
+</style>
+</head>
+<body>
+
+<section class="deck" id="deck">
+
+  <header class="bar">
+    <button class="menu" aria-label="Menu"><span></span><span></span></button>
+    <h1 class="wordmark">The Eight</h1>
+    <a class="members" href="#">Members</a>
+  </header>
+
+  <div class="stage" id="stage"><div class="ring" id="ring"></div></div>
+
+  <button class="nav nav--prev" id="prev" aria-label="Previous card">
+    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.3 1.4 2.9 5l3.4 3.6"/></svg>
+  </button>
+  <button class="nav nav--next" id="next" aria-label="Next card">
+    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.7 1.4 7.1 5l-3.4 3.6"/></svg>
+  </button>
+
+  <div class="counter"><span id="cardIdx">01</span> / <span id="cardTot">06</span></div>
+
+</section>
+
+<script>
+/* ==================================================================
+   1. THE DECK
+   Swap `img` for your own artwork — portrait, roughly 2:3.
+   Any <img> source works: 'assets/card-01.jpg', a full URL, or a
+   data URI. Leave it '' to fall back to the built-in placeholder.
+   ================================================================== */
+const CARDS = [
+  { name:'The Waterfall', pip:'8', img:'' },
+  { name:'The Rearing',   pip:'8', img:'' },
+  { name:'The Gallop',    pip:'8', img:'' },
+  { name:'The Crossing',  pip:'8', img:'' },
+  { name:'The Watchers',  pip:'8', img:'' },
+  { name:'The Return',    pip:'8', img:'' }
+];
+
+/* Each card sits at its own slight angle, as if dealt by hand — nothing
+   in the deck is perfectly upright. Angles are dealt once from DEAL_SEED
+   and stay put for the session; change the seed to re-deal. To pin a card
+   at an exact angle, give it its own `tilt` above, e.g.  tilt: -3.4        */
+const DEAL_SEED = 20260908;
+
+/* ---- placeholder plate — delete once the real art is wired in ---- */
+function placeholder(i){
+  const S = [[.30,.62,.20],[.52,.44,.34],[.18,.70,.26],
+             [.66,.38,.44],[.42,.56,.15],[.24,.50,.38]][i % 6];
+  const a = S[0], b = S[1], c = S[2], R = Math.round;
+
+  const ridge = (y, amp, fill) =>
+    '<path d="M0 ' + R(y) +
+    ' L' + R(58+a*70)  + ' ' + R(y-amp) +
+    ' L' + R(132+b*46) + ' ' + R(y-amp*.34) +
+    ' L' + R(214+c*70) + ' ' + R(y-amp*1.15) +
+    ' L' + R(312+a*40) + ' ' + R(y-amp*.42) +
+    ' L400 ' + R(y-amp*.86) + ' L400 470 L0 470Z" fill="' + fill + '"/>';
+
+  const water = Array.from({length:12}, (_,k) =>
+    '<path d="M' + R(18+k*34) + ' ' + R(474+((k*43)%50)) +
+    ' q ' + R(26+a*20) + ' -10 ' + 60 + ' 2"/>').join('');
+
+  const fall = Array.from({length:6}, (_,k) =>
+    '<path d="M' + R(44+c*170+k*6) + ' ' + R(298+a*40) + ' v ' + R(80+k*10) + '"/>').join('');
+
+  const svg =
+'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 614" preserveAspectRatio="xMidYMid slice">' +
+'<defs>' +
+ '<linearGradient id="s" x1="0" y1="0" x2="0" y2="1">' +
+  '<stop offset="0" stop-color="#faf5ec"/><stop offset="1" stop-color="#dcccb9"/></linearGradient>' +
+ '<pattern id="h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(' + R(24+a*38) + ')">' +
+  '<line x1="0" y1="0" x2="0" y2="5" stroke="#1a0206" stroke-width="1" opacity=".2"/></pattern>' +
+ '<pattern id="h2" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(' + R(-30-b*30) + ')">' +
+  '<line x1="0" y1="0" x2="0" y2="4" stroke="#1a0206" stroke-width="1" opacity=".32"/></pattern>' +
+'</defs>' +
+'<rect width="400" height="614" fill="url(#s)"/>' +
+'<g fill="#a4907e" opacity=".5">' +
+ '<ellipse cx="' + R(88+a*150)  + '" cy="' + R(80+b*34)  + '" rx="88" ry="26"/>' +
+ '<ellipse cx="' + R(206+b*110) + '" cy="' + R(112+a*26) + '" rx="106" ry="30"/>' +
+ '<ellipse cx="' + R(52+c*190)  + '" cy="' + R(136+c*26) + '" rx="72" ry="21"/>' +
+'</g>' +
+ridge(318+a*44, 122, '#8e261b') +
+ridge(318+a*44, 122, 'url(#h)') +
+ridge(358+b*30, 60,  '#6d1c14') +
+'<path d="M0 ' + R(408+b*22) + ' L118 ' + R(378+a*24) + ' L258 ' + R(418+c*20) +
+ ' L400 ' + R(386+b*18) + ' L400 614 L0 614Z" fill="#1a0206"/>' +
+'<path d="M0 ' + R(408+b*22) + ' L118 ' + R(378+a*24) + ' L258 ' + R(418+c*20) +
+ ' L400 ' + R(386+b*18) + ' L400 614 L0 614Z" fill="url(#h2)" opacity=".55"/>' +
+'<path d="M' + R(176+a*44) + ' 108 l6 -44 6 44 44 6 -44 6 -6 44 -6 -44 -44 -6z" fill="#1a0206"/>' +
+'<g stroke="#f7f1e6" stroke-width="1.6" fill="none" opacity=".8">' + fall + '</g>' +
+'<g stroke="#f7f1e6" stroke-width="1.1" fill="none" opacity=".5">' + water + '</g>' +
+'</svg>';
+
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+/* ==================================================================
+   2. GEOMETRY + MOTION
+
+   Every card's place is a function of `off` — its signed distance,
+   in cards, from the one that is face-up.
+
+        off =  0    centred, flat on, face-up
+        off = ±1    parked at the viewport edge, face-down
+        off = ±0.5  mid-sweep: flung wide and swung open like a door
+
+   The door-swing peaks at the half-way point and falls back to zero
+   at both rest points. That is what empties the middle of the frame
+   during a move and lets the two cards trade faces out at the edges.
+   ================================================================== */
+const stage = document.getElementById('stage');
+const ring  = document.getElementById('ring');
+const N     = CARDS.length;
+
+let P = {};
+function readVars(){
+  const cs = getComputedStyle(document.documentElement);
+  const W  = stage.clientWidth || 1918;
+  const k  = W / 1918;
+  P = {
+    persp  : parseFloat(cs.getPropertyValue('--persp'))  * W,
+    spread : parseFloat(cs.getPropertyValue('--spread')) * W,   /* refined below */
+    yaw    : parseFloat(cs.getPropertyValue('--rest-yaw')),
+    push   : parseFloat(cs.getPropertyValue('--push')) * k,
+    bump   : parseFloat(cs.getPropertyValue('--bump')) * k,
+    lean   : parseFloat(cs.getPropertyValue('--lean')),
+    tiltMax: parseFloat(cs.getPropertyValue('--tilt-max')),
+    tiltMin: parseFloat(cs.getPropertyValue('--tilt-min')),
+    flipFrom: parseFloat(cs.getPropertyValue('--flip-from')),
+    flipTo  : parseFloat(cs.getPropertyValue('--flip-to')),
+    dur    : parseFloat(cs.getPropertyValue('--dur'))
+  };
+  /* `--spread` is a fraction of VIEWPORT width, but so is the card. On a
+     portrait screen the card outgrows the gap and the neighbours land on
+     top of it. Floor the spread in CARD widths — the only reference that
+     guarantees clearance at any viewport shape. A desktop viewport sits
+     far above the floor, so its layout is untouched.
+     Measured off a live card: --card-w is a calc() token at the root, not
+     a resolved length, so it cannot be read from there. */
+  const probe = document.querySelector('.card');
+  if (probe){
+    /* the INFLATED width: a resting lean of up to --tilt-max widens a tall
+       card's footprint by about a quarter (w·cos + h·sin) */
+    const tilt = parseFloat(cs.getPropertyValue('--tilt-max')) * Math.PI / 180;
+    /* computed style, not offsetWidth: offset* rounds to whole pixels and
+       the floor is sub-pixel sensitive */
+    const pcs = getComputedStyle(probe);
+    const effW = parseFloat(pcs.width) * Math.cos(tilt)
+               + parseFloat(pcs.height) * Math.sin(tilt);
+    P.spread = Math.max(P.spread, effW * 0.99 + 18);
+  }
+
+  stage.style.perspective = P.persp + 'px';
+}
+readVars();
+addEventListener('resize', readVars);
+
+/* Deal each card its resting angle.
+
+   The DIRECTION alternates strictly — lean left, right, left, right — so
+   moving through the deck rocks back and forth instead of drifting one
+   way. Only the AMOUNT is dealt from DEAL_SEED, and it is kept between
+   --tilt-min and --tilt-max: a card sitting bolt upright reads as
+   machine-set, which is the one thing a hand-dealt deck never looks like.
+
+   Deterministic, so it is stable for the session and never jumps between
+   frames. Flip ALTERNATE_FROM to start the rock the other way. */
+const ALTERNATE_FROM = 1;          /*  1 = first card leans right, -1 = left */
+
+const TILT = CARDS.map(function(c, i){
+  if (typeof c.tilt === 'number') return c.tilt;
+
+  let h = (DEAL_SEED + (i + 1) * 0x9e3779b9) >>> 0;   /* splitmix32 */
+  h = Math.imul(h ^ (h >>> 16), 0x21f0aaad) >>> 0;
+  h = Math.imul(h ^ (h >>> 15), 0x735a2d97) >>> 0;
+  h = (h ^ (h >>> 15)) >>> 0;
+
+  const amount = P.tiltMin + (h / 0xffffffff) * (P.tiltMax - P.tiltMin);
+  const dir    = (i % 2 ? -1 : 1) * ALTERNATE_FROM;
+  return dir * amount;
+});
+
+/* an odd-length deck wraps two same-leaning cards back to back — nudge the
+   last one so the rock survives the loop */
+if (CARDS.length % 2 === 1 && typeof CARDS[CARDS.length - 1].tilt !== 'number'){
+  TILT[CARDS.length - 1] *= -1;
+}
+
+const nodes = CARDS.map(function(c, i){
+  const el = document.createElement('article');
+  el.className = 'card';
+  el.innerHTML =
+    '<div class="card__inner">' +
+      '<div class="face face--front">' +
+        '<div class="plate">' +
+          '<img src="' + (c.img || placeholder(i)) + '" alt="' + c.name + '" draggable="false">' +
+          '<span class="pip pip--tr">' + c.pip + '</span>' +
+          '<span class="pip pip--bl">' + c.pip + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="face face--back"><div class="weave"></div></div>' +
+    '</div>';
+  ring.appendChild(el);
+  el.inner = el.firstElementChild;
+  return el;
+});
+
+let pos = 0, lastActive = -1;
+const VISIBLE = 1.5;
+
+function offsetOf(i){
+  let d = i - pos;
+  d -= Math.round(d / N) * N;      /* wrap: the deck is a loop */
+  return d;
+}
+
+/* 6t^5 - 15t^4 + 10t^3 — zero velocity AND zero acceleration at both ends,
+   so the turn eases in and out of the sweep with no visible seam */
+function smootherstep(edge0, edge1, x){
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+function render(){
+  for (let i = 0; i < N; i++){
+    const el  = nodes[i];
+    const off = offsetOf(i);
+    const A   = Math.abs(off);
+
+    /* THE TURN — one rotation, one direction, shared by every card.
+
+       This used to be two rotations: a door-swing signed by `off`, and a
+       face-flip also signed by `off`. Both mirrored about the centre, so
+       the outgoing card led with its left edge and the incoming card led
+       with its right — the two halves of a move span opposite ways.
+
+       Now there is a single angle. `face` is an ODD function of `off`:
+
+           off = -1 -> +180   back, flat, parked left
+           off =  0 ->    0   front, flat, centred
+           off = +1 -> -180   back, flat, parked right
+
+       Odd and monotonic means that as the deck advances, EVERY card's
+       angle moves the same way — they all turn like cards on one drum,
+       just at different points in the turn. Passing through 90 is what
+       swaps the face, so no separate flip is needed: the back face is
+       already parked at rotateY(180) and comes round on its own. */
+    const turn = smootherstep(P.flipFrom, P.flipTo, A);
+    const face = -180 * (off < 0 ? -1 : 1) * turn;
+
+    if (A > VISIBLE){
+      if (el.style.visibility !== 'hidden'){
+        el.style.visibility = 'hidden';
+        el.style.opacity = '0';
+      }
+      continue;
+    }
+    el.style.visibility = 'visible';
+    el.style.opacity = (A > 1.12 ? Math.max(0, 1 - (A - 1.12) / 0.38) : 1).toFixed(3);
+
+    const arch = Math.sin(Math.PI * A);      /* peaks at the half-way point */
+
+    const x  = P.spread * off;
+    const z  = P.push * A + P.bump * arch;
+    const ry = face - P.yaw * off;
+    const rz = TILT[i] - P.lean * off;
+
+    /* shade as the card rolls away from the lens — sells it as an object
+       turning over rather than one picture cross-fading into another */
+    el.style.setProperty('--shade',
+      (Math.abs(Math.sin(ry * Math.PI / 180)) * 0.42).toFixed(3));
+
+    /* rotateZ stays on the OUTER element, so it lands after the turn in
+       screen space and the resting lean does not invert when the card
+       passes 90 and comes up showing its back. */
+    el.style.transform =
+      'translate3d(' + x.toFixed(1) + 'px,0,' + z.toFixed(1) + 'px) ' +
+      'rotateZ(' + rz.toFixed(2) + 'deg)';
+    el.inner.style.transform = 'rotateY(' + ry.toFixed(2) + 'deg)';
+  }
+
+  const active = ((Math.round(pos) % N) + N) % N;
+  if (active !== lastActive){
+    lastActive = active;
+    document.getElementById('cardIdx').textContent = String(active + 1).padStart(2, '0');
+  }
+}
+document.getElementById('cardTot').textContent = String(N).padStart(2, '0');
+readVars();   /* now that a card exists, the spread floor can be measured */
+
+/* ---- tween: one clean sweep per card. No spring, so no pumping ---- */
+let from = 0, to = 0, t0 = 0, dur = 0, tweening = false, dragging = false;
+const easeInOut = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+
+function tweenTo(next){
+  from = pos;
+  to   = next;
+  const span = Math.max(1, Math.abs(to - from));
+  dur  = P.dur * (1 + (span - 1) * 0.4);
+  t0   = performance.now();
+  tweening = true;
+}
+
+function tick(now){
+  if (tweening && !dragging){
+    const u = Math.min(1, (now - t0) / dur);
+    pos = from + (to - from) * easeInOut(u);
+    if (u === 1){ pos = to; tweening = false; }
+  }
+  render();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* ==================================================================
+   3. INPUT — arrows, keyboard, drag / swipe, wheel, click-a-neighbour
+   ================================================================== */
+const go = d => tweenTo(Math.round(tweening ? to : pos) + d);
+
+document.getElementById('next').addEventListener('click', () => go(1));
+document.getElementById('prev').addEventListener('click', () => go(-1));
+
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft')  go(-1);
+});
+
+let startX = 0, startPos = 0, moved = 0, lastX = 0, lastT = 0, vel = 0;
+const DRAG_PER_CARD = 430;          /* px of drag that equals one card */
+
+stage.addEventListener('pointerdown', e => {
+  dragging = true; tweening = false; moved = 0; vel = 0;
+  startX = lastX = e.clientX;
+  startPos = pos;
+  lastT = performance.now();
+  stage.classList.add('is-dragging');
+  stage.setPointerCapture(e.pointerId);
+});
+
+stage.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - startX;
+  moved = Math.abs(dx);
+  pos = startPos - dx / DRAG_PER_CARD;
+
+  const now = performance.now(), dt = now - lastT;
+  if (dt > 8){
+    vel = -(e.clientX - lastX) / DRAG_PER_CARD / dt;   /* cards per ms */
+    lastX = e.clientX;
+    lastT = now;
+  }
+});
+
+function endDrag(){
+  if (!dragging) return;
+  dragging = false;
+  stage.classList.remove('is-dragging');
+
+  const nearest = Math.round(pos);
+  /* a quick flick always carries at least one card */
+  if (Math.abs(vel) > 0.0012 && nearest === Math.round(startPos)){
+    tweenTo(nearest + Math.sign(vel));
+  } else {
+    tweenTo(nearest);
+  }
+}
+stage.addEventListener('pointerup', endDrag);
+stage.addEventListener('pointercancel', endDrag);
+stage.addEventListener('lostpointercapture', endDrag);
+
+/* WHEEL.
+   The old handler took any delta over 6 and re-armed after 430ms — half
+   the 860ms a turn actually takes. So on a trackpad, where wheel events
+   arrive in a continuous stream, every second event restarted the tween
+   from its own midpoint: the ease never played out, the deck lurched, and
+   the cards jumped past their intermediate angles.
+
+   Now the deltas accumulate into a gesture, and the next one cannot start
+   until the current turn has finished easing. */
+let wheelAccum = 0, wheelLast = 0, wheelUntil = 0;
+const WHEEL_STEP = 90;    /* delta that adds up to one card   */
+const WHEEL_GAP  = 220;   /* ms of quiet that ends a gesture  */
+
+stage.addEventListener('wheel', e => {
+  const now = performance.now();
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
+  /* a pause starts a fresh count, so a momentum tail cannot chain */
+  if (now - wheelLast > WHEEL_GAP) wheelAccum = 0;
+  wheelLast = now;
+
+  if (now < wheelUntil) return;          /* a turn is still easing */
+
+  wheelAccum += d;
+  if (Math.abs(wheelAccum) < WHEEL_STEP) return;
+
+  const dir = Math.sign(wheelAccum);
+  wheelAccum = 0;
+  wheelUntil = now + P.dur;              /* let this one finish */
+  go(dir);
+}, { passive:true });
+
+nodes.forEach(function(el, i){
+  el.addEventListener('click', function(){
+    if (moved > 6) return;                 /* that was a drag, not a click */
+    const off = offsetOf(i);
+    if (Math.abs(off) > 0.5) go(Math.sign(off));
+  });
+});
+</script>
+</body>
+</html>

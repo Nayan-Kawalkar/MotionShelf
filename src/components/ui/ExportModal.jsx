@@ -7,7 +7,6 @@ import "./export-modal.css";
 const METHODS = [
   { id: "cli", label: "CLI", icon: "▢" },
   { id: "code", label: "Code", icon: "</>" },
-  { id: "framer", label: "Framer", icon: "◈" },
   { id: "vanilla", label: "Vanilla JS", icon: "{ }" },
   { id: "prompt", label: "AI Prompt", icon: "✦" },
 ];

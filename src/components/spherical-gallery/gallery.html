@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Spherical Gallery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #ffffff;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    body {
+      background:
+        radial-gradient(120% 90% at 50% 50%, #0b0b0c 0%, #050505 45%, #000 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: grab;
+      touch-action: none;
+    }
+    body.hovering canvas { cursor: pointer; }
+    body.dragging canvas { cursor: grabbing; }
+
+    /* ---- Vignette: pushes everything but the centre into the dark ---- */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background:
+        radial-gradient(115% 78% at 50% 50%,
+          rgba(0,0,0,0) 32%,
+          rgba(0,0,0,0.28) 60%,
+          rgba(0,0,0,0.78) 80%,
+          rgba(0,0,0,0.96) 100%),
+        linear-gradient(to bottom,
+          rgba(0,0,0,0.75) 0%,
+          rgba(0,0,0,0) 22%,
+          rgba(0,0,0,0) 78%,
+          rgba(0,0,0,0.8) 100%);
+    }
+
+    /* Soft dark pool behind the wordmark so it always reads */
+    .center-glow {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: min(70vw, 900px);
+      height: min(46vh, 420px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 6;
+      background: radial-gradient(closest-side,
+        rgba(0,0,0,0.82) 0%,
+        rgba(0,0,0,0.55) 45%,
+        rgba(0,0,0,0) 100%);
+      filter: blur(2px);
+    }
+
+    /* ---- Centre branding ---- */
+    .overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--ink);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .overlay h1 {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      font-size: clamp(2.1rem, 5.2vw, 4.4rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      text-shadow:
+        0 2px 18px rgba(0,0,0,0.95),
+        0 12px 60px rgba(0,0,0,0.85);
+    }
+    .overlay h1 strong { font-weight: 400; }
+
+    .overlay .sub {
+      margin-top: 1.15rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      text-shadow: 0 2px 14px rgba(0,0,0,0.9);
+    }
+
+    /* Fade the whole scene in once textures are built */
+    .fade-in { animation: fadeIn 1.6s ease both; }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  </style>
+</head>
+<body>
+
+  <div class="vignette"></div>
+  <div class="center-glow"></div>
+
+  <div class="overlay fade-in">
+    <h1>Made with<br><strong>Squarespace</strong></h1>
+    <div class="sub">Drag to explore</div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
+
+  <script>
+  (function () {
+    gsap.registerPlugin(Observer);
+
+    /* =========================================================
+       CONFIG — tweak the look from here
+       ========================================================= */
+    const CFG = {
+      radius:        23,      // sphere radius (bigger = cards further away)
+      rows:          7,       // latitude rings (straight horizontal rows)
+      cols:          16,      // cards per row — every row uses the same count,
+                              // so the cards also line up into straight columns
+      phiStart:      0.24,    // top row  (× PI from the north pole)
+      phiEnd:        0.76,    // bottom row
+      cardWidth:     5.0,     // uniform card width in world units
+      cardAspect:    1.60,    // uniform card aspect (w / h)
+
+      // ---- spacing ----
+      // useGaps:false → you set cardWidth, the gaps fall out of it
+      // useGaps:true  → you set the gaps, cardWidth is solved for
+      useGaps:       false,
+      gapX:          4.0,     // horizontal gap, world units
+      gapY:          3.1,     // vertical gap, world units
+      glow:          0.16,    // additive halo strength behind each card
+
+      // ---- click ----
+      // one entry per card, in row-by-row order; '' = not clickable.
+      // e.g. links: ['https://a.com', '', 'https://b.com', …]
+      links:         [],
+      linkNewTab:    false,
+      clickEnabled:  true,
+      pressScale:    0.05,    // how far the card dips while held
+      clickSlop:     6,       // px of movement still counted as a click
+      clickHold:     900,     // ms — longer than this is a hold, not a click
+
+      // ---- hover ----
+      hoverScale:    0.16,    // how much the card grows under the cursor
+      hoverLift:     0.055,   // how far it steps toward the camera (× radius)
+      hoverBoost:    0.45,    // extra brightness on the hovered card
+      hoverGlow:     3.2,     // halo multiplier on the hovered card
+      hoverDim:      0.30,    // how far everything else drops back
+      hoverEase:     0.16,    // hover in/out speed
+
+      focusInner:    0.40,    // dot() where a card is fully lit
+      focusOuter:    0.985,   // dot() where a card has faded to black
+      pitchLimit:    0.40,    // max up / down tilt in radians (was 0.56)
+      autoDrift:     0.00028, // idle rotation speed
+      dragSpeed:     0.0032,
+      wheelSpeed:    0.0016,
+      friction:      0.935,   // momentum decay after release
+      ease:          0.10,    // camera smoothing while coasting
+      dragEase:      0.32     // camera smoothing while actually dragging
+    };
+
+    /* =========================================================
+       1. RENDERER / SCENE
+       ========================================================= */
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.016);
+
+    const camera = new THREE.PerspectiveCamera(74, innerWidth / innerHeight, 0.1, 200);
+    camera.position.set(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    if (THREE.sRGBEncoding !== undefined) renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.domElement.classList.add('fade-in');
+    document.body.appendChild(renderer.domElement);
+
+    const galleryGroup = new THREE.Group();
+    scene.add(galleryGroup);
+
+    /* =========================================================
+       2. TEXTURES — procedural "website screenshot" cards
+       ========================================================= */
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        r = Math.min(r, w / 2, h / 2);
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        return this;
+      };
+    }
+
+    const PALETTES = [
+      { bg: '#f5f2ec', ink: '#16150f', accent: '#2f4f36', soft: '#e3ddd0' },
+      { bg: '#ffffff', ink: '#101114', accent: '#2f6df6', soft: '#eaeef6' },
+      { bg: '#0d0d0d', ink: '#ffffff', accent: '#ccff2f', soft: '#1b1b1b' },
+      { bg: '#e9f0e4', ink: '#1e2b1c', accent: '#6f9455', soft: '#d4e2ca' },
+      { bg: '#f8e6ea', ink: '#3a1e26', accent: '#e35d84', soft: '#f0cfd8' },
+      { bg: '#efe8dc', ink: '#2a251d', accent: '#b9773a', soft: '#e0d4bf' },
+      { bg: '#171b25', ink: '#eef2f8', accent: '#6ea8ff', soft: '#252c3a' },
+      { bg: '#fdfbf6', ink: '#121212', accent: '#0f7268', soft: '#e9e4d9' },
+      { bg: '#f1eeff', ink: '#1b1436', accent: '#7a5cff', soft: '#e0dafa' },
+      { bg: '#fff7e8', ink: '#241a09', accent: '#f0a02a', soft: '#f4e6cb' },
+      { bg: '#101010', ink: '#f6f6f6', accent: '#ff4d3d', soft: '#1d1d1d' },
+      { bg: '#e6eef2', ink: '#0f2029', accent: '#2f7f9c', soft: '#d3e2e9' }
+    ];
+
+    const NAMES = [
+      'Myrtle Village', 'Second Story', 'Flaneur', 'Bathhouse', 'Xanadu',
+      'Potted', 'Stretch Squared', 'Margaret Rajic', 'Naughty Nancy',
+      'Everyday', 'Dreamscape', 'Fat Cherry', 'Sunny Studio', 'Atelier Nord',
+      'Field Notes', 'Ritual', 'The Green Room', 'Superbloom',
+      'Northsound', 'Copper & Oak', 'Wildflower', 'Halcyon', 'Marlow',
+      'Cold Brew Co.', 'Paper Plane', 'Studio Verde', 'Lantern', 'Hollow'
+    ];
+
+    const LINES = [
+      'A ritual best shared.', 'Forming deeper relationships.',
+      "You're not stuck, you're overthinking.", 'Let’s connect.',
+      'Made to be lived in.', 'Slow mornings, good light.',
+      'Built for the long game.', 'Everything in its place.',
+      'Designed for the everyday.', 'Where the light lands.',
+      'Small batch, made slowly.', 'Come as you are.',
+      'A quiet kind of luxury.', 'New work, twice a year.'
+    ];
+
+    const pick = a => a[(Math.random() * a.length) | 0];
+
+    // sequential, reshuffling picker — stops the same headline appearing
+    // on four cards in the same eyeful
+    function cycler(arr) {
+      let bag = [];
+      return () => {
+        if (!bag.length) {
+          bag = arr.slice();
+          for (let i = bag.length - 1; i > 0; i--) {
+            const j = (Math.random() * (i + 1)) | 0;
+            [bag[i], bag[j]] = [bag[j], bag[i]];
+          }
+        }
+        return bag.pop();
+      };
+    }
+    // light palettes dominate (indices 0,1,3,4,5,7,8,9,11), dark ones are the accent
+    const LIGHT = [0, 1, 3, 4, 5, 7, 8, 9, 11];
+    const DARK = [2, 6, 10];
+    const pickPalette = () =>
+      PALETTES[Math.random() < 0.82 ? pick(LIGHT) : pick(DARK)];
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const nextName = cycler(NAMES);
+    const nextLine = cycler(LINES);
+
+    function drawNav(ctx, w, p, dark) {
+      ctx.fillStyle = dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.72)';
+      const y = w * 0.055;
+      ctx.fillRect(w * 0.05, y, w * 0.10, w * 0.014);
+      let x = w * 0.60;
+      for (let i = 0; i < 4; i++) {
+        ctx.globalAlpha = 0.55;
+        ctx.fillRect(x, y, w * 0.055, w * 0.012);
+        x += w * 0.085;
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // shrink a font until the string fits the given width
+    function fitText(ctx, text, maxW, px, weight, family) {
+      let size = px;
+      do {
+        ctx.font = `${weight} ${Math.round(size)}px ${family}`;
+        if (ctx.measureText(text).width <= maxW) break;
+        size *= 0.94;
+      } while (size > 8);
+      return size;
+    }
+
+    function textBlock(ctx, x, y, w, lines, size, gap, color, alpha) {
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      for (let i = 0; i < lines; i++) {
+        const lw = w * (i === lines - 1 ? rand(0.4, 0.7) : rand(0.85, 1));
+        ctx.fillRect(x, y + i * (size + gap), lw, size);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function makeTexture(w, h) {
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      const ctx = cv.getContext('2d');
+      const p = pickPalette();
+      const dark = parseInt(p.bg.slice(1, 3), 16) < 90;
+      const r = Math.round(Math.min(w, h) * 0.045);
+
+      // rounded card silhouette — everything outside stays transparent
+      ctx.save();
+      ctx.roundRect(0, 0, w, h, r);
+      ctx.clip();
+
+      ctx.fillStyle = p.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      let heroName;
+      const kind = (function () {
+        const r = Math.random();
+        if (r < 0.28) return 'hero';
+        if (r < 0.50) return 'editorial';
+        if (r < 0.66) return 'grid';
+        if (r < 0.82) return 'product';
+        if (r < 0.94) return 'split';
+        return 'type';
+      })();
+
+      if (kind === 'hero') {
+        const g = ctx.createLinearGradient(0, 0, w, h * 0.9);
+        g.addColorStop(0, p.accent);
+        g.addColorStop(1, p.soft);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h * 0.72);
+        ctx.fillStyle = 'rgba(0,0,0,0.28)';
+        ctx.fillRect(0, h * 0.32, w, h * 0.40);
+        ctx.fillStyle = '#fff';
+        fitText(ctx, heroName = nextName(), w * 0.88, h * 0.115, 600, 'Georgia, serif');
+        ctx.fillText(heroName, w * 0.06, h * 0.60);
+        textBlock(ctx, w * 0.06, h * 0.80, w * 0.55, 2, h * 0.028, h * 0.035, p.ink, 0.45);
+        drawNav(ctx, w, p, true);
+
+      } else if (kind === 'editorial') {
+        drawNav(ctx, w, p, dark);
+        ctx.fillStyle = p.ink;
+        const line = nextLine();
+        ctx.textAlign = 'center';
+        fitText(ctx, line, w * 0.84, h * 0.135, 400, 'Georgia, serif');
+        ctx.fillText(line, w / 2, h * 0.44);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = p.soft;
+        ctx.fillRect(w * 0.30, h * 0.58, w * 0.40, h * 0.26);
+        ctx.fillStyle = p.accent;
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(w * 0.30, h * 0.58, w * 0.40, h * 0.05);
+        ctx.globalAlpha = 1;
+
+      } else if (kind === 'grid') {
+        drawNav(ctx, w, p, dark);
+        const cols = 3, rows = 2;
+        const pad = w * 0.05, gx = w * 0.025;
+        const cw = (w - pad * 2 - gx * (cols - 1)) / cols;
+        const ch = (h * 0.62 - gx * (rows - 1)) / rows;
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const q = pickPalette();
+            // never fill a tile with something the card background can swallow
+            ctx.fillStyle = Math.random() > 0.35 ? q.accent : p.ink;
+            ctx.globalAlpha = Math.random() > 0.35 ? rand(0.65, 1) : 0.14;
+            const hh = ch * rand(0.72, 1);
+            ctx.roundRect(pad + x * (cw + gx), h * 0.20 + y * (ch + gx), cw, hh, r * 0.5);
+            ctx.fill();
+            ctx.globalAlpha = 0.18;
+            ctx.strokeStyle = p.ink;
+            ctx.lineWidth = Math.max(1, w * 0.002);
+            ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 1;
+
+      } else if (kind === 'product') {
+        drawNav(ctx, w, p, dark);
+        const g = ctx.createRadialGradient(w * 0.5, h * 0.48, 4, w * 0.5, h * 0.48, h * 0.42);
+        g.addColorStop(0, p.accent);
+        g.addColorStop(1, p.soft);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(w * 0.5, h * 0.48, h * 0.26, 0, Math.PI * 2);
+        ctx.fill();
+        textBlock(ctx, w * 0.36, h * 0.80, w * 0.28, 2, h * 0.026, h * 0.03, p.ink, 0.5);
+        ctx.fillStyle = p.accent;
+        ctx.roundRect(w * 0.41, h * 0.90, w * 0.18, h * 0.06, h * 0.03);
+        ctx.fill();
+
+      } else if (kind === 'type') {
+        ctx.fillStyle = p.accent;
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = dark ? '#0b0b0b' : (Math.random() > 0.5 ? '#0b0b0b' : '#fff');
+        const word = nextName().split(' ')[0].toUpperCase();
+        ctx.textAlign = 'center';
+        fitText(ctx, word, w * 0.86, h * 0.34, 800, 'Helvetica, Arial, sans-serif');
+        ctx.fillText(word, w / 2, h * 0.60);
+        ctx.textAlign = 'left';
+        ctx.globalAlpha = 0.4;
+        ctx.fillRect(w * 0.08, h * 0.72, w * 0.84, h * 0.010);
+        ctx.globalAlpha = 1;
+        textBlock(ctx, w * 0.08, h * 0.80, w * 0.42, 2, h * 0.022, h * 0.028,
+                  dark ? '#fff' : '#0b0b0b', 0.42);
+        drawNav(ctx, w, p, !dark);
+
+      } else { // split
+        ctx.fillStyle = p.soft;
+        ctx.fillRect(0, 0, w * 0.48, h);
+        ctx.fillStyle = p.accent;
+        ctx.globalAlpha = 0.9;
+        ctx.fillRect(w * 0.48, h * 0.16, w * 0.52, h * 0.68);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = p.ink;
+        const nm = nextName().split(' ')[0];
+        fitText(ctx, nm, w * 0.38, h * 0.10, 500, 'Georgia, serif');
+        ctx.fillText(nm, w * 0.06, h * 0.42);
+        textBlock(ctx, w * 0.06, h * 0.52, w * 0.34, 3, h * 0.022, h * 0.028, p.ink, 0.4);
+        drawNav(ctx, w, p, dark);
+      }
+
+      // browser chrome on some cards
+      if (Math.random() > 0.62) {
+        ctx.fillStyle = dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)';
+        ctx.fillRect(0, 0, w, h * 0.075);
+        ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => {
+          ctx.fillStyle = c;
+          ctx.globalAlpha = 0.75;
+          ctx.beginPath();
+          ctx.arc(w * 0.035 + i * w * 0.028, h * 0.038, h * 0.012, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+      }
+
+      // inner edge light so the card reads as a lit panel
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+      ctx.lineWidth = Math.max(1, w * 0.004);
+      ctx.roundRect(1, 1, w - 2, h - 2, r);
+      ctx.stroke();
+      ctx.restore();
+
+      const tex = new THREE.CanvasTexture(cv);
+      if (THREE.sRGBEncoding !== undefined) tex.encoding = THREE.sRGBEncoding;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
+      tex.minFilter = THREE.LinearMipMapLinearFilter;
+      return tex;
+    }
+
+    // One pool of same-shaped textures — every card is identical in size,
+    // only the artwork changes, so rows and columns stay perfectly aligned.
+    const TEXTURES = (function () {
+      const list = [];
+      const w = 512, h = Math.round(512 / CFG.cardAspect);
+      for (let i = 0; i < 26; i++) list.push(makeTexture(w, h));
+      // shuffle once so the sequence around each row is mixed but never repeats
+      // two neighbours in a row
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = (Math.random() * (i + 1)) | 0;
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+      return list;
+    })();
+
+    // Soft additive halo shared by every card
+    const glowTex = (function () {
+      const s = 128, cv = document.createElement('canvas');
+      cv.width = cv.height = s;
+      const c = cv.getContext('2d');
+      const g = c.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+      g.addColorStop(0, 'rgba(255,255,255,0.55)');
+      g.addColorStop(0.45, 'rgba(255,255,255,0.16)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = g;
+      c.fillRect(0, 0, s, s);
+      return new THREE.CanvasTexture(cv);
+    })();
+
+    /* =========================================================
+       3. LAYOUT — straight rows, even columns, uniform cards
+       Every card is the same size and sits on an exact grid slot:
+       row  → latitude (phi), col → longitude (theta). No jitter,
+       no tilt, no gaps, no depth offset — clean sequence order.
+       ========================================================= */
+    const cards = [];
+
+    // Rows near the top and bottom sit on a narrower circle, so the gap is
+    // honoured at the TIGHTEST row. Card width and the vertical band depend
+    // on each other, so a few passes settle it.
+    const ring = (phi) => (2 * Math.PI * CFG.radius * Math.sin(phi)) / CFG.cols;
+
+    let CARD_W = CFG.cardWidth;
+    let PHI_START = CFG.phiStart;
+    let PHI_END = CFG.phiEnd;
+
+    if (CFG.useGaps) {
+      let phiTop = Math.PI / 2;
+      CARD_W = Math.max(0.2, ring(Math.PI / 2) - CFG.gapX);
+      for (let i = 0; i < 6; i++) {
+        const ch = CARD_W / CFG.cardAspect;
+        const span = Math.max(0, CFG.rows - 1) * (ch + CFG.gapY);
+        const half = span / 2 / CFG.radius;
+        phiTop = Math.max(0.05 * Math.PI, Math.PI / 2 - half);
+        CARD_W = Math.max(0.2, ring(phiTop) - CFG.gapX);
+      }
+      PHI_START = phiTop / Math.PI;
+      PHI_END = 1 - PHI_START;
+    }
+
+    const CARD_H = CARD_W / CFG.cardAspect;
+    const cardGeo = new THREE.PlaneGeometry(CARD_W, CARD_H);
+
+    let seq = 0; // running index: images fill row by row, left to right
+
+    for (let row = 0; row < CFG.rows; row++) {
+      const t = CFG.rows === 1 ? 0.5 : row / (CFG.rows - 1);
+      const phi = (PHI_START + t * (PHI_END - PHI_START)) * Math.PI;
+
+      for (let col = 0; col < CFG.cols; col++) {
+        const theta = (col / CFG.cols) * Math.PI * 2;
+        const rad = CFG.radius;
+
+        const tex = TEXTURES[seq % TEXTURES.length];
+        seq++;
+
+        const w = CARD_W, h = CARD_H;
+
+        const mat = new THREE.MeshBasicMaterial({
+          map: tex,
+          transparent: true,
+          alphaTest: 0.04,
+          side: THREE.FrontSide,
+          fog: true
+        });
+
+        const mesh = new THREE.Mesh(cardGeo, mat);
+        mesh.position.set(
+          rad * Math.sin(phi) * Math.sin(theta),
+          rad * Math.cos(phi),
+          rad * Math.sin(phi) * Math.cos(theta)
+        );
+        mesh.lookAt(0, 0, 0);
+        galleryGroup.add(mesh);
+
+        // halo sits just behind the card
+        const glowMat = new THREE.SpriteMaterial({
+          map: glowTex,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          opacity: 0
+        });
+        const glow = new THREE.Sprite(glowMat);
+        glow.scale.set(w * 1.9, h * 2.2, 1);
+        glow.position.copy(mesh.position).multiplyScalar(1.012);
+        galleryGroup.add(glow);
+
+        const card = {
+          mesh, mat, glow, glowMat,
+          basePos: mesh.position.clone(),
+          dir: mesh.position.clone().normalize(),
+          index: seq - 1,
+          link: CFG.links.length
+            ? (CFG.links[(seq - 1) % CFG.links.length] || '')
+            : '',
+          hover: 0,          // 0 → 1, eased every frame
+          press: 0,          // 0 → 1 while held down
+          glowScale: [w * 1.9, h * 2.2]
+        };
+        mesh.userData.card = card;
+        cards.push(card);
+      }
+    }
+
+    /* =========================================================
+       4. INPUT — drag with momentum, rubber-banded pitch
+       ========================================================= */
+    // how far the view may pitch up / down before it stops (radians)
+    const TOP_LIMIT = CFG.pitchLimit;
+    const BOTTOM_LIMIT = -CFG.pitchLimit;
+    const RUBBER = 0.28;      // resistance once you drag past a limit
+    const OVERSHOOT = 0.09;   // how far the rubber band may visibly stretch
+
+    let targetY = 0, targetX = 0;
+    let currentY = 0, currentX = 0;
+    let velY = 0, velX = 0;
+    let dragging = false;
+    let idle = 0;
+    let pointerX = 0, pointerY = 0; // where the cursor is
+    let parX = 0, parY = 0;         // eased parallax actually applied
+    let pendingDX = 0, pendingDY = 0; // input collected between frames
+
+    const sens = () => CFG.dragSpeed * (1400 / Math.max(innerWidth, 700));
+
+    Observer.create({
+      target: renderer.domElement,
+      type: 'pointer,touch,wheel',
+      dragMinimum: 0,
+      wheelSpeed: 1,
+      preventDefault: true,
+      onPress: () => {
+        dragging = true; idle = 0;
+        velY = velX = 0;
+        pendingDX = pendingDY = 0;
+        clock.getDelta();            // drop the idle gap so frame 1 is normal
+        document.body.classList.add('dragging');
+      },
+      onRelease: () => {
+        dragging = false;
+        document.body.classList.remove('dragging');
+        targetX = Math.max(BOTTOM_LIMIT, Math.min(TOP_LIMIT, targetX)); // spring back
+      },
+      // collect movement here, apply it once per frame — several pointer
+      // events can land between two frames, and summing them keeps the
+      // motion even and the throw speed honest
+      onDrag: (self) => {
+        idle = 0;
+        pendingDX += self.deltaX;
+        pendingDY += self.deltaY;
+      },
+      onWheel: (self) => {
+        idle = 0;
+        const d = self.deltaY * CFG.wheelSpeed * 0.35;
+        targetY -= d;
+        velY = -d * 0.6;
+      },
+      onMove: (self) => {
+        pointerX = (self.x / innerWidth) * 2 - 1;
+        pointerY = (self.y / innerHeight) * 2 - 1;
+      }
+    });
+
+    /* =========================================================
+       4b. HOVER — raycast the grid under the cursor
+       ========================================================= */
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    let hoverEnabled = false;   // mouse only — a finger has no hover state
+    let hovered = null;         // the card currently under the cursor
+    let hoverMix = 0;           // 0 → 1, how much "focus mode" is engaged
+
+    const meshes = cards.map(c => c.mesh);
+
+    renderer.domElement.addEventListener('pointermove', (ev) => {
+      hoverEnabled = ev.pointerType === 'mouse';
+      ndc.x = (ev.clientX / innerWidth) * 2 - 1;
+      ndc.y = -(ev.clientY / innerHeight) * 2 + 1;
+    });
+    renderer.domElement.addEventListener('pointerleave', () => {
+      hoverEnabled = false;
+      hovered = null;
+    });
+
+    // ---- click vs drag -------------------------------------------------
+    let pressedCard = null;
+    let downX = 0, downY = 0, downTime = 0;
+
+    function cardAt(clientX, clientY) {
+      const r = renderer.domElement.getBoundingClientRect();
+      ndc.x = ((clientX - r.left) / r.width) * 2 - 1;
+      ndc.y = -((clientY - r.top) / r.height) * 2 + 1;
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObjects(meshes, false)[0];
+      return hit ? hit.object.userData.card : null;
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (ev) => {
+      if (!CFG.clickEnabled) return;
+      downX = ev.clientX; downY = ev.clientY; downTime = performance.now();
+      pressedCard = cardAt(ev.clientX, ev.clientY);
+    });
+
+    renderer.domElement.addEventListener('pointermove', (ev) => {
+      if (pressedCard && Math.hypot(ev.clientX - downX, ev.clientY - downY) > CFG.clickSlop) {
+        pressedCard = null;   // it became a drag
+      }
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((type) => {
+      renderer.domElement.addEventListener(type, (ev) => {
+        if (!pressedCard) return;
+        const card = pressedCard;
+        pressedCard = null;
+        if (type !== 'pointerup') return;
+        const moved = Math.hypot(ev.clientX - downX, ev.clientY - downY);
+        if (moved > CFG.clickSlop) return;
+        if (performance.now() - downTime > CFG.clickHold) return;
+        if (cardAt(ev.clientX, ev.clientY) !== card) return;
+        if (!card.link) return;
+        if (CFG.linkNewTab) window.open(card.link, '_blank', 'noopener,noreferrer');
+        else window.location.assign(card.link);
+      });
+    });
+
+    function updateHover() {
+      // no hover while the user is throwing the room around
+      if (!hoverEnabled || dragging) { hovered = null; return; }
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObjects(meshes, false)[0];
+      hovered = hit ? hit.object.userData.card : null;
+      document.body.classList.toggle('hovering', !!(hovered && hovered.link));
+    }
+
+    /* =========================================================
+       5. LOOP
+       ========================================================= */
+    const clock = new THREE.Clock();
+    const q = new THREE.Quaternion();
+    const e = new THREE.Euler(0, 0, 0, 'XYZ');
+    const v = new THREE.Vector3();
+    const smoothstep = (a, b, x) => {
+      const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+      return t * t * (3 - 2 * t);
+    };
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const f = Math.min(dt * 60, 2); // frame-rate independent, never a giant step
+
+      // ---- apply the drag collected since the last frame
+      if (dragging) {
+        if (pendingDX || pendingDY) {
+          const k = sens();
+          const dx = pendingDX * k;
+          const dy = pendingDY * k;
+          pendingDX = pendingDY = 0;
+
+          targetY -= dx;
+          velY = -dx * 0.9;
+
+          let next = targetX - dy;
+          if (next > TOP_LIMIT)         next = TOP_LIMIT + (next - TOP_LIMIT) * RUBBER;
+          else if (next < BOTTOM_LIMIT) next = BOTTOM_LIMIT + (next - BOTTOM_LIMIT) * RUBBER;
+          velX = (next - targetX) * 0.9;
+          targetX = next;
+        } else {
+          // held still — bleed the throw off so releasing does not fling
+          velY *= Math.pow(0.8, f);
+          velX *= Math.pow(0.8, f);
+        }
+      }
+
+      if (!dragging) {
+        // momentum
+        targetY += velY * f;
+        targetX += velX * f;
+        velY *= Math.pow(CFG.friction, f);
+        velX *= Math.pow(CFG.friction, f);
+        if (Math.abs(velY) < 1e-5) velY = 0;
+        if (Math.abs(velX) < 1e-5) velX = 0;
+
+        // pull the pitch back inside its limits
+        if (targetX > TOP_LIMIT)      targetX += (TOP_LIMIT - targetX) * 0.12 * f;
+        if (targetX < BOTTOM_LIMIT)   targetX += (BOTTOM_LIMIT - targetX) * 0.12 * f;
+
+        // idle drift, ramped in so it never snaps on — and held still
+        // while the cursor is resting on a card
+        idle += dt;
+        const ramp = smoothstep(0.6, 2.2, idle)
+                   * (1 - Math.min(1, Math.abs(velY) * 200))
+                   * (1 - hoverMix);
+        targetY -= CFG.autoDrift * ramp * f * 60 * 0.0167;
+      } else {
+        idle = 0;
+      }
+
+      // follow the pointer closely while dragging, coast gently after
+      const ease = 1 - Math.pow(1 - (dragging ? CFG.dragEase : CFG.ease), f);
+      currentY += (targetY - currentY) * ease;
+      currentX += (targetX - currentX) * ease;
+
+      // parallax eases to zero on press instead of snapping there
+      const pEase = 1 - Math.pow(1 - 0.08, f);
+      parX += ((dragging ? 0 : pointerX * 0.02) - parX) * pEase;
+      parY += ((dragging ? 0 : pointerY * 0.015) - parY) * pEase;
+      const px = parX, py = parY;
+
+      galleryGroup.rotation.y = currentY + px;
+      galleryGroup.rotation.x = Math.max(BOTTOM_LIMIT - OVERSHOOT,
+                                Math.min(TOP_LIMIT + OVERSHOOT, currentX + py));
+
+      // ---- what is under the cursor right now
+      updateHover();
+      const hEase = 1 - Math.pow(1 - CFG.hoverEase, f);
+      hoverMix += ((hovered ? 1 : 0) - hoverMix) * hEase;
+
+      // ---- per-card focus falloff (bright at the centre, black at the rim)
+      e.set(galleryGroup.rotation.x, galleryGroup.rotation.y, 0, 'XYZ');
+      q.setFromEuler(e);
+
+      for (let i = 0; i < cards.length; i++) {
+        const c = cards[i];
+        v.copy(c.dir).applyQuaternion(q);
+        const facing = -v.z;                              // 1 = dead ahead
+        const k = smoothstep(CFG.focusInner, CFG.focusOuter, facing);
+        let b = 0.05 + 0.95 * Math.pow(k, 1.12);
+
+        // ease this card's own hover state
+        const want = (c === hovered) ? 1 : 0;
+        if (c.hover !== want) {
+          c.hover += (want - c.hover) * hEase;
+          if (Math.abs(want - c.hover) < 0.001) c.hover = want;
+        }
+        const hv = c.hover;
+
+        // everything that is not the hovered card steps back
+        b *= 1 - CFG.hoverDim * hoverMix * (1 - hv);
+        // the hovered card lights up
+        b *= 1 + CFG.hoverBoost * hv;
+
+        c.mat.color.setScalar(b);
+        c.glowMat.opacity = Math.pow(k, 2.4) * CFG.glow * (1 + CFG.hoverGlow * hv);
+
+        // press feedback — the card dips slightly while held
+        const wantPress = c === pressedCard ? 1 : 0;
+        if (c.press !== wantPress) {
+          c.press += (wantPress - c.press) * (1 - Math.pow(1 - 0.3, f));
+          if (Math.abs(wantPress - c.press) < 0.001) c.press = wantPress;
+        }
+
+        if (hv > 0 || c.press > 0) {
+          // grow, and step toward the viewer along its own radius
+          const s = (1 + CFG.hoverScale * hv) * (1 - CFG.pressScale * c.press);
+          c.mesh.scale.set(s, s, 1);
+          c.mesh.position.copy(c.basePos).multiplyScalar(1 - CFG.hoverLift * hv);
+          c.glow.position.copy(c.mesh.position).multiplyScalar(1.012);
+          c.glow.scale.set(c.glowScale[0] * s, c.glowScale[1] * s, 1);
+        } else if (c.mesh.scale.x !== 1) {
+          c.mesh.scale.set(1, 1, 1);
+          c.mesh.position.copy(c.basePos);
+          c.glow.position.copy(c.basePos).multiplyScalar(1.012);
+          c.glow.scale.set(c.glowScale[0], c.glowScale[1], 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    /* =========================================================
+       6. RESIZE
+       ========================================================= */
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  })();
+  </script>
+</body>
+</html>

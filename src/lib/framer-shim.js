@@ -51,5 +51,14 @@ export const RenderTarget = Object.freeze({
   hasRestrictions: () => false,
 });
 
+/**
+ * Framer's hook form of the same switch, used by components that need to know
+ * whether they are being rendered to a still image. This site always renders
+ * live, so it is always false.
+ */
+export function useIsStaticRenderer() {
+  return false;
+}
+
 export const Frame = null;
 export const Scroll = null;

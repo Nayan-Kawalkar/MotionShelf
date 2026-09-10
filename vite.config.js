@@ -10,6 +10,12 @@ export default defineConfig({
       // Showcased components are Framer code components and import from
       // "framer". See src/lib/framer-shim.js.
       framer: fileURLToPath(new URL("./src/lib/framer-shim.js", import.meta.url)),
+
+      // Framer resolves bare URL imports itself; Vite does not. The Spherical
+      // Gallery pulls three from esm.sh so the file stays paste-ready, so map
+      // that exact URL onto the local package — same trick as "framer" above,
+      // and the exported source keeps its URL import untouched.
+      "https://esm.sh/three@0.160.1": "three",
     },
   },
 })

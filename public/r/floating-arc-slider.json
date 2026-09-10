@@ -1,0 +1,223 @@
+{
+  "id": "floating-arc-slider",
+  "name": "Floating Arc Card Slider",
+  "description": "Two infinite card rows riding an inverted parabola, with drag momentum, hover drift and a cursor-tracking spotlight border.",
+  "category": "Interactive Elements",
+  "tags": [
+    "slider",
+    "marquee",
+    "drag",
+    "cards",
+    "arc"
+  ],
+  "pro": false,
+  "dependencies": [],
+  "controls": [
+    {
+      "key": "bgInner",
+      "label": "BG Center",
+      "type": "color",
+      "default": "#0c2b27"
+    },
+    {
+      "key": "bgOuter",
+      "label": "BG Edge",
+      "type": "color",
+      "default": "#041413"
+    },
+    {
+      "key": "cardBg",
+      "label": "Card",
+      "type": "color",
+      "default": "#09201e"
+    },
+    {
+      "key": "accent",
+      "label": "Accent",
+      "type": "color",
+      "default": "#2bdca3"
+    },
+    {
+      "key": "textMain",
+      "label": "Text",
+      "type": "color",
+      "default": "#e3f2ef"
+    },
+    {
+      "key": "cardWidth",
+      "label": "Card Width",
+      "type": "range",
+      "min": 60,
+      "max": 400,
+      "step": 1,
+      "unit": "px",
+      "default": 135
+    },
+    {
+      "key": "cardHeight",
+      "label": "Card Height",
+      "type": "range",
+      "min": 80,
+      "max": 500,
+      "step": 1,
+      "unit": "px",
+      "default": 185
+    },
+    {
+      "key": "cardGap",
+      "label": "Gap",
+      "type": "range",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "key": "cardRadius",
+      "label": "Radius",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "key": "row1Depth",
+      "label": "Arc Depth",
+      "type": "range",
+      "min": -0.5,
+      "max": 0.5,
+      "step": 0.01,
+      "default": 0.12
+    },
+    {
+      "key": "autoScroll",
+      "label": "Auto Scroll",
+      "type": "range",
+      "min": -8,
+      "max": 8,
+      "step": 0.1,
+      "default": 0
+    },
+    {
+      "key": "hoverSpeed",
+      "label": "Hover Drift",
+      "type": "range",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.12
+    },
+    {
+      "key": "floatAmount",
+      "label": "Float",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "step": 0.5,
+      "unit": "px",
+      "default": 4.5
+    },
+    {
+      "key": "opacityFalloff",
+      "label": "Fade Edges",
+      "type": "range",
+      "min": 0,
+      "max": 2,
+      "step": 0.01,
+      "default": 0.75
+    },
+    {
+      "key": "rotateZAmount",
+      "label": "Tilt Z",
+      "type": "range",
+      "min": -45,
+      "max": 45,
+      "step": 0.5,
+      "unit": "°",
+      "default": 8
+    },
+    {
+      "key": "grayscale",
+      "label": "Grayscale",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "glowEnabled",
+      "label": "Cursor Glow",
+      "type": "toggle",
+      "on": "On",
+      "off": "Off",
+      "default": true
+    },
+    {
+      "key": "glowRadius",
+      "label": "Glow Size",
+      "type": "range",
+      "min": 20,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "dependent": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "v1",
+      "name": "Variant 1",
+      "values": {}
+    },
+    {
+      "id": "v2",
+      "name": "Mono",
+      "values": {
+        "bgInner": "#161616",
+        "bgOuter": "#0a0a0a",
+        "cardBg": "#161616",
+        "accent": "#ffffff",
+        "textMain": "#f5f5f5",
+        "cardRadius": 2
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Amber Drift",
+      "values": {
+        "bgInner": "#241708",
+        "bgOuter": "#140d06",
+        "cardBg": "#241708",
+        "accent": "#f5a524",
+        "textMain": "#fdf3e3",
+        "autoScroll": 1.4,
+        "grayscale": false
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Flat",
+      "values": {
+        "row1Depth": 0,
+        "floatAmount": 0,
+        "rotateZAmount": 0,
+        "glowEnabled": false,
+        "opacityFalloff": 0.3
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "FloatingArcCardSlider.tsx",
+      "target": "component",
+      "content": "import {\r\n    useCallback,\r\n    useEffect,\r\n    useMemo,\r\n    useRef,\r\n    type CSSProperties,\r\n    type MouseEvent as ReactMouseEvent,\r\n    type PointerEvent as ReactPointerEvent,\r\n} from \"react\"\r\n\r\n/**\r\n * FLOATING ARC CARD SLIDER\r\n *\r\n * A 1:1 port of the \"/nk — Floating Arc Card Slider\" HTML prototype.\r\n * Two infinite rows of cards ride an inverted parabola across the frame,\r\n * drifting on hover, dragging on pointer-down, scrubbing on wheel, with a\r\n * cursor-tracking spotlight border on every card.\r\n *\r\n * @framerIntrinsicWidth 1200\r\n * @framerIntrinsicHeight 620\r\n * @framerSupportedLayoutWidth any\r\n * @framerSupportedLayoutHeight any\r\n */\r\n\r\n/* ------------------------------------------------------------------ */\r\n/* Types                                                               */\r\n/* ------------------------------------------------------------------ */\r\n\r\ninterface CardData {\r\n    /** Image only — no title, no author, image edge to edge. */\r\n    imageOnly?: boolean\r\n    /** Where the image sits when the card has text. (\"full\" is the old\r\n     *  spelling of imageOnly and still works.) */\r\n    type: \"image\" | \"text\" | \"full\"\r\n    title: string\r\n    name: string\r\n    role: string\r\n    image: string\r\n    avatar?: string\r\n    /** Optional destination. Set one and the card becomes clickable. */\r\n    link?: string\r\n}\r\n\r\ninterface Props {\r\n    // content\r\n    cards: CardData[]\r\n    rowOffset: number\r\n    repeatCount: number\r\n    linkTarget: \"_self\" | \"_blank\"\r\n\r\n    // card\r\n    cardWidth: number\r\n    cardHeight: number\r\n    cardGap: number\r\n    cardRadius: number\r\n    cardPadding: number\r\n    scaleTypography: boolean\r\n    grayscale: boolean\r\n    serifFont: string\r\n    sansFont: string\r\n    loadGoogleFonts: boolean\r\n\r\n    // rows\r\n    row1Top: number\r\n    row1Depth: number\r\n    row2Top: number\r\n    row2Depth: number\r\n    row2Speed: number\r\n\r\n    // motion\r\n    easing: number\r\n    dragEasing: number\r\n    momentum: number\r\n    wheelSpeed: number\r\n    dragSpeed: number\r\n    hoverSpeed: number\r\n    touchSpeed: number\r\n    speedBoost: boolean\r\n    autoScroll: number\r\n    floatAmount: number\r\n    floatSpeed: number\r\n    lockPageScroll: boolean\r\n\r\n    // depth falloff\r\n    opacityFalloff: number\r\n    scaleFalloff: number\r\n    rotateZAmount: number\r\n    rotateYAmount: number\r\n    perspective: number\r\n\r\n    // colors\r\n    showBackground: boolean\r\n    bgInner: string\r\n    bgOuter: string\r\n    cardBg: string\r\n    cardBorder: string\r\n    accent: string\r\n    textMain: string\r\n    textMuted: string\r\n\r\n    // glow\r\n    glowEnabled: boolean\r\n    glowRadius: number\r\n    glowThickness: number\r\n    glowFill: number\r\n\r\n    style?: CSSProperties\r\n}\r\n\r\n/* ------------------------------------------------------------------ */\r\n/* Helpers                                                             */\r\n/* ------------------------------------------------------------------ */\r\n\r\n/** Parses hex / rgb() / rgba() into [r, g, b, a]. Returns null for anything\r\n *  else (design tokens, hsl, named colours) so callers can fall back. */\r\nfunction toRgb(color: string): [number, number, number, number] | null {\r\n    if (!color) return null\r\n    const c = color.trim()\r\n\r\n    if (c[0] === \"#\") {\r\n        let hex = c.slice(1)\r\n        if (hex.length === 3 || hex.length === 4) {\r\n            hex = hex\r\n                .split(\"\")\r\n                .map((ch) => ch + ch)\r\n                .join(\"\")\r\n        }\r\n        const r = parseInt(hex.slice(0, 2), 16)\r\n        const g = parseInt(hex.slice(2, 4), 16)\r\n        const b = parseInt(hex.slice(4, 6), 16)\r\n        const a = hex.length >= 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1\r\n        if (![r, g, b].some((n) => Number.isNaN(n))) return [r, g, b, a]\r\n        return null\r\n    }\r\n\r\n    const m = c.match(/rgba?\\(([^)]+)\\)/i)\r\n    if (m) {\r\n        const p = m[1].split(/[,\\s/]+/).filter(Boolean).map(parseFloat)\r\n        if (p.length >= 3)\r\n            return [p[0], p[1], p[2], p[3] !== undefined ? p[3] : 1]\r\n    }\r\n\r\n    return null\r\n}\r\n\r\n/** `color` at `alpha` opacity. Falls back to color-mix for exotic values. */\r\nfunction withAlpha(color: string, alpha: number): string {\r\n    const rgb = toRgb(color)\r\n    if (!rgb) {\r\n        return `color-mix(in srgb, ${color} ${Math.round(\r\n            alpha * 100\r\n        )}%, transparent)`\r\n    }\r\n    const [r, g, b, a] = rgb\r\n    return `rgba(${r}, ${g}, ${b}, ${a * alpha})`\r\n}\r\n\r\n/** `color` multiplied toward black — used for the outer background stop. */\r\nfunction shade(color: string, factor: number): string {\r\n    const rgb = toRgb(color)\r\n    if (!rgb) return color\r\n    const [r, g, b, a] = rgb\r\n    const f = (n: number) => Math.max(0, Math.min(255, Math.round(n * factor)))\r\n    return `rgba(${f(r)}, ${f(g)}, ${f(b)}, ${a})`\r\n}\r\n\r\nconst FONT_HREF =\r\n    \"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap\"\r\n\r\nconst STYLE_ID = \"fa-arc-slider-styles\"\r\n\r\nconst BASE_CSS = `\r\n.fa-arc-card, .fa-arc-card * { box-sizing: border-box; }\r\na.fa-arc-card {\r\n  text-decoration: none;\r\n  color: inherit;\r\n  -webkit-user-drag: none;\r\n  -webkit-tap-highlight-color: transparent;\r\n}\r\n.fa-arc-card {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  z-index: 2;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  overflow: hidden;\r\n  will-change: transform, opacity;\r\n  transform-style: preserve-3d;\r\n  backface-visibility: hidden;\r\n  contain: layout paint style;\r\n  transition: box-shadow 0.3s ease;\r\n  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);\r\n}\r\n/* The two spotlight layers are expensive to composite, so they only exist\r\n   while a card is actually being hovered. */\r\n.fa-arc-card.fa-glow::before {\r\n  content: '';\r\n  position: absolute;\r\n  inset: 0;\r\n  border-radius: inherit;\r\n  padding: var(--fa-glow-thickness, 1.5px);\r\n  background: radial-gradient(\r\n    var(--fa-glow-radius, 100px) circle at var(--fa-mx, -200px) var(--fa-my, -200px),\r\n    var(--fa-glow-a) 0%,\r\n    var(--fa-glow-b) 45%,\r\n    transparent 80%\r\n  );\r\n  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);\r\n  -webkit-mask-composite: xor;\r\n  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);\r\n  mask-composite: exclude;\r\n  pointer-events: none;\r\n  opacity: var(--fa-glow-opacity, 0);\r\n  transition: opacity 0.25s ease;\r\n  z-index: 5;\r\n}\r\n.fa-arc-card.fa-glow::after {\r\n  content: '';\r\n  position: absolute;\r\n  inset: 0;\r\n  border-radius: inherit;\r\n  background: radial-gradient(\r\n    calc(var(--fa-glow-radius, 100px) * 1.2) circle at var(--fa-mx, -200px) var(--fa-my, -200px),\r\n    var(--fa-glow-c) 0%,\r\n    var(--fa-glow-d) 50%,\r\n    transparent 80%\r\n  );\r\n  pointer-events: none;\r\n  opacity: var(--fa-glow-opacity, 0);\r\n  transition: opacity 0.25s ease;\r\n  z-index: 1;\r\n}\r\n.fa-arc-card:hover { box-shadow: 0 20px 45px var(--fa-hover-shadow); }\r\n.fa-arc-card[data-off=\"1\"] { display: none; }\r\n.fa-arc-media {\r\n  position: relative;\r\n  z-index: 2;\r\n  width: 100%;\r\n  flex-shrink: 0;\r\n  background-size: cover;\r\n  background-position: center;\r\n  filter: var(--fa-media-filter, none);\r\n  transition: filter 0.3s ease;\r\n}\r\n.fa-arc-card:hover .fa-arc-media { filter: none; }\r\n.fa-arc-avatar {\r\n  border-radius: 50%;\r\n  background-size: cover;\r\n  background-position: center;\r\n  flex-shrink: 0;\r\n  filter: var(--fa-avatar-filter, none);\r\n}\r\n`\r\n\r\n/* ------------------------------------------------------------------ */\r\n/* Component                                                           */\r\n/* ------------------------------------------------------------------ */\r\n\r\nexport default function FloatingArcCardSlider(userProps: Partial<Props>) {\r\n    const props = useMemo(() => {\r\n        const merged: any = { ...DEFAULTS }\r\n        for (const k in userProps) {\r\n            const v = (userProps as any)[k]\r\n            if (v !== undefined) merged[k] = v\r\n        }\r\n        return merged as Props\r\n    }, [userProps])\r\n\r\n    const {\r\n        cards,\r\n        rowOffset,\r\n        repeatCount,\r\n        linkTarget,\r\n        cardWidth,\r\n        cardHeight,\r\n        cardGap,\r\n        cardRadius,\r\n        cardPadding,\r\n        scaleTypography,\r\n        grayscale,\r\n        serifFont,\r\n        sansFont,\r\n        loadGoogleFonts,\r\n        row1Top,\r\n        row1Depth,\r\n        row2Top,\r\n        row2Depth,\r\n        row2Speed,\r\n        easing,\r\n        dragEasing,\r\n        momentum,\r\n        wheelSpeed,\r\n        dragSpeed,\r\n        hoverSpeed,\r\n        touchSpeed,\r\n        speedBoost,\r\n        autoScroll,\r\n        floatAmount,\r\n        floatSpeed,\r\n        lockPageScroll,\r\n        opacityFalloff,\r\n        scaleFalloff,\r\n        rotateZAmount,\r\n        rotateYAmount,\r\n        perspective,\r\n        showBackground,\r\n        bgInner,\r\n        bgOuter,\r\n        cardBg,\r\n        cardBorder,\r\n        accent,\r\n        textMain,\r\n        textMuted,\r\n        glowEnabled,\r\n        glowRadius,\r\n        glowThickness,\r\n        glowFill,\r\n        style,\r\n    } = props\r\n\r\n    const containerRef = useRef<HTMLDivElement>(null)\r\n    const row1Refs = useRef<(HTMLDivElement | null)[]>([])\r\n    const row2Refs = useRef<(HTMLDivElement | null)[]>([])\r\n\r\n    const scroll = useRef(0)\r\n    const target = useRef(0)\r\n    const size = useRef({ w: 1200, h: 620 })\r\n    const dragging = useRef(false)\r\n    const lastX = useRef<number | null>(null)\r\n    const lastT = useRef(0)\r\n    const vel = useRef(0)\r\n    const moved = useRef(0)\r\n    const captured = useRef(false)\r\n    const pointerId = useRef(0)\r\n    const dirty = useRef(true)\r\n    const onScreen = useRef(true)\r\n\r\n    const list = cards && cards.length ? cards : []\r\n    const slots = useMemo(\r\n        () => Array.from({ length: Math.max(1, Math.round(repeatCount)) }),\r\n        [repeatCount]\r\n    )\r\n\r\n    const itemSpacing = cardWidth + cardGap\r\n    const trackWidth = slots.length * itemSpacing\r\n\r\n    // Drop refs for cards that no longer exist.\r\n    row1Refs.current.length = slots.length\r\n    row2Refs.current.length = slots.length\r\n\r\n    // Live config for the animation loop. Written every render, read inside\r\n    // rAF — so prop tweaks apply instantly without restarting the loop.\r\n    const cfg = useRef<any>({})\r\n    cfg.current = {\r\n        cardWidth,\r\n        itemSpacing,\r\n        trackWidth,\r\n        easing,\r\n        dragEasing,\r\n        momentum,\r\n        autoScroll,\r\n        floatAmount,\r\n        floatSpeed,\r\n        row1Top,\r\n        row1Depth,\r\n        row2Top,\r\n        row2Depth,\r\n        row2Speed,\r\n        opacityFalloff,\r\n        scaleFalloff,\r\n        rotateZAmount,\r\n        rotateYAmount,\r\n    }\r\n    dirty.current = true\r\n\r\n    /* ---------------- stylesheet + webfonts ---------------- */\r\n    useEffect(() => {\r\n        if (typeof document === \"undefined\") return\r\n        if (!document.getElementById(STYLE_ID)) {\r\n            const el = document.createElement(\"style\")\r\n            el.id = STYLE_ID\r\n            el.textContent = BASE_CSS\r\n            document.head.appendChild(el)\r\n        }\r\n    }, [])\r\n\r\n    useEffect(() => {\r\n        if (!loadGoogleFonts || typeof document === \"undefined\") return\r\n        if (document.querySelector(`link[href=\"${FONT_HREF}\"]`)) return\r\n        const link = document.createElement(\"link\")\r\n        link.rel = \"stylesheet\"\r\n        link.href = FONT_HREF\r\n        document.head.appendChild(link)\r\n    }, [loadGoogleFonts])\r\n\r\n    /* ---------------- measure ---------------- */\r\n    useEffect(() => {\r\n        const node = containerRef.current\r\n        if (!node || typeof ResizeObserver === \"undefined\") return\r\n        const measure = () => {\r\n            const r = node.getBoundingClientRect()\r\n            size.current = { w: r.width || 1, h: r.height || 1 }\r\n            dirty.current = true\r\n        }\r\n        measure()\r\n        const ro = new ResizeObserver(measure)\r\n        ro.observe(node)\r\n\r\n        // Stop animating while the section is off-screen.\r\n        let io: IntersectionObserver | null = null\r\n        if (typeof IntersectionObserver !== \"undefined\") {\r\n            io = new IntersectionObserver(\r\n                ([e]) => {\r\n                    onScreen.current = e.isIntersecting\r\n                    dirty.current = true\r\n                },\r\n                { rootMargin: \"120px\" }\r\n            )\r\n            io.observe(node)\r\n        }\r\n\r\n        return () => {\r\n            ro.disconnect()\r\n            io?.disconnect()\r\n        }\r\n    }, [])\r\n\r\n    /* ---------------- wheel ---------------- */\r\n    useEffect(() => {\r\n        const node = containerRef.current\r\n        if (!node) return\r\n        const onWheel = (e: WheelEvent) => {\r\n            if (lockPageScroll) e.preventDefault()\r\n            target.current += e.deltaY * wheelSpeed\r\n        }\r\n        node.addEventListener(\"wheel\", onWheel, { passive: !lockPageScroll })\r\n        return () => node.removeEventListener(\"wheel\", onWheel)\r\n    }, [wheelSpeed, lockPageScroll])\r\n\r\n    /* ---------------- render loop ----------------\r\n     * Reads everything through `cfg`, so changing a property control never\r\n     * tears down and restarts the loop mid-scroll. */\r\n    useEffect(() => {\r\n        let raf = 0\r\n        let prev = 0\r\n\r\n        const opCache: number[][] = [[], []]\r\n        const offCache: number[][] = [[], []]\r\n\r\n        const round = (n: number) => Math.round(n * 100) / 100\r\n\r\n        const placeRow = (\r\n            row: 0 | 1,\r\n            refs: (HTMLDivElement | null)[],\r\n            scrollValue: number,\r\n            phaseOffset: number,\r\n            topY: number,\r\n            depth: number,\r\n            jiggleOffset: number,\r\n            time: number,\r\n            W: number\r\n        ) => {\r\n            const c = cfg.current\r\n            const { cardWidth: cw, itemSpacing: gap, trackWidth: track } = c\r\n            const half = W / 2\r\n            const margin = cw * 1.4\r\n            const ops = opCache[row]\r\n            const offs = offCache[row]\r\n\r\n            for (let i = 0; i < refs.length; i++) {\r\n                const el = refs[i]\r\n                if (!el) continue\r\n\r\n                let rawX = (i * gap - scrollValue + phaseOffset) % track\r\n                if (rawX < -cw) rawX += track\r\n                if (rawX > track - cw) rawX -= track\r\n\r\n                const x = rawX - cw / 2\r\n\r\n                // Cull: the track is several screens wide, so most cards sit\r\n                // far off to the side. Hidden cards cost nothing to composite.\r\n                const visible = x > -margin && x < W + margin\r\n                const offFlag = visible ? 0 : 1\r\n                if (offs[i] !== offFlag) {\r\n                    offs[i] = offFlag\r\n                    el.setAttribute(\"data-off\", offFlag ? \"1\" : \"0\")\r\n                }\r\n                if (!visible) continue\r\n\r\n                const normX = (x + cw / 2 - half) / half\r\n                const curve = 1 - normX * normX\r\n                const y =\r\n                    topY +\r\n                    curve * depth +\r\n                    Math.sin(time * c.floatSpeed + (i + jiggleOffset) * 0.7) *\r\n                        c.floatAmount\r\n\r\n                const absN = normX < 0 ? -normX : normX\r\n                const t = 1 - (absN * c.opacityFalloff > 1 ? 1 : absN * c.opacityFalloff)\r\n                const opacity = Math.max(0.05, t * t)\r\n                const scale = 1 - absN * c.scaleFalloff\r\n                const rotateZ = normX * -c.rotateZAmount\r\n                const rotateY = normX * -c.rotateYAmount\r\n\r\n                el.style.transform = `translate3d(${round(x)}px, ${round(\r\n                    y\r\n                )}px, 0px) scale(${round(scale * 1000) / 1000}) rotateZ(${round(\r\n                    rotateZ\r\n                )}deg) rotateY(${round(rotateY)}deg)`\r\n\r\n                // opacity is stable while idle — only write it when it moves\r\n                const op = Math.round(opacity * 1000) / 1000\r\n                if (ops[i] !== op) {\r\n                    ops[i] = op\r\n                    el.style.opacity = op as unknown as string\r\n                }\r\n            }\r\n        }\r\n\r\n        const render = (time: number) => {\r\n            raf = requestAnimationFrame(render)\r\n\r\n            if (!onScreen.current) {\r\n                prev = 0\r\n                return\r\n            }\r\n\r\n            const c = cfg.current\r\n            if (!prev) prev = time\r\n            let dt = time - prev\r\n            prev = time\r\n            if (!(dt > 0)) dt = 16.667\r\n            // frame factor, clamped so a dropped frame can't fling the track\r\n            const f = Math.min(3, dt / 16.6667)\r\n\r\n            if (c.autoScroll) target.current += c.autoScroll * f\r\n\r\n            // flick momentum: keep gliding after the pointer lets go\r\n            if (!dragging.current && (vel.current > 0.02 || vel.current < -0.02)) {\r\n                target.current += vel.current * f\r\n                vel.current *= Math.pow(c.momentum, f)\r\n            }\r\n\r\n            const gap = target.current - scroll.current\r\n            const idle = gap < 0.02 && gap > -0.02\r\n\r\n            if (idle) {\r\n                scroll.current = target.current\r\n            } else {\r\n                // frame-rate independent easing: identical feel at 60 and 120Hz\r\n                const e = dragging.current ? c.dragEasing : c.easing\r\n                scroll.current += gap * (1 - Math.pow(1 - Math.min(0.999, e), f))\r\n            }\r\n\r\n            // nothing to draw: parked, no float, no resize since last frame\r\n            if (idle && !c.floatAmount && !dirty.current) return\r\n            dirty.current = false\r\n\r\n            const { w: W, h: H } = size.current\r\n            const r1TopY = H * c.row1Top\r\n            const r1Depth = H * c.row1Depth\r\n\r\n            placeRow(0, row1Refs.current, scroll.current, 0, r1TopY, r1Depth, 0, time, W)\r\n            placeRow(\r\n                1,\r\n                row2Refs.current,\r\n                scroll.current * c.row2Speed,\r\n                c.itemSpacing / 2,\r\n                H * c.row2Top,\r\n                H * c.row2Depth,\r\n                5,\r\n                time,\r\n                W\r\n            )\r\n        }\r\n\r\n        raf = requestAnimationFrame(render)\r\n        return () => cancelAnimationFrame(raf)\r\n    }, [])\r\n\r\n    /* ---------------- pointer drag + hover drift ---------------- */\r\n    const boostFactor = useCallback(\r\n        (delta: number, dt: number) => {\r\n            if (!speedBoost) return 1\r\n            const speed = Math.abs(delta) / dt\r\n            return 1 + Math.min(Math.pow(speed, 1.2) * 1.2, 3.5)\r\n        },\r\n        [speedBoost]\r\n    )\r\n\r\n    const onPointerDown = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {\r\n        const t = e.target as HTMLElement\r\n        if (t.closest(\"[data-nodrag]\")) return\r\n        dragging.current = true\r\n        moved.current = 0\r\n        vel.current = 0\r\n        lastX.current = e.clientX\r\n        lastT.current = performance.now()\r\n        pointerId.current = e.pointerId\r\n        captured.current = false\r\n        e.currentTarget.style.cursor = \"grabbing\"\r\n    }, [])\r\n\r\n    /** Pointer capture is taken only once the gesture is really a drag.\r\n     *  Capturing on pointerdown would retarget the click and break card links. */\r\n    const captureIfDragging = useCallback((el: HTMLElement) => {\r\n        if (captured.current || moved.current <= 6) return\r\n        try {\r\n            el.setPointerCapture(pointerId.current)\r\n            captured.current = true\r\n        } catch (err) {}\r\n    }, [])\r\n\r\n    /** One pointer sample -> scroll delta. Called once per coalesced sample so\r\n     *  a 120Hz trackpad or stylus feeds every point into the motion. */\r\n    const applySample = useCallback(\r\n        (clientX: number, now: number, touch: boolean) => {\r\n            if (lastX.current === null) {\r\n                lastX.current = clientX\r\n                lastT.current = now\r\n                return\r\n            }\r\n            const dt = Math.max(1, now - lastT.current)\r\n            const raw = lastX.current - clientX\r\n            lastX.current = clientX\r\n            lastT.current = now\r\n            if (!raw) return\r\n\r\n            const boost = boostFactor(raw, dt)\r\n\r\n            if (dragging.current) {\r\n                moved.current += raw < 0 ? -raw : raw\r\n                const delta = raw * (touch ? touchSpeed : dragSpeed) * boost\r\n                target.current += delta\r\n                // exponential average -> a stable flick velocity, in px/frame\r\n                const perFrame = (delta / dt) * 16.6667\r\n                vel.current = vel.current * 0.7 + perFrame * 0.3\r\n            } else if (hoverSpeed) {\r\n                target.current += -raw * hoverSpeed * boost\r\n            }\r\n        },\r\n        [dragSpeed, hoverSpeed, touchSpeed, boostFactor]\r\n    )\r\n\r\n    const onPointerMove = useCallback(\r\n        (e: ReactPointerEvent<HTMLDivElement>) => {\r\n            const touch = e.pointerType === \"touch\"\r\n            const native: any = e.nativeEvent\r\n            const coalesced =\r\n                dragging.current && typeof native.getCoalescedEvents === \"function\"\r\n                    ? native.getCoalescedEvents()\r\n                    : null\r\n\r\n            if (coalesced && coalesced.length > 1) {\r\n                for (let i = 0; i < coalesced.length; i++) {\r\n                    const s = coalesced[i]\r\n                    applySample(s.clientX, s.timeStamp || performance.now(), touch)\r\n                }\r\n            } else {\r\n                applySample(e.clientX, performance.now(), touch)\r\n            }\r\n\r\n            if (dragging.current) captureIfDragging(e.currentTarget)\r\n        },\r\n        [applySample, captureIfDragging]\r\n    )\r\n\r\n    const endDrag = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {\r\n        if (!dragging.current) return\r\n        dragging.current = false\r\n        // stale grip (finger held still before release) shouldn't fling\r\n        if (performance.now() - lastT.current > 120) vel.current = 0\r\n        e.currentTarget.style.cursor = \"grab\"\r\n        if (captured.current) {\r\n            captured.current = false\r\n            try {\r\n                ;(e.currentTarget as HTMLElement).releasePointerCapture(\r\n                    e.pointerId\r\n                )\r\n            } catch (err) {}\r\n        }\r\n    }, [])\r\n\r\n    const onPointerLeave = useCallback(() => {\r\n        dragging.current = false\r\n        lastX.current = null\r\n    }, [])\r\n\r\n    /** Swallow the click that ends a drag, so flicking the track never\r\n     *  navigates. A real click (under ~6px of travel) goes through. */\r\n    const onCardClick = useCallback((e: ReactMouseEvent<HTMLElement>) => {\r\n        if (moved.current > 6) {\r\n            e.preventDefault()\r\n            e.stopPropagation()\r\n        }\r\n    }, [])\r\n\r\n    /* ---------------- card glow ----------------\r\n     * The spotlight layers are attached on enter and detached ~after the fade\r\n     * out, so only the hovered card ever carries them. */\r\n    const glowTimers = useRef(new WeakMap<HTMLElement, number>())\r\n\r\n    const onCardMove = useCallback(\r\n        (e: ReactMouseEvent<HTMLElement>) => {\r\n            if (!glowEnabled) return\r\n            const el = e.currentTarget\r\n            const timer = glowTimers.current.get(el)\r\n            if (timer) {\r\n                clearTimeout(timer)\r\n                glowTimers.current.delete(el)\r\n            }\r\n            const rect = el.getBoundingClientRect()\r\n            el.style.setProperty(\"--fa-mx\", `${e.clientX - rect.left}px`)\r\n            el.style.setProperty(\"--fa-my\", `${e.clientY - rect.top}px`)\r\n            if (!el.classList.contains(\"fa-glow\")) {\r\n                el.classList.add(\"fa-glow\")\r\n                // next frame, so the opacity transition has a 0 to start from\r\n                requestAnimationFrame(() =>\r\n                    el.style.setProperty(\"--fa-glow-opacity\", \"1\")\r\n                )\r\n            }\r\n        },\r\n        [glowEnabled]\r\n    )\r\n\r\n    const onCardLeave = useCallback((e: ReactMouseEvent<HTMLElement>) => {\r\n        const el = e.currentTarget\r\n        el.style.setProperty(\"--fa-glow-opacity\", \"0\")\r\n        const timer = window.setTimeout(() => {\r\n            el.classList.remove(\"fa-glow\")\r\n            glowTimers.current.delete(el)\r\n        }, 300)\r\n        glowTimers.current.set(el, timer)\r\n    }, [])\r\n\r\n    /* ---------------- derived styling ---------------- */\r\n    const ts = scaleTypography ? cardWidth / 135 : 1\r\n    const hs = scaleTypography ? cardHeight / 185 : 1\r\n\r\n    const cardStyle: CSSProperties = {\r\n        width: cardWidth,\r\n        height: cardHeight,\r\n        background: cardBg,\r\n        border: `1px solid ${cardBorder}`,\r\n        borderRadius: cardRadius,\r\n        padding: cardPadding,\r\n    }\r\n\r\n    const titleStyle: CSSProperties = {\r\n        position: \"relative\",\r\n        zIndex: 2,\r\n        fontFamily: `${serifFont}, Georgia, serif`,\r\n        fontSize: 11.5 * ts,\r\n        lineHeight: 1.25,\r\n        color: textMain,\r\n        fontWeight: 400,\r\n        letterSpacing: -0.1 * ts,\r\n    }\r\n\r\n    const footerStyle: CSSProperties = {\r\n        position: \"relative\",\r\n        zIndex: 2,\r\n        display: \"flex\",\r\n        alignItems: \"center\",\r\n        gap: 6 * ts,\r\n        marginTop: \"auto\",\r\n    }\r\n\r\n    const nameStyle: CSSProperties = {\r\n        fontSize: 9 * ts,\r\n        fontWeight: 500,\r\n        color: textMain,\r\n        lineHeight: 1.1,\r\n    }\r\n\r\n    const roleStyle: CSSProperties = {\r\n        fontSize: 7.5 * ts,\r\n        color: textMuted,\r\n        textTransform: \"uppercase\",\r\n        letterSpacing: 0.4 * ts,\r\n        marginTop: 1,\r\n    }\r\n\r\n    const renderCard = (row: 0 | 1, i: number) => {\r\n        const data =\r\n            list.length === 0\r\n                ? null\r\n                : list[\r\n                      (row === 0 ? i : i + Math.round(rowOffset)) % list.length\r\n                  ]\r\n\r\n        const img = data?.image ?? \"\"\r\n        const avatar = data?.avatar || img\r\n        const isFull = data?.imageOnly === true || data?.type === \"full\"\r\n        const isImageFirst = data?.type === \"image\"\r\n        const link = data?.link || \"\"\r\n\r\n        const media = (\r\n            <div\r\n                className=\"fa-arc-media\"\r\n                style={\r\n                    isFull\r\n                        ? {\r\n                              // full-bleed: one image, edge to edge, nothing else\r\n                              height: \"100%\",\r\n                              flex: 1,\r\n                              borderRadius: \"inherit\",\r\n                              zIndex: 0,\r\n                              backgroundImage: img ? `url(\"${img}\")` : undefined,\r\n                              backgroundColor: img\r\n                                  ? undefined\r\n                                  : withAlpha(textMuted, 0.2),\r\n                          }\r\n                        : {\r\n                              height: (isImageFirst ? 72 : 65) * hs,\r\n                              borderRadius: 6 * ts,\r\n                              backgroundImage: img ? `url(\"${img}\")` : undefined,\r\n                              backgroundColor: img\r\n                                  ? undefined\r\n                                  : withAlpha(textMuted, 0.2),\r\n                              ...(isImageFirst\r\n                                  ? { marginBottom: 6 * hs }\r\n                                  : { margin: `${6 * hs}px 0` }),\r\n                          }\r\n                }\r\n            />\r\n        )\r\n\r\n        const title = (\r\n            <div\r\n                style={{\r\n                    ...titleStyle,\r\n                    fontSize: (isImageFirst ? 11 : 11.5) * ts,\r\n                }}\r\n            >\r\n                {data?.title ?? \"\"}\r\n            </div>\r\n        )\r\n\r\n        const footer = (\r\n            <div style={footerStyle}>\r\n                <div\r\n                    className=\"fa-arc-avatar\"\r\n                    style={{\r\n                        width: 20 * ts,\r\n                        height: 20 * ts,\r\n                        backgroundImage: avatar ? `url(\"${avatar}\")` : undefined,\r\n                        backgroundColor: avatar\r\n                            ? undefined\r\n                            : withAlpha(textMuted, 0.3),\r\n                    }}\r\n                />\r\n                <div style={{ display: \"flex\", flexDirection: \"column\" }}>\r\n                    <span style={nameStyle}>{data?.name ?? \"\"}</span>\r\n                    <span style={roleStyle}>{data?.role ?? \"\"}</span>\r\n                </div>\r\n            </div>\r\n        )\r\n\r\n        // `key` is kept out of this object: React 19 warns when a key arrives\r\n        // through a spread, so it is passed explicitly at each call site.\r\n        const key = `${row}-${i}`\r\n        const shared = {\r\n            className: \"fa-arc-card\",\r\n            ref: (el: HTMLElement | null) => {\r\n                if (row === 0) row1Refs.current[i] = el as HTMLDivElement\r\n                else row2Refs.current[i] = el as HTMLDivElement\r\n            },\r\n            style: {\r\n                ...cardStyle,\r\n                ...(isFull ? { padding: 0 } : null),\r\n                ...(link ? { cursor: \"pointer\" } : null),\r\n            },\r\n            onMouseMove: onCardMove,\r\n            onMouseLeave: onCardLeave,\r\n            draggable: false,\r\n        }\r\n\r\n        const body = isFull ? (\r\n            media\r\n        ) : (\r\n            <>\r\n                {isImageFirst ? (\r\n                    <>\r\n                        {media}\r\n                        {title}\r\n                    </>\r\n                ) : (\r\n                    <>\r\n                        {title}\r\n                        {media}\r\n                    </>\r\n                )}\r\n                {footer}\r\n            </>\r\n        )\r\n\r\n        // A real anchor when a link is set, so it behaves like one (middle\r\n        // click, open in new tab, right-click copy). A drag never navigates.\r\n        return link ? (\r\n            <a\r\n                key={key}\r\n                {...shared}\r\n                href={link}\r\n                target={linkTarget}\r\n                rel={linkTarget === \"_blank\" ? \"noopener noreferrer\" : undefined}\r\n                onClick={onCardClick}\r\n            >\r\n                {body}\r\n            </a>\r\n        ) : (\r\n            <div key={key} {...shared}>{body}</div>\r\n        )\r\n    }\r\n\r\n    const rootStyle: CSSProperties = {\r\n        position: \"relative\",\r\n        width: \"100%\",\r\n        height: \"100%\",\r\n        overflow: \"hidden\",\r\n        perspective: perspective,\r\n        cursor: \"grab\",\r\n        touchAction: \"pan-y\",\r\n        userSelect: \"none\",\r\n        WebkitUserSelect: \"none\",\r\n        fontFamily: `${sansFont}, -apple-system, sans-serif`,\r\n        background: showBackground\r\n            ? `radial-gradient(circle at 50% 50%, ${bgInner} 0%, ${bgOuter} 70%, ${shade(\r\n                  bgOuter,\r\n                  0.5\r\n              )} 100%)`\r\n            : undefined,\r\n        // CSS custom properties consumed by the injected stylesheet\r\n        [\"--fa-glow-radius\" as any]: `${glowRadius}px`,\r\n        [\"--fa-glow-thickness\" as any]: `${glowThickness}px`,\r\n        [\"--fa-glow-a\" as any]: withAlpha(accent, 1),\r\n        [\"--fa-glow-b\" as any]: withAlpha(accent, 0.5),\r\n        [\"--fa-glow-c\" as any]: withAlpha(accent, 0.22 * glowFill),\r\n        [\"--fa-glow-d\" as any]: withAlpha(accent, 0.05 * glowFill),\r\n        [\"--fa-hover-shadow\" as any]: withAlpha(accent, 0.15),\r\n        [\"--fa-media-filter\" as any]: grayscale\r\n            ? \"grayscale(100%) contrast(1.05)\"\r\n            : \"none\",\r\n        [\"--fa-avatar-filter\" as any]: grayscale ? \"grayscale(100%)\" : \"none\",\r\n        ...style,\r\n    }\r\n\r\n    return (\r\n        <div\r\n            ref={containerRef}\r\n            style={rootStyle}\r\n            onPointerDown={onPointerDown}\r\n            onPointerMove={onPointerMove}\r\n            onPointerUp={endDrag}\r\n            onPointerCancel={endDrag}\r\n            onPointerLeave={onPointerLeave}\r\n        >\r\n            {slots.map((_, i) => [renderCard(0, i), renderCard(1, i)])}\r\n        </div>\r\n    )\r\n}\r\n\r\n/* ------------------------------------------------------------------ */\r\n/* Defaults                                                            */\r\n/* ------------------------------------------------------------------ */\r\n\r\nconst U = (id: string) => `https://images.unsplash.com/photo-${id}?w=300&q=80`\r\n\r\n/** True when a card shows nothing but its image. */\r\nconst imageOnlyCard = (c: Partial<CardData>) =>\r\n    c?.imageOnly === true || c?.type === \"full\"\r\n\r\nconst DEFAULT_CARDS: CardData[] = [\r\n    { type: \"text\", title: \"Liderar desde la cocina\", name: \"Mar Castagno\", role: \"FREELANCE\", image: U(\"1534528741775-53994a69daeb\") },\r\n    { type: \"text\", title: \"Hacerlo bien aunque nadie lo vea\", name: \"Marcos Llerena\", role: \"MANDARINA\", image: U(\"1507003211169-0a1dd7228f2d\") },\r\n    { type: \"image\", title: \"Tres historias sobre el...\", name: \"Fernando Vega Olmos\", role: \"ANITA & VEGA\", image: U(\"1472099645785-5658abf4ff4e\") },\r\n    { type: \"image\", title: \"La llamada que no esperaba\", name: \"Liva Grinberga\", role: \"NOT ON SALE\", image: U(\"1544005313-94ddf0286df2\") },\r\n    { type: \"text\", title: \"Inventando un nuevo lenguaje\", name: \"Wesly Haar\", role: \"MONKS\", image: U(\"1500648767791-00dcc994a43e\") },\r\n    { type: \"text\", title: \"Momento de inspiración: una historia\", name: \"Luciana Capriotti\", role: \"CONSULTANT\", image: U(\"1573496359142-b8d87734a5a2\") },\r\n    { type: \"image\", title: \"La calma también es un...\", name: \"Hernan Puente\", role: \"INDICIUS\", image: U(\"1519085360753-af0119f7cbe7\") },\r\n    { type: \"image\", title: \"Construir lo posible\", name: \"Lucas Davison\", role: \"DHNN\", image: U(\"1506794778202-cad84cf45f1d\") },\r\n    { type: \"image\", title: \"La comunidad como motor\", name: \"Alan Buscaglia\", role: \"GENTLEMAN PROGRAMMING\", image: U(\"1522075469751-3a6694fb2f61\") },\r\n    { type: \"text\", title: \"Crear, soltar, volver a empezar\", name: \"Ramón Vasquez Mansilla\", role: \"PRIMATE CLAN\", image: U(\"1501196354995-cbb51c65aaea\") },\r\n    { type: \"image\", title: \"La tecnología no alcanza\", name: \"Lucas Llorente\", role: \"ZETENTA\", image: U(\"1522071820081-009f0129c71c\") },\r\n    { type: \"text\", title: \"Contar cuentitos\", name: \"Lucia Aguilar\", role: \"TRYOLABS\", image: U(\"1534528741775-53994a69daeb\") },\r\n    { type: \"text\", title: \"La inspiración que nace desde la fricción\", name: \"Emiliano Tomas\", role: \"UNKNOWN LABS\", image: U(\"1539571696357-5a69c17a67c6\") },\r\n    // Image-only cards: no title, no author — just the picture, edge to edge.\r\n    { imageOnly: true, type: \"text\", title: \"\", name: \"\", role: \"\", image: U(\"1517841905240-472988babdf9\") },\r\n    { imageOnly: true, type: \"text\", title: \"\", name: \"\", role: \"\", image: U(\"1524504388940-b1c1722653e1\") },\r\n]\r\n\r\n/* @controls:start */\r\nconst DEFAULTS: Omit<Props, \"style\"> = {\r\n    cards: DEFAULT_CARDS,\r\n    rowOffset: 7,\r\n    repeatCount: 22,\r\n    linkTarget: \"_self\",\r\n\r\n    cardWidth: 135,\r\n    cardHeight: 185,\r\n    cardGap: 30,\r\n    cardRadius: 10,\r\n    cardPadding: 10,\r\n    scaleTypography: true,\r\n    grayscale: true,\r\n    serifFont: \"Playfair Display\",\r\n    sansFont: \"Inter\",\r\n    loadGoogleFonts: true,\r\n\r\n    row1Top: 0.08,\r\n    row1Depth: 0.12,\r\n    row2Top: 0.46,\r\n    row2Depth: 0.12,\r\n    row2Speed: 1.05,\r\n\r\n    easing: 0.1,\r\n    dragEasing: 0.24,\r\n    momentum: 0.94,\r\n    wheelSpeed: 0.85,\r\n    dragSpeed: 0.75,\r\n    hoverSpeed: 0.12,\r\n    touchSpeed: 1.2,\r\n    speedBoost: true,\r\n    autoScroll: 0,\r\n    floatAmount: 4.5,\r\n    floatSpeed: 0.0018,\r\n    lockPageScroll: false,\r\n\r\n    opacityFalloff: 0.75,\r\n    scaleFalloff: 0.1,\r\n    rotateZAmount: 8,\r\n    rotateYAmount: 6,\r\n    perspective: 1200,\r\n\r\n    showBackground: true,\r\n    bgInner: \"#0c2b27\",\r\n    bgOuter: \"#041413\",\r\n    cardBg: \"#09201e\",\r\n    cardBorder: \"rgba(255, 255, 255, 0.08)\",\r\n    accent: \"#2bdca3\",\r\n    textMain: \"#e3f2ef\",\r\n    textMuted: \"#5e837f\",\r\n\r\n    glowEnabled: true,\r\n    glowRadius: 100,\r\n    glowThickness: 1.5,\r\n    glowFill: 1,\r\n\r\n}\r\n/* @controls:end */\r\n\r\n/* ------------------------------------------------------------------ */\r\n/* Property controls                                                   */\r\n/* ------------------------------------------------------------------ */\n"
+    }
+  ],
+  "alternates": {
+    "vanilla": null
+  }
+}
