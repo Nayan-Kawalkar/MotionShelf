@@ -1,5 +1,7 @@
 import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
 import GalleryPage from "./pages/GalleryPage";
+import SectionsPage from "./pages/SectionsPage";
+import SectionPage from "./pages/SectionPage";
 import PreviewPage from "./pages/PreviewPage";
 import ComponentPage from "./pages/ComponentPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -95,6 +97,8 @@ function App() {
         <Routes>
           <Route path="/" element={<GalleryPage />} />
           <Route path="/component/:id" element={<ComponentPage />} />
+          <Route path="/sections" element={<SectionsPage />} />
+          <Route path="/section/:id" element={<SectionPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

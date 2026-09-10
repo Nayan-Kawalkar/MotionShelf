@@ -1,0 +1,341 @@
+/* ---- Section detail ------------------------------------------------------ */
+.section-page {
+  padding: 30px 26px 80px;
+}
+
+.section-page__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 30px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.section-page__back {
+  display: inline-block;
+  margin-bottom: 14px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  transition: color 140ms ease;
+}
+
+.section-page__back:hover {
+  color: var(--fg);
+}
+
+.section-page__title {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.section-page__desc {
+  max-width: 62ch;
+  margin: 12px 0 0;
+  color: var(--fg-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.section-page__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.fact {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.fact--pro {
+  border-color: var(--pro);
+  color: var(--pro);
+}
+
+/* ---- Actions ------------------------------------------------------------- */
+.section-page__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 17px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.btn:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.btn--primary {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.btn--primary:hover {
+  background: var(--fg-2);
+  border-color: var(--fg-2);
+  color: var(--bg);
+}
+
+/* ---- Stage chrome -------------------------------------------------------- */
+.stage-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0 12px;
+}
+
+.stage-bar__label,
+.stage-bar__px {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.stage-bar__px {
+  margin-left: auto;
+}
+
+.stage-bar__widths {
+  display: flex;
+  gap: 4px;
+}
+
+.stage-bar__width {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.stage-bar__width:hover {
+  color: var(--fg);
+}
+
+.stage-bar__width--on {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.section-stage {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+}
+
+.section-stage__frame {
+  width: 100%;
+  height: 70vh;
+  min-height: 460px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--bg);
+  /* A narrower width is set inline for the tablet and phone stops. */
+  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Get this section ---------------------------------------------------- */
+.get {
+  margin-top: 40px;
+}
+
+.get__tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.get__tab {
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 13px;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.get__tab:hover {
+  color: var(--fg);
+}
+
+.get__tab--on {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--elevated);
+  overflow: hidden;
+}
+
+.panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.panel__name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.panel__copy {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 12px;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.panel__copy:hover {
+  color: var(--fg);
+  border-color: var(--border-strong);
+}
+
+.panel__body {
+  margin: 0;
+  padding: 16px 14px;
+  max-height: 340px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--fg-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.panel__note {
+  margin: 0;
+  padding: 12px 14px 16px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--fg-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.panel__note code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg);
+}
+
+.panel__cta {
+  margin: 0 14px 16px;
+}
+
+/* ---- Related ------------------------------------------------------------- */
+.related {
+  margin-top: 44px;
+}
+
+.related__title {
+  margin: 0 0 14px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.related__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .related__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.related__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.related__item:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.related__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.related__cat {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 700px) {
+  .section-page {
+    padding: 22px 14px 50px;
+  }
+
+  .section-page__title {
+    font-size: 28px;
+  }
+
+  .section-stage {
+    padding: 8px;
+  }
+
+  .section-stage__frame {
+    height: 60vh;
+  }
+}
