@@ -26,19 +26,20 @@ function pagesFor(slug, names) {
 }
 
 const templates = [
+  // ---- Real templates ------------------------------------------------------
+  // Live sites with public repositories. Checked against the GitHub API: all
+  // public, all on `main`, and every site allows being framed (no
+  // X-Frame-Options, no frame-ancestors) so the previews embed.
   {
-    // A real, live template — not scaffold. Hosted-only for now: no public
-    // repository is linked from the site, so `repo` stays null (GitHub link
-    // and zip download are hidden) until the source URL is known.
     id: "luxeria",
     name: "Luxeria",
-    category: "Automotive",
-    tags: ["3d", "webgl", "automotive", "showcase", "luxury"],
+    category: "3D Showcase",
+    tags: ["3d", "webgl", "automotive", "showcase", "gltf"],
     description:
-      "A luxury car showcase built around real-time 3D models — a single-page collection of performance cars with cinematic scroll motion.",
+      "A luxury car showcase built around real-time 3D models: AI-generated vehicle concepts turned into GLTF models you can inspect directly in the browser.",
     pages: [{ name: "Home", url: "https://luxeriaa.vercel.app/" }],
-    repo: null,
-    branch: null,
+    repo: "Nayan-Kawalkar/Luxeriaa",
+    branch: "main",
     framework: "React",
     stack: ["React", "Three.js", "GSAP", "Vite"],
     addedAt: "2026-09-12",
@@ -47,6 +48,44 @@ const templates = [
     pro: false,
   },
   {
+    id: "nexbot",
+    name: "NexBot",
+    category: "3D Showcase",
+    tags: ["3d", "webgl", "robots", "showcase", "gltf"],
+    description:
+      "A gallery of futuristic robot concepts, each one a real-time 3D model you can turn and explore in the browser.",
+    pages: [{ name: "Home", url: "https://nex-bot-delta.vercel.app/" }],
+    repo: "Nayan-Kawalkar/NexBot",
+    branch: "main",
+    framework: "React",
+    stack: ["React", "Three.js", "GSAP", "Vite"],
+    addedAt: "2026-09-12",
+    views: 0,
+    likes: 0,
+    pro: false,
+  },
+  {
+    id: "axiom-sneaker",
+    name: "Axiom",
+    category: "3D Showcase",
+    tags: ["3d", "webgl", "product", "sneaker", "gltf"],
+    description:
+      "A single-product sneaker launch page centred on one interactive 3D shoe model. No build step — plain HTML, CSS and JavaScript with Three.js from a CDN.",
+    pages: [{ name: "Home", url: "https://3-d-shoe-web.vercel.app/" }],
+    repo: "Nayan-Kawalkar/3D-shoe-web",
+    branch: "main",
+    framework: "HTML",
+    stack: ["HTML", "CSS", "JS", "Three.js"],
+    addedAt: "2026-09-12",
+    views: 0,
+    likes: 0,
+    pro: false,
+  },
+
+  // ---- Scaffold templates ------------------------------------------------
+  // Stand-ins so the multi-page preview has something to show. They have no
+  // repository, so they are hosted-only: preview works, no GitHub or zip.
+  {
     id: "northwind-saas",
     name: "Northwind",
     category: "SaaS",
@@ -54,8 +93,8 @@ const templates = [
     description:
       "A dark SaaS site with a product-first hero, a feature grid, three-tier pricing and a docs-style changelog.",
     pages: pagesFor("northwind-saas", ["Home", "Pricing", "Changelog"]),
-    repo: "Nayan-Kawalkar/MotionShelf-templates",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "northwind-saas",
     framework: "Astro",
     stack: ["Astro", "CSS"],
@@ -72,8 +111,8 @@ const templates = [
     description:
       "An editorial studio portfolio: oversized project index, full-bleed case studies and a quiet contact page.",
     pages: pagesFor("folio-studio", ["Home", "Work", "Contact"]),
-    repo: "Nayan-Kawalkar/MotionShelf-templates",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "folio-studio",
     framework: "HTML",
     stack: ["HTML", "CSS", "JS"],
@@ -90,8 +129,8 @@ const templates = [
     description:
       "A services agency site with a statement hero, a numbered services list and a team page.",
     pages: pagesFor("harbor-agency", ["Home", "Services"]),
-    repo: "Nayan-Kawalkar/MotionShelf-templates",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "harbor-agency",
     framework: "Next.js",
     stack: ["Next.js", "Tailwind"],
@@ -108,8 +147,8 @@ const templates = [
     description:
       "A documentation site with a persistent sidebar, reading-width articles and an API reference layout.",
     pages: pagesFor("ledger-docs", ["Home", "Guide"]),
-    repo: "Nayan-Kawalkar/MotionShelf-templates",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "ledger-docs",
     framework: "Astro",
     stack: ["Astro", "MDX"],

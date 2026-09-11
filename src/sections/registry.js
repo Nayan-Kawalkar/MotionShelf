@@ -20,6 +20,27 @@ import { categoriesOf } from "../library/shared";
 const DEMO = "/sections-demo";
 
 const sections = [
+  // ---- Real sections -------------------------------------------------------
+  {
+    id: "moving-garden",
+    name: "Moving Garden",
+    category: "Hero",
+    tags: ["hero", "parallax", "scroll", "layers", "nature"],
+    description:
+      "A scroll-driven hero that reveals a garden scene in stacked parallax layers, each frame drifting at its own depth as you scroll.",
+    hostedUrl: "https://moving-gardern.vercel.app/",
+    repo: "Nayan-Kawalkar/Moving-Gardern",
+    branch: "main",
+    stack: ["React", "Tailwind", "Vite"],
+    addedAt: "2026-09-12",
+    views: 0,
+    likes: 0,
+    pro: false,
+  },
+
+  // ---- Scaffold sections -------------------------------------------------
+  // Stand-ins with no repository, so hosted-only: preview works, no GitHub
+  // or zip. Replace with real entries like the one above.
   {
     id: "aurora-hero",
     name: "Aurora Hero",
@@ -28,8 +49,8 @@ const sections = [
     description:
       "A full-height hero with a drifting aurora gradient, an oversized headline and a paired call to action.",
     hostedUrl: `${DEMO}/aurora-hero.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "aurora-hero",
     stack: ["HTML", "CSS"],
     addedAt: "2026-09-11",
@@ -45,8 +66,8 @@ const sections = [
     description:
       "Three tiers on a hairline grid with a monthly/annual toggle and a highlighted middle plan.",
     hostedUrl: `${DEMO}/ledger-pricing.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "ledger-pricing",
     stack: ["HTML", "CSS", "JS"],
     addedAt: "2026-09-10",
@@ -62,8 +83,8 @@ const sections = [
     description:
       "An edge-faded logo wall that loops seamlessly and pauses when the pointer rests on it.",
     hostedUrl: `${DEMO}/marquee-logos.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "marquee-logos",
     stack: ["HTML", "CSS"],
     addedAt: "2026-09-09",
@@ -79,8 +100,8 @@ const sections = [
     description:
       "An accessible disclosure list built on native details/summary, with a measured open-and-close.",
     hostedUrl: `${DEMO}/stacked-faq.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "stacked-faq",
     stack: ["HTML", "CSS"],
     addedAt: "2026-09-08",
@@ -96,8 +117,8 @@ const sections = [
     description:
       "A two-column quote block: portrait on one side, oversized pull quote and attribution on the other.",
     hostedUrl: `${DEMO}/split-testimonial.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "split-testimonial",
     stack: ["HTML", "CSS"],
     addedAt: "2026-09-07",
@@ -113,8 +134,8 @@ const sections = [
     description:
       "A four-column footer with a newsletter capture, legal row and a quiet oversized wordmark.",
     hostedUrl: `${DEMO}/grid-footer.html`,
-    repo: "Nayan-Kawalkar/MotionShelf-sections",
-    branch: "main",
+    repo: null,
+    branch: null,
     dir: "grid-footer",
     stack: ["HTML", "CSS"],
     addedAt: "2026-09-06",
