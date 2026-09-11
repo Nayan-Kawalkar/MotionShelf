@@ -1,9 +1,9 @@
-/* ---- Section detail ------------------------------------------------------ */
-.section-page {
+/* ---- Library entry detail (section, template) ------------------------------------------------------ */
+.item-page {
   padding: 30px 26px 80px;
 }
 
-.section-page__head {
+.item-page__head {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -13,7 +13,7 @@
   border-bottom: 1px solid var(--border-soft);
 }
 
-.section-page__back {
+.item-page__back {
   display: inline-block;
   margin-bottom: 14px;
   font: var(--label);
@@ -23,11 +23,11 @@
   transition: color 140ms ease;
 }
 
-.section-page__back:hover {
+.item-page__back:hover {
   color: var(--fg);
 }
 
-.section-page__title {
+.item-page__title {
   margin: 0;
   font-size: 38px;
   font-weight: 600;
@@ -35,7 +35,7 @@
   line-height: 1;
 }
 
-.section-page__desc {
+.item-page__desc {
   max-width: 62ch;
   margin: 12px 0 0;
   color: var(--fg-muted);
@@ -43,7 +43,7 @@
   line-height: 1.55;
 }
 
-.section-page__facts {
+.item-page__facts {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -66,7 +66,7 @@
 }
 
 /* ---- Actions ------------------------------------------------------------- */
-.section-page__links {
+.item-page__links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -107,6 +107,7 @@
 /* ---- Stage chrome -------------------------------------------------------- */
 .stage-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   margin: 26px 0 12px;
@@ -122,6 +123,34 @@
 
 .stage-bar__px {
   margin-left: auto;
+}
+
+.stage-bar__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-right: 8px;
+  padding-right: 14px;
+  border-right: 1px solid var(--border);
+}
+
+.stage-bar__page {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.stage-bar__page:hover {
+  color: var(--fg);
+}
+
+.stage-bar__page--on {
+  border-color: var(--border-strong);
+  color: var(--fg);
 }
 
 .stage-bar__widths {
@@ -149,7 +178,7 @@
   color: var(--bg);
 }
 
-.section-stage {
+.item-stage {
   display: flex;
   justify-content: center;
   padding: 16px;
@@ -158,7 +187,7 @@
   background: var(--surface-2);
 }
 
-.section-stage__frame {
+.item-stage__frame {
   width: 100%;
   height: 70vh;
   min-height: 460px;
@@ -323,19 +352,19 @@
 }
 
 @media (max-width: 700px) {
-  .section-page {
+  .item-page {
     padding: 22px 14px 50px;
   }
 
-  .section-page__title {
+  .item-page__title {
     font-size: 28px;
   }
 
-  .section-stage {
+  .item-stage {
     padding: 8px;
   }
 
-  .section-stage__frame {
+  .item-stage__frame {
     height: 60vh;
   }
 }

@@ -1,0 +1,494 @@
+/* ---- Lab entry ----------------------------------------------------------- */
+.entry {
+  --type: var(--accent);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 30px 26px 80px;
+}
+
+.entry--case-study {
+  --type: #e8c76a;
+}
+
+.entry--pipeline {
+  --type: #6d8fff;
+}
+
+.entry--agent {
+  --type: #7fd6b0;
+}
+
+.entry--automation {
+  --type: #f08a6c;
+}
+
+.entry__head {
+  max-width: 760px;
+}
+
+.entry__back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  transition: color 140ms ease;
+}
+
+.entry__back:hover {
+  color: var(--fg);
+}
+
+.entry__type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--type);
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+}
+
+.entry__type svg {
+  width: 18px;
+  height: 18px;
+}
+
+.entry__title {
+  margin: 12px 0 0;
+  font-size: clamp(32px, 4.4vw, 50px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+.entry__summary {
+  margin: 14px 0 0;
+  color: var(--fg-muted);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.entry__meta time {
+  margin-right: 6px;
+}
+
+.entry__tag {
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.entry__cover {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  margin-top: 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+/* ---- Flow (pipelines, automations) --------------------------------------- *
+ * The trigger and each step as nodes joined by a connector line, wrapping onto
+ * new rows when there are more steps than fit.
+ * ------------------------------------------------------------------------- */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 30px;
+  margin: 30px 0 0;
+  padding: 22px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--elevated);
+}
+
+.flow__node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+  max-width: 220px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+/* The connector to the next node. */
+.flow__node:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -31px;
+  width: 30px;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.flow__node--trigger {
+  border-color: var(--type);
+}
+
+.flow__label {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.flow__node--trigger .flow__label {
+  color: var(--type);
+}
+
+.flow__text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+/* ---- Body + facts -------------------------------------------------------- */
+.entry__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 48px;
+  align-items: start;
+  margin-top: 40px;
+}
+
+@media (max-width: 960px) {
+  .entry__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* On one column the facts lead, so the key numbers are seen first. */
+  .entry__facts {
+    order: -1;
+  }
+}
+
+.entry__facts {
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--elevated);
+}
+
+@media (max-width: 960px) {
+  .entry__facts {
+    position: static;
+  }
+}
+
+.entry__facts:empty {
+  display: none;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.facts__row dt {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.facts__row dd {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  color: var(--fg);
+}
+
+.factlist__title {
+  margin: 0 0 10px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.factlist__items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--fg-2);
+}
+
+/* Case-study outcomes: the headline numbers. */
+.factlist__items--emphasis li {
+  padding-left: 12px;
+  border-left: 2px solid var(--type);
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.factlist__items--chips {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.factlist__items--chips li {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12.5px;
+}
+
+.facts__links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.facts__links .btn {
+  justify-content: center;
+}
+
+/* ---- Prose (the markdown body) ------------------------------------------- */
+.prose {
+  max-width: 68ch;
+  color: var(--fg-2);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose h2 {
+  margin: 44px 0 12px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+.prose h3 {
+  margin: 32px 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose pre,
+.prose table {
+  margin: 0 0 18px;
+}
+
+.prose a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 140ms ease;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--type);
+}
+
+.prose strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 22px;
+}
+
+.prose li + li {
+  margin-top: 6px;
+}
+
+.prose li::marker {
+  color: var(--fg-dim);
+}
+
+.prose blockquote {
+  padding: 4px 0 4px 18px;
+  border-left: 2px solid var(--type);
+  color: var(--fg-muted);
+  font-style: italic;
+}
+
+.prose code {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--fg);
+}
+
+.prose pre {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--elevated);
+  overflow-x: auto;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 26px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.prose hr {
+  margin: 40px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.prose th,
+.prose td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+/* ---- More of the same type ----------------------------------------------- */
+.entry__more {
+  margin-top: 60px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.entry__more-title {
+  margin: 0 0 14px;
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.entry__more-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 800px) {
+  .entry__more-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.entry__more-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.entry__more-item:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.entry__more-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.entry__more-date {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 700px) {
+  .entry {
+    padding: 22px 14px 50px;
+  }
+
+  .flow {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .flow__node {
+    max-width: none;
+  }
+
+  /* Stacked vertically, the connector runs down instead of across. */
+  .flow__node:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -15px;
+    left: 24px;
+    width: 1px;
+    height: 14px;
+  }
+}

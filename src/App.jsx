@@ -1,7 +1,10 @@
 import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
 import GalleryPage from "./pages/GalleryPage";
-import SectionsPage from "./pages/SectionsPage";
-import SectionPage from "./pages/SectionPage";
+import LibraryPage from "./pages/LibraryPage";
+import LibraryItemPage from "./pages/LibraryItemPage";
+import { SECTIONS, TEMPLATES } from "./library/libraries";
+import LabPage from "./pages/LabPage";
+import LabEntryPage from "./pages/LabEntryPage";
 import PreviewPage from "./pages/PreviewPage";
 import ComponentPage from "./pages/ComponentPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -13,6 +16,7 @@ const NAV_LINKS = [
   { to: "/", label: "Components", end: true },
   { to: "/sections", label: "Sections" },
   { to: "/templates", label: "Templates" },
+  { to: "/lab", label: "Lab" },
   { to: "/docs", label: "Docs" },
   { to: "/pricing", label: "Pricing" },
 ];
@@ -97,8 +101,12 @@ function App() {
         <Routes>
           <Route path="/" element={<GalleryPage />} />
           <Route path="/component/:id" element={<ComponentPage />} />
-          <Route path="/sections" element={<SectionsPage />} />
-          <Route path="/section/:id" element={<SectionPage />} />
+          <Route path="/sections" element={<LibraryPage key="sections" library={SECTIONS} />} />
+          <Route path="/section/:id" element={<LibraryItemPage library={SECTIONS} />} />
+          <Route path="/templates" element={<LibraryPage key="templates" library={TEMPLATES} />} />
+          <Route path="/template/:id" element={<LibraryItemPage library={TEMPLATES} />} />
+          <Route path="/lab" element={<LabPage />} />
+          <Route path="/lab/:slug" element={<LabEntryPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
