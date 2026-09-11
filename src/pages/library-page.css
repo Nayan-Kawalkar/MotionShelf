@@ -1,13 +1,13 @@
-/* ---- Sections index ------------------------------------------------------ */
-.sections {
+/* ---- Library index (sections, templates) ------------------------------------------------------ */
+.library {
   padding: 30px 26px 80px;
 }
 
-.sections__head {
+.library__head {
   margin-bottom: 22px;
 }
 
-.sections__slug {
+.library__slug {
   display: block;
   margin-bottom: 12px;
   font: var(--label);
@@ -16,7 +16,7 @@
   color: var(--fg-dim);
 }
 
-.sections__title {
+.library__title {
   margin: 0;
   font-size: 40px;
   font-weight: 600;
@@ -24,7 +24,7 @@
   line-height: 0.95;
 }
 
-.sections__lede {
+.library__lede {
   max-width: 58ch;
   margin: 14px 0 0;
   color: var(--fg-muted);
@@ -33,7 +33,7 @@
 }
 
 /* ---- Filters ------------------------------------------------------------- */
-.sections__filters {
+.library__filters {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -85,26 +85,41 @@
 }
 
 /* ---- Grid ---------------------------------------------------------------- *
- * Sections are wide by nature, so this is a plain two-up row grid rather than
- * the component gallery's masonry — a 16:10 frame reads as a page band.
+ * Row grids, not the component gallery's masonry.
+ *   band  sections are wide by nature: two-up, 16:10 — reads as a page band
+ *   page  templates are whole sites: three-up, 4:3 — reads as a site's top fold
  * ------------------------------------------------------------------------- */
-.sections__grid {
+.library__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 34px 24px;
 }
 
+.library__grid--band {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.library__grid--page {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .library__grid--page {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
-  .sections__grid {
+  .library__grid--band,
+  .library__grid--page {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.scard {
+.lcard {
   margin: 0;
 }
 
-.scard__frame {
+.lcard__frame {
   position: relative;
   aspect-ratio: 16 / 10;
   border-radius: var(--radius-card);
@@ -114,18 +129,22 @@
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
 }
 
-.scard:hover .scard__frame {
+.lcard:hover .lcard__frame {
   transform: translateY(-3px);
   border-color: var(--border-strong);
 }
 
+/* A template card shows more of the page than a section band does. */
+.lcard--page .lcard__frame {
+  aspect-ratio: 4 / 3;
+}
+
 /* The hosted page is rendered at desktop width and scaled down, so the card
    shows the section as it really lays out rather than its mobile stack. */
-.scard__iframe {
+.lcard__iframe {
   width: 1280px;
   height: 800px;
   border: 0;
-  transform: scale(calc(100% / 1280 * 1px * 0 + 1));
   transform: scale(0.5);
   transform-origin: top left;
   /* The frame is a picture here — clicking anywhere opens the section page. */
@@ -134,29 +153,29 @@
 
 /* Scale is width-driven: the card is fluid, so tie it to the container. */
 @supports (container-type: size) {
-  .scard__frame {
+  .lcard__frame {
     container-type: size;
   }
 
-  .scard__iframe {
+  .lcard__iframe {
     transform: scale(calc(100cqw / 1280));
   }
 }
 
-.scard__placeholder {
+.lcard__placeholder {
   width: 100%;
   height: 100%;
   background: linear-gradient(140deg, var(--surface-3), var(--surface-2));
 }
 
-.scard__hit {
+.lcard__hit {
   position: absolute;
   inset: 0;
   z-index: 2;
   border-radius: var(--radius-card);
 }
 
-.scard__pro {
+.lcard__pro {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -172,7 +191,23 @@
   text-transform: uppercase;
 }
 
-.scard__meta {
+.lcard__pages {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 3;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(12, 12, 12, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--fg-2);
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+}
+
+.lcard__meta {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -180,7 +215,7 @@
   padding: 14px 2px 0;
 }
 
-.scard__name {
+.lcard__name {
   margin: 0;
   font-size: 19px;
   font-weight: 600;
@@ -189,13 +224,13 @@
   color: var(--fg);
 }
 
-.scard__category {
+.lcard__category {
   margin: 3px 0 0;
   font-size: 14px;
   color: var(--fg-muted);
 }
 
-.scard__stack {
+.lcard__stack {
   flex: none;
   margin-top: 4px;
   font: var(--label);
@@ -205,11 +240,11 @@
 }
 
 @media (max-width: 700px) {
-  .sections {
+  .library {
     padding: 22px 14px 50px;
   }
 
-  .sections__title {
+  .library__title {
     font-size: 30px;
   }
 }

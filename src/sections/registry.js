@@ -1,3 +1,5 @@
+import { categoriesOf } from "../library/shared";
+
 /**
  * Sections are not built in this repo. Each entry is pure metadata pointing at
  * something already hosted and already on GitHub:
@@ -124,50 +126,8 @@ const sections = [
 
 export default sections;
 
+export const sectionCategories = () => categoriesOf(sections);
+
 export function getSection(id) {
   return sections.find((s) => s.id === id);
-}
-
-/** Categories with counts, for the filter row. */
-export function sectionCategories() {
-  const counts = new Map();
-  for (const s of sections) counts.set(s.category, (counts.get(s.category) ?? 0) + 1);
-  return [...counts].map(([name, count]) => ({ name, count }));
-}
-
-export function repoUrl(section) {
-  const base = `https://github.com/${section.repo}`;
-  return section.dir ? `${base}/tree/${section.branch}/${section.dir}` : base;
-}
-
-/**
- * GitHub assembles the archive itself, so there is nothing to bundle here and
- * no zip library to ship. It is always the whole repository at that branch —
- * a subdirectory cannot be downloaded on its own, which is why the prompt and
- * the detail page both name `dir`.
- */
-export function zipUrl(section) {
-  return `https://github.com/${section.repo}/archive/refs/heads/${section.branch}.zip`;
-}
-
-/** The paste-into-an-agent brief for pulling one section into a project. */
-export function sectionPrompt(section) {
-  return [
-    `Add the "${section.name}" section to my project.`,
-    "",
-    section.description,
-    "",
-    `Source: ${repoUrl(section)}`,
-    section.dir ? `The section lives in the \`${section.dir}\` directory of that repo.` : "",
-    `Live reference: ${section.hostedUrl}`,
-    `Built with: ${section.stack.join(", ")}`,
-    "",
-    "Fetch that source, then recreate the section in my codebase:",
-    "- match the surrounding project's markup conventions and styling system",
-    "- keep the layout, spacing and motion of the original",
-    "- replace the placeholder copy and images with mine, which I will name next",
-    "- keep it responsive and accessible",
-  ]
-    .filter(Boolean)
-    .join("\n");
 }

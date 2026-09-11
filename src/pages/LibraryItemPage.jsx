@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import sections, { getSection, repoUrl, sectionPrompt, zipUrl } from "../sections/registry";
+import { buildPrompt, repoUrl, zipUrl } from "../library/shared";
 import useCopy from "../lib/useCopy";
-import "./section-page.css";
+import "./library-item-page.css";
 
 const WIDTHS = [
   { id: "full", label: "Full", width: null },
@@ -10,71 +10,98 @@ const WIDTHS = [
   { id: "phone", label: "Phone", width: 414 },
 ];
 
-export default function SectionPage() {
+/**
+ * The detail page for one entry in a hosted library. Keyed on the entry id by
+ * the router, so moving between entries remounts and resets the page picker,
+ * width and tab rather than carrying one entry's state into the next.
+ */
+export default function LibraryItemPage({ library }) {
   const { id } = useParams();
-  const section = getSection(id);
+  const item = library.get(id);
+  return item ? (
+    <ItemDetail key={item.id} item={item} library={library} />
+  ) : (
+    <div className="empty">
+      <h1>Nothing here</h1>
+      <p>
+        That {library.noun} doesn’t exist, or it moved.
+      </p>
+      <Link to={library.indexPath} className="empty__link">
+        Browse all {library.plural}
+      </Link>
+    </div>
+  );
+}
+
+function ItemDetail({ item, library }) {
+  const pages = item.pages?.length ? item.pages : [{ name: "Page", url: item.hostedUrl }];
+  const [pageIndex, setPageIndex] = useState(0);
   const [width, setWidth] = useState("full");
   const [tab, setTab] = useState("prompt");
 
-  if (!section) {
-    return (
-      <div className="empty">
-        <h1>Nothing here</h1>
-        <p>That section doesn’t exist, or it moved.</p>
-        <Link to="/sections" className="empty__link">
-          Browse all sections
-        </Link>
-      </div>
-    );
-  }
-
+  const page = pages[pageIndex];
   const active = WIDTHS.find((w) => w.id === width);
-  const related = sections.filter((s) => s.id !== section.id).slice(0, 4);
+  const related = library.items.filter((other) => other.id !== item.id).slice(0, 4);
 
   return (
-    <div className="section-page">
-      <header className="section-page__head">
+    <div className="item-page">
+      <header className="item-page__head">
         <div>
-          <Link to="/sections" className="section-page__back">
-            ‹ All sections
+          <Link to={library.indexPath} className="item-page__back">
+            ‹ All {library.plural}
           </Link>
-          <h1 className="section-page__title">{section.name}</h1>
-          <p className="section-page__desc">{section.description}</p>
+          <h1 className="item-page__title">{item.name}</h1>
+          <p className="item-page__desc">{item.description}</p>
 
-          <div className="section-page__facts">
-            <span className="fact">{section.category}</span>
-            <span className="fact">{section.stack.join(" · ")}</span>
-            <span className="fact">{section.views.toLocaleString()} views</span>
-            {section.pro && <span className="fact fact--pro">Pro</span>}
+          <div className="item-page__facts">
+            <span className="fact">{item.category}</span>
+            {item.framework && <span className="fact">{item.framework}</span>}
+            <span className="fact">{item.stack.join(" · ")}</span>
+            {pages.length > 1 && <span className="fact">{pages.length} pages</span>}
+            <span className="fact">{item.views.toLocaleString()} views</span>
+            {item.pro && <span className="fact fact--pro">Pro</span>}
           </div>
         </div>
 
-        <div className="section-page__links">
+        <div className="item-page__links">
           <a
             className="btn btn--primary"
-            href={zipUrl(section)}
+            href={zipUrl(item)}
             // GitHub serves the archive with Content-Disposition, so this
             // downloads rather than navigating away.
             download
           >
             <ZipIcon /> Download zip
           </a>
-          <a
-            className="btn"
-            href={section.hostedUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          <a className="btn" href={page.url} target="_blank" rel="noreferrer noopener">
             <ExternalIcon /> Full preview
           </a>
-          <a className="btn" href={repoUrl(section)} target="_blank" rel="noreferrer noopener">
+          <a className="btn" href={repoUrl(item)} target="_blank" rel="noreferrer noopener">
             <GitHubIcon /> GitHub
           </a>
         </div>
       </header>
 
       <div className="stage-bar">
-        <span className="stage-bar__label">Preview</span>
+        {pages.length > 1 ? (
+          <div className="stage-bar__pages" role="tablist" aria-label={`${item.name} pages`}>
+            {pages.map((p, i) => (
+              <button
+                key={p.url}
+                type="button"
+                role="tab"
+                aria-selected={i === pageIndex}
+                className={`stage-bar__page${i === pageIndex ? " stage-bar__page--on" : ""}`}
+                onClick={() => setPageIndex(i)}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="stage-bar__label">Preview</span>
+        )}
+
         <div className="stage-bar__widths">
           {WIDTHS.map((w) => (
             <button
@@ -90,19 +117,19 @@ export default function SectionPage() {
         <span className="stage-bar__px">{active.width ? `${active.width}px` : "fluid"}</span>
       </div>
 
-      <div className="section-stage">
+      <div className="item-stage">
         <iframe
-          className="section-stage__frame"
+          className="item-stage__frame"
           style={active.width ? { width: active.width } : undefined}
-          src={section.hostedUrl}
-          title={`${section.name} live preview`}
+          src={page.url}
+          title={`${item.name} — ${page.name}`}
           sandbox="allow-scripts allow-same-origin"
           referrerPolicy="no-referrer"
         />
       </div>
 
       <section className="get">
-        <div className="get__tabs" role="tablist" aria-label="Get this section">
+        <div className="get__tabs" role="tablist" aria-label={`Get this ${library.noun}`}>
           <button
             type="button"
             role="tab"
@@ -123,15 +150,23 @@ export default function SectionPage() {
           </button>
         </div>
 
-        {tab === "prompt" ? <PromptPanel section={section} /> : <ZipPanel section={section} />}
+        {tab === "prompt" ? (
+          <PromptPanel item={item} noun={library.noun} />
+        ) : (
+          <ZipPanel item={item} noun={library.noun} />
+        )}
       </section>
 
       {related.length > 0 && (
         <section className="related">
-          <h2 className="related__title">More sections</h2>
+          <h2 className="related__title">More {library.plural}</h2>
           <div className="related__list">
             {related.map((other) => (
-              <Link key={other.id} to={`/section/${other.id}`} className="related__item">
+              <Link
+                key={other.id}
+                to={`${library.itemPath}/${other.id}`}
+                className="related__item"
+              >
                 <span className="related__name">{other.name}</span>
                 <span className="related__cat">{other.category}</span>
               </Link>
@@ -143,8 +178,8 @@ export default function SectionPage() {
   );
 }
 
-function PromptPanel({ section }) {
-  const text = sectionPrompt(section);
+function PromptPanel({ item, noun }) {
+  const text = buildPrompt(item, noun);
   const { copy, copied } = useCopy();
 
   return (
@@ -164,14 +199,14 @@ function PromptPanel({ section }) {
   );
 }
 
-function ZipPanel({ section }) {
+function ZipPanel({ item, noun }) {
   const { copy, copied } = useCopy();
-  const url = zipUrl(section);
+  const url = zipUrl(item);
 
   return (
     <div className="panel">
       <div className="panel__bar">
-        <span className="panel__name">{section.branch}.zip</span>
+        <span className="panel__name">{item.branch}.zip</span>
         <button type="button" className="panel__copy" onClick={() => copy(url)}>
           {copied ? "Copied" : "Copy link"}
         </button>
@@ -179,11 +214,11 @@ function ZipPanel({ section }) {
       <pre className="panel__body">{url}</pre>
       <p className="panel__note">
         GitHub builds the archive on request, so it is always current with{" "}
-        <code>{section.branch}</code>. It contains the whole repository
-        {section.dir ? (
+        <code>{item.branch}</code>. It contains the whole repository
+        {item.dir ? (
           <>
             {" "}
-            — this section is the <code>{section.dir}</code> directory inside it.
+            — this {noun} is the <code>{item.dir}</code> directory inside it.
           </>
         ) : (
           "."

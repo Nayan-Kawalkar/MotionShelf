@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import sections, { sectionCategories } from "../sections/registry";
-import "./sections-page.css";
+import "./library-page.css";
 
 const SORTS = [
   { id: "recent", label: "Newest" },
@@ -9,44 +8,43 @@ const SORTS = [
   { id: "likes", label: "Most liked" },
 ];
 
-export default function SectionsPage() {
+/**
+ * The index page for one hosted library — Sections or Templates. Everything
+ * that differs between them arrives on `library` (see library/libraries.js).
+ */
+export default function LibraryPage({ library }) {
   const [category, setCategory] = useState(null);
   const [sort, setSort] = useState("recent");
 
-  const cats = useMemo(sectionCategories, []);
+  const cats = useMemo(() => library.categories(), [library]);
 
   const results = useMemo(() => {
-    const list = sections.filter((s) => !category || s.category === category);
+    const list = library.items.filter((item) => !category || item.category === category);
     const sorted = [...list];
     if (sort === "views") sorted.sort((a, b) => b.views - a.views);
     else if (sort === "likes") sorted.sort((a, b) => b.likes - a.likes);
     else sorted.sort((a, b) => b.addedAt.localeCompare(a.addedAt));
     return sorted;
-  }, [category, sort]);
+  }, [library, category, sort]);
 
   return (
-    <div className="sections">
-      <header className="sections__head">
-        <div>
-          <span className="sections__slug">
-            Sections / {String(results.length).padStart(2, "0")} listed
-          </span>
-          <h1 className="sections__title">Section Library</h1>
-          <p className="sections__lede">
-            Hosted page sections you can preview live, open on GitHub, and pull into a
-            project as a zip or an agent prompt.
-          </p>
-        </div>
+    <div className="library">
+      <header className="library__head">
+        <span className="library__slug">
+          {library.plural} / {String(results.length).padStart(2, "0")} listed
+        </span>
+        <h1 className="library__title">{library.title}</h1>
+        <p className="library__lede">{library.lede}</p>
       </header>
 
-      <div className="sections__filters">
+      <div className="library__filters">
         <div className="filter-row" role="group" aria-label="Category">
           <button
             type="button"
             className={`filter${category === null ? " filter--on" : ""}`}
             onClick={() => setCategory(null)}
           >
-            All <span className="filter__count">{sections.length}</span>
+            All <span className="filter__count">{library.items.length}</span>
           </button>
           {cats.map((c) => (
             <button
@@ -74,24 +72,25 @@ export default function SectionsPage() {
         </div>
       </div>
 
-      <div className="sections__grid">
-        {results.map((section) => (
-          <SectionCard key={section.id} section={section} />
+      <div className={`library__grid library__grid--${library.shape}`}>
+        {results.map((item) => (
+          <LibraryCard key={item.id} item={item} library={library} />
         ))}
       </div>
     </div>
   );
 }
 
-function SectionCard({ section }) {
-  // The frame only mounts once the card is on screen — six live iframes on
-  // first paint would stall the page for no benefit.
+function LibraryCard({ item, library }) {
+  // The frame only mounts once the card is on screen — a grid of live iframes
+  // on first paint would stall the page for no benefit.
   const [visible, setVisible] = useState(false);
+  const pageCount = item.pages?.length ?? 0;
 
   return (
-    <article className="scard">
+    <article className={`lcard lcard--${library.shape}`}>
       <div
-        className="scard__frame"
+        className="lcard__frame"
         ref={(node) => {
           if (!node || visible) return;
           const io = new IntersectionObserver(
@@ -107,39 +106,44 @@ function SectionCard({ section }) {
       >
         {visible ? (
           <iframe
-            className="scard__iframe"
-            src={section.hostedUrl}
-            title={`${section.name} preview`}
+            className="lcard__iframe"
+            src={item.hostedUrl}
+            title={`${item.name} preview`}
             loading="lazy"
             // Sandboxed so a hosted page cannot navigate this one, submit
             // forms, or open popups. `allow-same-origin` is what lets it load
             // its own stylesheets — without it the frame renders unstyled.
             // It grants nothing against this page for a genuinely external
-            // section, since the frame is a different origin either way.
+            // entry, since the frame is a different origin either way.
             sandbox="allow-scripts allow-same-origin"
             referrerPolicy="no-referrer"
             tabIndex={-1}
           />
         ) : (
-          <div className="scard__placeholder" aria-hidden="true" />
+          <div className="lcard__placeholder" aria-hidden="true" />
         )}
 
         {/* The frame is inert; the whole card is the link. */}
         <Link
-          to={`/section/${section.id}`}
-          className="scard__hit"
-          aria-label={`${section.name} — ${section.category}`}
+          to={`${library.itemPath}/${item.id}`}
+          className="lcard__hit"
+          aria-label={`${item.name} — ${item.category}`}
         />
 
-        {section.pro && <span className="scard__pro">Pro</span>}
+        {item.pro && <span className="lcard__pro">Pro</span>}
+        {pageCount > 1 && (
+          <span className="lcard__pages">
+            {pageCount} pages
+          </span>
+        )}
       </div>
 
-      <div className="scard__meta">
+      <div className="lcard__meta">
         <div>
-          <h2 className="scard__name">{section.name}</h2>
-          <p className="scard__category">{section.category}</p>
+          <h2 className="lcard__name">{item.name}</h2>
+          <p className="lcard__category">{item.category}</p>
         </div>
-        <span className="scard__stack">{section.stack.join(" · ")}</span>
+        <span className="lcard__stack">{item.framework ?? item.stack.join(" · ")}</span>
       </div>
     </article>
   );
