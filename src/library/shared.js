@@ -34,7 +34,7 @@ export function zipUrl(item) {
 
 /**
  * An agent reading the prompt is not on this site, so a path like
- * "/templates-demo/x.html" means nothing to it. Resolve against the page's own
+ * "/demo/index.html" means nothing to it. Resolve against the page's own
  * origin; absolute URLs pass through unchanged.
  */
 function absoluteUrl(url) {

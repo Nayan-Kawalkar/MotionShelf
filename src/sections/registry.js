@@ -15,10 +15,6 @@ import { categoriesOf } from "../library/shared";
  * `hostedUrl` at the live URL and `repo` at the real repository.
  */
 
-// SCAFFOLD: these point at demo pages served from this project's own /public
-// so the preview flow is visible end to end. Replace with real hosted URLs.
-const DEMO = "/sections-demo";
-
 const sections = [
   // ---- Real sections -------------------------------------------------------
   {
@@ -38,111 +34,6 @@ const sections = [
     pro: false,
   },
 
-  // ---- Scaffold sections -------------------------------------------------
-  // Stand-ins with no repository, so hosted-only: preview works, no GitHub
-  // or zip. Replace with real entries like the one above.
-  {
-    id: "aurora-hero",
-    name: "Aurora Hero",
-    category: "Hero",
-    tags: ["hero", "gradient", "dark", "cta"],
-    description:
-      "A full-height hero with a drifting aurora gradient, an oversized headline and a paired call to action.",
-    hostedUrl: `${DEMO}/aurora-hero.html`,
-    repo: null,
-    branch: null,
-    dir: "aurora-hero",
-    stack: ["HTML", "CSS"],
-    addedAt: "2026-09-11",
-    views: 2100,
-    likes: 318,
-    pro: false,
-  },
-  {
-    id: "ledger-pricing",
-    name: "Ledger Pricing",
-    category: "Pricing",
-    tags: ["pricing", "table", "tiers", "toggle"],
-    description:
-      "Three tiers on a hairline grid with a monthly/annual toggle and a highlighted middle plan.",
-    hostedUrl: `${DEMO}/ledger-pricing.html`,
-    repo: null,
-    branch: null,
-    dir: "ledger-pricing",
-    stack: ["HTML", "CSS", "JS"],
-    addedAt: "2026-09-10",
-    views: 1640,
-    likes: 247,
-    pro: false,
-  },
-  {
-    id: "marquee-logos",
-    name: "Marquee Logos",
-    category: "Social Proof",
-    tags: ["logos", "marquee", "loop", "clients"],
-    description:
-      "An edge-faded logo wall that loops seamlessly and pauses when the pointer rests on it.",
-    hostedUrl: `${DEMO}/marquee-logos.html`,
-    repo: null,
-    branch: null,
-    dir: "marquee-logos",
-    stack: ["HTML", "CSS"],
-    addedAt: "2026-09-09",
-    views: 980,
-    likes: 132,
-    pro: false,
-  },
-  {
-    id: "stacked-faq",
-    name: "Stacked FAQ",
-    category: "FAQ",
-    tags: ["faq", "accordion", "disclosure", "a11y"],
-    description:
-      "An accessible disclosure list built on native details/summary, with a measured open-and-close.",
-    hostedUrl: `${DEMO}/stacked-faq.html`,
-    repo: null,
-    branch: null,
-    dir: "stacked-faq",
-    stack: ["HTML", "CSS"],
-    addedAt: "2026-09-08",
-    views: 1220,
-    likes: 176,
-    pro: false,
-  },
-  {
-    id: "split-testimonial",
-    name: "Split Testimonial",
-    category: "Testimonial",
-    tags: ["testimonial", "quote", "portrait", "split"],
-    description:
-      "A two-column quote block: portrait on one side, oversized pull quote and attribution on the other.",
-    hostedUrl: `${DEMO}/split-testimonial.html`,
-    repo: null,
-    branch: null,
-    dir: "split-testimonial",
-    stack: ["HTML", "CSS"],
-    addedAt: "2026-09-07",
-    views: 1450,
-    likes: 209,
-    pro: true,
-  },
-  {
-    id: "grid-footer",
-    name: "Grid Footer",
-    category: "Footer",
-    tags: ["footer", "grid", "links", "newsletter"],
-    description:
-      "A four-column footer with a newsletter capture, legal row and a quiet oversized wordmark.",
-    hostedUrl: `${DEMO}/grid-footer.html`,
-    repo: null,
-    branch: null,
-    dir: "grid-footer",
-    stack: ["HTML", "CSS"],
-    addedAt: "2026-09-06",
-    views: 870,
-    likes: 118,
-    pro: false,
-  },
 ];
 
 export default sections;
