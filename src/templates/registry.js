@@ -27,6 +27,26 @@ function pagesFor(slug, names) {
 
 const templates = [
   {
+    // A real, live template — not scaffold. Hosted-only for now: no public
+    // repository is linked from the site, so `repo` stays null (GitHub link
+    // and zip download are hidden) until the source URL is known.
+    id: "luxeria",
+    name: "Luxeria",
+    category: "Automotive",
+    tags: ["3d", "webgl", "automotive", "showcase", "luxury"],
+    description:
+      "A luxury car showcase built around real-time 3D models — a single-page collection of performance cars with cinematic scroll motion.",
+    pages: [{ name: "Home", url: "https://luxeriaa.vercel.app/" }],
+    repo: null,
+    branch: null,
+    framework: "React",
+    stack: ["React", "Three.js", "GSAP", "Vite"],
+    addedAt: "2026-09-12",
+    views: 0,
+    likes: 0,
+    pro: false,
+  },
+  {
     id: "northwind-saas",
     name: "Northwind",
     category: "SaaS",

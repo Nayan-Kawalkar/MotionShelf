@@ -40,6 +40,7 @@ function ItemDetail({ item, library }) {
   const [tab, setTab] = useState("prompt");
 
   const page = pages[pageIndex];
+  const hasSource = Boolean(item.repo);
   const active = WIDTHS.find((w) => w.id === width);
   const related = library.items.filter((other) => other.id !== item.id).slice(0, 4);
 
@@ -64,21 +65,31 @@ function ItemDetail({ item, library }) {
         </div>
 
         <div className="item-page__links">
+          {/* Hosted-only entries have no public source: no zip, no GitHub. */}
+          {hasSource && (
+            <a
+              className="btn btn--primary"
+              href={zipUrl(item)}
+              // GitHub serves the archive with Content-Disposition, so this
+              // downloads rather than navigating away.
+              download
+            >
+              <ZipIcon /> Download zip
+            </a>
+          )}
           <a
-            className="btn btn--primary"
-            href={zipUrl(item)}
-            // GitHub serves the archive with Content-Disposition, so this
-            // downloads rather than navigating away.
-            download
+            className={`btn${hasSource ? "" : " btn--primary"}`}
+            href={page.url}
+            target="_blank"
+            rel="noreferrer noopener"
           >
-            <ZipIcon /> Download zip
-          </a>
-          <a className="btn" href={page.url} target="_blank" rel="noreferrer noopener">
             <ExternalIcon /> Full preview
           </a>
-          <a className="btn" href={repoUrl(item)} target="_blank" rel="noreferrer noopener">
-            <GitHubIcon /> GitHub
-          </a>
+          {hasSource && (
+            <a className="btn" href={repoUrl(item)} target="_blank" rel="noreferrer noopener">
+              <GitHubIcon /> GitHub
+            </a>
+          )}
         </div>
       </header>
 
@@ -139,18 +150,20 @@ function ItemDetail({ item, library }) {
           >
             AI Prompt
           </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "zip"}
-            className={`get__tab${tab === "zip" ? " get__tab--on" : ""}`}
-            onClick={() => setTab("zip")}
-          >
-            Download
-          </button>
+          {hasSource && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "zip"}
+              className={`get__tab${tab === "zip" ? " get__tab--on" : ""}`}
+              onClick={() => setTab("zip")}
+            >
+              Download
+            </button>
+          )}
         </div>
 
-        {tab === "prompt" ? (
+        {tab === "prompt" || !hasSource ? (
           <PromptPanel item={item} noun={library.noun} />
         ) : (
           <ZipPanel item={item} noun={library.noun} />
@@ -192,8 +205,10 @@ function PromptPanel({ item, noun }) {
       </div>
       <pre className="panel__body">{text}</pre>
       <p className="panel__note">
-        Paste into Claude Code, Cursor, or any coding agent. It points the agent at the
-        repository and tells it to match your codebase rather than paste blindly.
+        Paste into Claude Code, Cursor, or any coding agent.{" "}
+        {item.repo
+          ? "It points the agent at the repository and tells it to match your codebase rather than paste blindly."
+          : "There is no public source, so it points the agent at the live page and tells it to rebuild in your codebase's conventions."}
       </p>
     </div>
   );

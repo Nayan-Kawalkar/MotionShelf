@@ -5,7 +5,9 @@
  * hosted and already on GitHub:
  *
  *   hostedUrl  the live page, iframed for previews and opened by "Full preview"
- *   repo       "owner/name" — the GitHub link, and what the zip is built from
+ *   repo       "owner/name" — the GitHub link, and what the zip is built from.
+ *              Optional: an entry that is only hosted, with no public source,
+ *              leaves it null and the GitHub link and zip download are hidden
  *   branch     which branch the zip downloads (GitHub assembles it)
  *   dir        optional subdirectory the entry lives in
  *
@@ -14,6 +16,7 @@
  */
 
 export function repoUrl(item) {
+  if (!item.repo) return null;
   const base = `https://github.com/${item.repo}`;
   return item.dir ? `${base}/tree/${item.branch}/${item.dir}` : base;
 }
@@ -25,6 +28,7 @@ export function repoUrl(item) {
  * detail page both name `dir`.
  */
 export function zipUrl(item) {
+  if (!item.repo) return null;
   return `https://github.com/${item.repo}/archive/refs/heads/${item.branch}.zip`;
 }
 
@@ -58,14 +62,16 @@ export function buildPrompt(item, noun) {
     "",
     item.description,
     "",
-    `Source: ${repoUrl(item)}`,
-    item.dir ? `It lives in the \`${item.dir}\` directory of that repo.` : null,
+    item.repo ? `Source: ${repoUrl(item)}` : null,
+    item.repo && item.dir ? `It lives in the \`${item.dir}\` directory of that repo.` : null,
     `Live reference: ${absoluteUrl(item.hostedUrl)}`,
     item.framework ? `Framework: ${item.framework}` : null,
     `Built with: ${item.stack.join(", ")}`,
     pages ? `Pages: ${pages}` : null,
     "",
-    "Fetch that source, then recreate it in my codebase:",
+    item.repo
+      ? "Fetch that source, then recreate it in my codebase:"
+      : "There is no public source, so work from the live reference and recreate it in my codebase:",
     "- match the surrounding project's markup conventions and styling system",
     "- keep the layout, spacing and motion of the original",
     "- replace the placeholder copy and images with mine, which I will name next",
