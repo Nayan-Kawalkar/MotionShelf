@@ -1,22 +1,16 @@
 import { useEffect, useMemo, useRef } from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
 import { useScroll } from "framer-motion"
 
 /**
  * 3D HELICAL SCROLL GALLERY
- * A 1:1 Framer port of the Three.js + GSAP ScrollTrigger original.
+ * A 1:1 port of the Three.js + GSAP ScrollTrigger original.
  * GSAP ScrollTrigger is replaced by Framer Motion's useScroll + an
  * exponential smoother that reproduces `scrub: 0.6`.
  *
- * HOW TO USE IN FRAMER
- * 1. Insert on a page, set Width = Fill.
- * 2. Set Height = Fit (the component sizes itself from "Scroll Length").
- * 3. Everything else is in the properties panel on the right.
- *
- * @framerIntrinsicWidth 1200
- * @framerIntrinsicHeight 3600
- * @framerSupportsResizeMode false
- * @framerDisableUnlink
+ * HOW TO USE
+ * 1. Drop it into the page flow at full width.
+ * 2. Leave its height auto — it sizes itself from "Scroll Length".
+ * 3. Everything else is a prop.
  */
 
 /* ------------------------------------------------------------------ */
@@ -154,10 +148,9 @@ export default function HelicalScrollGallery(props: Props) {
     }
 
     const isCanvas =
-        RenderTarget.current() === RenderTarget.canvas ||
-        RenderTarget.current() === RenderTarget.thumbnail
+        false
 
-    // Framer hands us a fresh array object every render, so key the scene
+    // A fresh array object can arrive every render, so key the scene
     // rebuild off the actual content instead of object identity.
     const cardsKey = useMemo(() => {
         const list = Array.isArray(cards) ? cards : []
@@ -513,192 +506,3 @@ HelicalScrollGallery.defaultProps = DEFAULTS
 /* ------------------------------------------------------------------ */
 /* Property controls                                                   */
 /* ------------------------------------------------------------------ */
-
-addPropertyControls(HelicalScrollGallery, {
-    title: {
-        type: ControlType.String,
-        title: "Title",
-        displayTextArea: true,
-        defaultValue: "Design In\nMotion",
-    },
-    subtitle: {
-        type: ControlType.String,
-        title: "Subtitle",
-        defaultValue: "Scroll to explore sequence",
-    },
-    background: {
-        type: ControlType.Color,
-        title: "Background",
-        defaultValue: "#111111",
-    },
-    scrollLength: {
-        type: ControlType.Number,
-        title: "Scroll Length",
-        description: "Total scroll distance in vh. Higher = slower.",
-        defaultValue: 600,
-        min: 100,
-        max: 2000,
-        step: 50,
-        unit: "vh",
-    },
-    smoothing: {
-        type: ControlType.Number,
-        title: "Scrub",
-        description: "Seconds the motion takes to catch up to the scroll.",
-        defaultValue: 0.6,
-        min: 0,
-        max: 3,
-        step: 0.05,
-        unit: "s",
-    },
-    cardCount: {
-        type: ControlType.Number,
-        title: "Cards",
-        defaultValue: 12,
-        min: 1,
-        max: 60,
-        step: 1,
-        displayStepper: true,
-    },
-    cards: {
-        type: ControlType.Array,
-        title: "Content",
-        description: "Leave empty for the generated placeholder cards.",
-        control: {
-            type: ControlType.Object,
-            controls: {
-                image: { type: ControlType.ResponsiveImage, title: "Image" },
-                label: {
-                    type: ControlType.String,
-                    title: "Label",
-                    defaultValue: "",
-                },
-                color: {
-                    type: ControlType.Color,
-                    title: "Fallback",
-                    defaultValue: "#1a1a1a",
-                },
-            },
-        },
-        defaultValue: [],
-    },
-    cardWidth: {
-        type: ControlType.Number,
-        title: "Card W",
-        defaultValue: 1.6,
-        min: 0.2,
-        max: 6,
-        step: 0.1,
-    },
-    cardHeight: {
-        type: ControlType.Number,
-        title: "Card H",
-        defaultValue: 2.0,
-        min: 0.2,
-        max: 8,
-        step: 0.1,
-    },
-    radiusX: {
-        type: ControlType.Number,
-        title: "Arch Width",
-        defaultValue: 3.8,
-        min: 0,
-        max: 12,
-        step: 0.1,
-    },
-    radiusZ: {
-        type: ControlType.Number,
-        title: "Spiral Depth",
-        defaultValue: 2.5,
-        min: 0,
-        max: 12,
-        step: 0.1,
-    },
-    pitch: {
-        type: ControlType.Number,
-        title: "Climb Rate",
-        defaultValue: 1.2,
-        min: 0,
-        max: 5,
-        step: 0.1,
-    },
-    turns: {
-        type: ControlType.Number,
-        title: "Turns",
-        description: "Rotations across the loop (× π).",
-        defaultValue: 2.5,
-        min: 0.5,
-        max: 10,
-        step: 0.5,
-    },
-    yOffset: {
-        type: ControlType.Number,
-        title: "Y Offset",
-        defaultValue: -2.5,
-        min: -10,
-        max: 10,
-        step: 0.1,
-    },
-    zOffset: {
-        type: ControlType.Number,
-        title: "Z Offset",
-        defaultValue: -1.5,
-        min: -10,
-        max: 10,
-        step: 0.1,
-    },
-    tilt: {
-        type: ControlType.Number,
-        title: "Roll",
-        defaultValue: 0.15,
-        min: 0,
-        max: 1,
-        step: 0.01,
-    },
-    minScale: {
-        type: ControlType.Number,
-        title: "Min Scale",
-        defaultValue: 0.6,
-        min: 0.1,
-        max: 2,
-        step: 0.05,
-    },
-    maxScale: {
-        type: ControlType.Number,
-        title: "Max Scale",
-        defaultValue: 1.3,
-        min: 0.1,
-        max: 4,
-        step: 0.05,
-    },
-    fogDensity: {
-        type: ControlType.Number,
-        title: "Fog",
-        defaultValue: 0.05,
-        min: 0,
-        max: 0.3,
-        step: 0.005,
-    },
-    fov: {
-        type: ControlType.Number,
-        title: "FOV",
-        defaultValue: 45,
-        min: 10,
-        max: 120,
-        step: 1,
-    },
-    cameraZ: {
-        type: ControlType.Number,
-        title: "Camera Z",
-        defaultValue: 10,
-        min: 1,
-        max: 40,
-        step: 0.5,
-    },
-    autoPlayOnCanvas: {
-        type: ControlType.Boolean,
-        title: "Preview Spin",
-        description: "Slowly animate inside the Framer canvas.",
-        defaultValue: true,
-    },
-})

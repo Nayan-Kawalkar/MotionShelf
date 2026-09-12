@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from "react"
-import { addPropertyControls, ControlType, useIsStaticRenderer } from "framer"
 
 /* =====================================================================
    ORIENTATION — a quaternion, not two Euler angles.
@@ -97,11 +96,6 @@ interface Props {
 /**
  * Sphere Album — a 3D sphere of image cards. Scroll spins it, drag tumbles it
  * in any direction with inertia, click opens the card's link.
- *
- * @framerSupportedLayoutWidth any-prefer-fixed
- * @framerSupportedLayoutHeight any-prefer-fixed
- * @framerIntrinsicWidth 900
- * @framerIntrinsicHeight 700
  */
 export default function SphereAlbum(props: Partial<Props>) {
     const {
@@ -125,7 +119,7 @@ export default function SphereAlbum(props: Partial<Props>) {
         style,
     } = props
 
-    const isStatic = useIsStaticRenderer()
+    const isStatic = false
     const stageRef = useRef<HTMLDivElement>(null)
     const cardRefs = useRef<(HTMLAnchorElement | null)[]>([])
     const points = useMemo(() => fibonacciSphere(Math.max(1, items.length)), [items.length])
@@ -515,62 +509,3 @@ export default function SphereAlbum(props: Partial<Props>) {
 }
 
 SphereAlbum.displayName = "Sphere Album"
-
-const defaultItems: Item[] = Array.from({ length: 20 }, (_, i) => {
-    const portrait = i % 3 !== 1
-    return {
-        title: `Card ${i + 1}`,
-        width: portrait ? 76 : 104,
-        height: portrait ? 100 : 79,
-    }
-})
-
-addPropertyControls(SphereAlbum, {
-    items: {
-        type: ControlType.Array,
-        title: "Cards",
-        defaultValue: defaultItems,
-        control: {
-            type: ControlType.Object,
-            controls: {
-                image: { type: ControlType.ResponsiveImage, title: "Image" },
-                title: { type: ControlType.String, title: "Title", defaultValue: "Untitled" },
-                link: {
-                    type: ControlType.Link,
-                    title: "Detail page",
-                    description: "Where this card goes when clicked.",
-                },
-                width: { type: ControlType.Number, title: "Width", defaultValue: 80, min: 20, max: 320, step: 1, unit: "px" },
-                height: { type: ControlType.Number, title: "Height", defaultValue: 104, min: 20, max: 320, step: 1, unit: "px" },
-            },
-        },
-    },
-    openInNewTab: { type: ControlType.Boolean, title: "New tab", defaultValue: false },
-
-    radius: {
-        type: ControlType.Number, title: "Radius", defaultValue: 46, min: 20, max: 70, step: 1, unit: "%",
-        description: "Sphere size as a share of the frame's shorter side.",
-    },
-    autoSpin: { type: ControlType.Number, title: "Idle spin", defaultValue: 0.11, min: 0, max: 1, step: 0.01 },
-    dragSpeed: { type: ControlType.Number, title: "Drag speed", defaultValue: 0.58, min: 0.1, max: 2, step: 0.01 },
-    wheelSpeed: { type: ControlType.Number, title: "Scroll speed", defaultValue: 0.26, min: 0, max: 1, step: 0.01 },
-    damping: {
-        type: ControlType.Number, title: "Glide", defaultValue: 0.945, min: 0.85, max: 0.99, step: 0.005,
-        description: "How long a throw keeps going. Lower is heavier.",
-    },
-    captureWheel: {
-        type: ControlType.Boolean, title: "Scroll spins", defaultValue: true,
-        description: "On: the wheel rotates the sphere. Off: the page scrolls normally.",
-    },
-    enableZoom: { type: ControlType.Boolean, title: "Pinch zoom", defaultValue: true },
-
-    depthFade: { type: ControlType.Number, title: "Depth fade", defaultValue: 0.34, min: 0, max: 1, step: 0.01 },
-    depthBlur: { type: ControlType.Number, title: "Depth blur", defaultValue: 2.2, min: 0, max: 6, step: 0.1, unit: "px" },
-    hoverLift: { type: ControlType.Number, title: "Hover lift", defaultValue: 46, min: 0, max: 160, step: 1, unit: "px" },
-    introMs: { type: ControlType.Number, title: "Intro", defaultValue: 900, min: 0, max: 3000, step: 50, unit: "ms" },
-
-    cardBackground: { type: ControlType.Color, title: "Card fill", defaultValue: "#ffffff" },
-    cardPadding: { type: ControlType.Number, title: "Card inset", defaultValue: 8, min: 0, max: 32, step: 1, unit: "px" },
-    cardRadius: { type: ControlType.Number, title: "Card radius", defaultValue: 0, min: 0, max: 40, step: 1, unit: "px" },
-    shadow: { type: ControlType.Boolean, title: "Shadow", defaultValue: true },
-})

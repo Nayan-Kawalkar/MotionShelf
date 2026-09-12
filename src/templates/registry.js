@@ -19,6 +19,25 @@ const templates = [
   // public, all on `main`, and every site allows being framed (no
   // X-Frame-Options, no frame-ancestors) so the previews embed.
   {
+    id: "nova-cans",
+    name: "Nova",
+    category: "3D Showcase",
+    tags: ["product", "launch", "scroll", "drinks", "cinematic"],
+    description:
+      "A cinematic product launch page for a drinks brand — rendered can shots revealed on scroll, over cold blues and ice.",
+    pages: [{ name: "Home", url: "https://3d-drink-cans.vercel.app/" }],
+    repo: "Nayan-Kawalkar/3d-drink-cans",
+    branch: "main",
+    framework: "React",
+    // The bundle carries no Three.js or WebGL: the 3D is pre-rendered art,
+    // and the page animates it on a smooth-scroll timeline.
+    stack: ["React", "TypeScript", "Lenis", "Vite"],
+    addedAt: "2026-09-12",
+    views: 0,
+    likes: 0,
+    pro: false,
+  },
+  {
     id: "luxeria",
     name: "Luxeria",
     category: "3D Showcase",

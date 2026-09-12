@@ -3,10 +3,9 @@ import ImageQueue from "./ImageQueue";
 /**
  * Workbench adapter for the Image Queue.
  *
- * The component takes its slides and its type styling from Framer's property
- * panel and destructures them with no fallbacks, so outside Framer both arrive
- * undefined — the deck falls back to four blank cards. This supplies a real
- * set, plus the label font the panel's Font control would otherwise provide.
+ * The component destructures `slides` and `font` with no fallbacks, so both
+ * arrive undefined unless something passes them and the deck falls back to
+ * four blank cards. This supplies a real set, plus the label type.
  *
  * Everything the control schema exposes is flat and passes straight through.
  */

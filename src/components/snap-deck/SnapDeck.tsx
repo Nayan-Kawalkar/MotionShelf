@@ -1,11 +1,10 @@
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
 import type { CSSProperties } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 /**
  * SNAP-TO-CENTER INFINITE DECK
  *
- * A Framer port of the GSAP prototype. The GSAP engine (gsap.set / gsap.to
+ * A port of the GSAP prototype. The GSAP engine (gsap.set / gsap.to
  * with a power2.out ease) is reimplemented with plain requestAnimationFrame
  * + transforms, so there is no external dependency.
  *
@@ -13,12 +12,6 @@ import { useEffect, useMemo, useRef, useState } from "react"
  * the horizontal and vertical arrangements be *interpolated* — switching
  * mode animates every card from its row slot to its column slot instead of
  * cutting between two static layouts.
- *
- * @framerIntrinsicWidth 1200
- * @framerIntrinsicHeight 800
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
- * @framerDisableUnlink
  */
 
 /* ------------------------------------------------------------------ *
@@ -39,7 +32,7 @@ type CardData = {
     borderColor: string
     iconOuter: string
     iconInner: string
-    // Framer's Image control hands back a URL string on older versions and a
+    // An image prop may be a URL string or a
     // ResponsiveImage object on newer ones.
     image?: string | { src?: string }
     link?: string
@@ -115,7 +108,7 @@ const power2InOut = (t: number) =>
  *  Cards away from the anchor read as thumbnails: drained of saturation and
  *  sunk toward the deck background. The card that lands on the anchor blooms
  *  back to its real colours. Interpolating needs numbers, so each colour is
- *  parsed once; anything unparseable (a Framer variable, a gradient, a named
+ *  parsed once; anything unparseable (a CSS variable, a gradient, a named
  *  colour) is passed through untouched rather than guessed at.
  * ------------------------------------------------------------------ */
 
@@ -693,7 +686,7 @@ export default function SnapDeck(props: Partial<Props>) {
 
     conf.palettes = palettes
 
-    // A colour edit in Framer has to repaint cards the loop is not currently
+    // A colour edit has to repaint cards the loop is not currently
     // animating, so wake it for one pass.
     useEffect(() => {
         engine.dirtyPalette = true
@@ -727,7 +720,7 @@ export default function SnapDeck(props: Partial<Props>) {
         const track = trackRef.current
         if (!stage || !track) return
 
-        const isCanvas = RenderTarget.current() === RenderTarget.canvas
+        const isCanvas = false
 
         const itemFor = (m: number) =>
             lerp(conf.cardW + conf.gap, conf.cardH + conf.gap, m)
@@ -2028,391 +2021,3 @@ const DEFAULTS = {
     scrollTarget: "component",
 }
 /* @controls:end */
-
-addPropertyControls(SnapDeck, {
-    cards: {
-        type: ControlType.Array,
-        title: "Cards",
-        defaultValue: defaultCards,
-        control: {
-            type: ControlType.Object,
-            controls: {
-                variant: {
-                    type: ControlType.Enum,
-                    title: "Type",
-                    options: ["text", "icon"],
-                    optionTitles: ["Text", "Icon"],
-                    defaultValue: "text",
-                    displaySegmentedControl: true,
-                },
-                number: {
-                    type: ControlType.String,
-                    title: "Number",
-                    defaultValue: "001",
-                    hidden: (p) => p.variant === "icon",
-                },
-                title: {
-                    type: ControlType.String,
-                    title: "Title",
-                    defaultValue: "PRODUX",
-                    hidden: (p) => p.variant === "icon",
-                },
-                titleSize: {
-                    type: ControlType.Number,
-                    title: "Title Size",
-                    defaultValue: 35.2,
-                    min: 8,
-                    max: 160,
-                    step: 0.1,
-                    displayStepper: false,
-                    hidden: (p) => p.variant === "icon",
-                },
-                centerTitle: {
-                    type: ControlType.Boolean,
-                    title: "Center Title",
-                    defaultValue: false,
-                    hidden: (p) => p.variant === "icon",
-                },
-                titleColor: {
-                    type: ControlType.Color,
-                    title: "Title Color",
-                    defaultValue: "",
-                    optional: true,
-                    hidden: (p) => p.variant === "icon",
-                },
-                footerLeft: {
-                    type: ControlType.String,
-                    title: "Footer L",
-                    defaultValue: "Overview",
-                    hidden: (p) => p.variant === "icon",
-                },
-                footerRight: {
-                    type: ControlType.String,
-                    title: "Footer R",
-                    defaultValue: "2026",
-                    hidden: (p) => p.variant === "icon",
-                },
-                image: {
-                    type: ControlType.Image,
-                    title: "Image",
-                },
-                link: {
-                    type: ControlType.Link,
-                    title: "Link",
-                },
-                background: {
-                    type: ControlType.Color,
-                    title: "Background",
-                    defaultValue: "#dcd3b8",
-                },
-                color: {
-                    type: ControlType.Color,
-                    title: "Text",
-                    defaultValue: "#1a1a1a",
-                },
-                borderColor: {
-                    type: ControlType.Color,
-                    title: "Border",
-                    defaultValue: "",
-                    optional: true,
-                },
-                iconOuter: {
-                    type: ControlType.Color,
-                    title: "Ring Outer",
-                    defaultValue: "#ff4b72",
-                    hidden: (p) => p.variant !== "icon",
-                },
-                iconInner: {
-                    type: ControlType.Color,
-                    title: "Ring Inner",
-                    defaultValue: "#ffffff",
-                    hidden: (p) => p.variant !== "icon",
-                },
-            },
-        },
-    },
-    cardWidth: {
-        type: ControlType.Number,
-        title: "Card W",
-        defaultValue: 420,
-        min: 80,
-        max: 1200,
-        step: 1,
-        displayStepper: false,
-    },
-    cardHeight: {
-        type: ControlType.Number,
-        title: "Card H",
-        defaultValue: 280,
-        min: 80,
-        max: 1200,
-        step: 1,
-        displayStepper: false,
-    },
-    verticalCardWidth: {
-        type: ControlType.Number,
-        title: "Vert Card W",
-        defaultValue: 460,
-        min: 80,
-        max: 1200,
-        step: 1,
-        displayStepper: false,
-    },
-    gap: {
-        type: ControlType.Number,
-        title: "Gap",
-        defaultValue: 16,
-        min: 0,
-        max: 200,
-        step: 1,
-        displayStepper: false,
-    },
-    startMode: {
-        type: ControlType.Enum,
-        title: "Mode",
-        options: ["horizontal", "vertical"],
-        optionTitles: ["Horizontal", "Vertical"],
-        defaultValue: "horizontal",
-        displaySegmentedControl: true,
-    },
-    loop: {
-        type: ControlType.Enum,
-        title: "Loop",
-        options: ["infinite", "finite"],
-        optionTitles: ["Infinite", "Finite"],
-        defaultValue: "infinite",
-        displaySegmentedControl: true,
-    },
-    morphDuration: {
-        type: ControlType.Number,
-        title: "Morph (s)",
-        defaultValue: 0.9,
-        min: 0,
-        max: 3,
-        step: 0.05,
-        displayStepper: false,
-    },
-    morphEase: {
-        type: ControlType.Enum,
-        title: "Morph Ease",
-        options: ["inOut", "out", "linear"],
-        optionTitles: ["In Out", "Out", "Linear"],
-        defaultValue: "inOut",
-    },
-    thumbDesaturate: {
-        type: ControlType.Number,
-        title: "Thumb Desat",
-        defaultValue: 0.8,
-        min: 0,
-        max: 1,
-        step: 0.05,
-        displayStepper: false,
-    },
-    thumbDim: {
-        type: ControlType.Number,
-        title: "Thumb Dim",
-        defaultValue: 0.35,
-        min: 0,
-        max: 1,
-        step: 0.05,
-        displayStepper: false,
-    },
-    showMeta: {
-        type: ControlType.Boolean,
-        title: "Card Label",
-        defaultValue: true,
-    },
-    showCardText: {
-        type: ControlType.Boolean,
-        title: "Text On Card",
-        defaultValue: false,
-        enabledTitle: "Yes",
-        disabledTitle: "No",
-    },
-    metaTitleSize: {
-        type: ControlType.Number,
-        title: "Label Size",
-        defaultValue: 36,
-        min: 10,
-        max: 120,
-        step: 1,
-        displayStepper: false,
-        hidden: (p) => !p.showMeta,
-    },
-    metaColor: {
-        type: ControlType.Color,
-        title: "Label Color",
-        defaultValue: "#ffffff",
-        hidden: (p) => !p.showMeta,
-    },
-    metaInset: {
-        type: ControlType.Number,
-        title: "Label Inset",
-        defaultValue: 104,
-        min: 0,
-        max: 400,
-        step: 2,
-        displayStepper: false,
-        hidden: (p) => !p.showMeta,
-    },
-    metaGap: {
-        type: ControlType.Number,
-        title: "Label Gap",
-        defaultValue: 118,
-        min: 0,
-        max: 400,
-        step: 2,
-        displayStepper: false,
-        hidden: (p) => !p.showMeta,
-    },
-    metaOffset: {
-        type: ControlType.Number,
-        title: "Label Offset",
-        defaultValue: 18,
-        min: 0,
-        max: 200,
-        step: 1,
-        displayStepper: false,
-        hidden: (p) => !p.showMeta,
-    },
-    textAboveImage: {
-        type: ControlType.Boolean,
-        title: "Text Over Img",
-        defaultValue: false,
-        enabledTitle: "Yes",
-        disabledTitle: "No",
-    },
-    focusDuration: {
-        type: ControlType.Number,
-        title: "Bloom (s)",
-        defaultValue: 0.5,
-        min: 0,
-        max: 3,
-        step: 0.05,
-        displayStepper: false,
-    },
-    showSwitcher: {
-        type: ControlType.Boolean,
-        title: "Switcher",
-        defaultValue: true,
-    },
-    verticalLabel: {
-        type: ControlType.String,
-        title: "Label V",
-        defaultValue: "VERTICAL",
-        hidden: (p) => !p.showSwitcher,
-    },
-    horizontalLabel: {
-        type: ControlType.String,
-        title: "Label H",
-        defaultValue: "HORIZONTAL",
-        hidden: (p) => !p.showSwitcher,
-    },
-    background: {
-        type: ControlType.Color,
-        title: "Background",
-        defaultValue: "#0d0d0d",
-    },
-    accent: {
-        type: ControlType.Color,
-        title: "Accent",
-        defaultValue: "#ccff00",
-    },
-    inactive: {
-        type: ControlType.Color,
-        title: "Inactive",
-        defaultValue: "#444444",
-        hidden: (p) => !p.showSwitcher,
-    },
-    scrollSpeed: {
-        type: ControlType.Number,
-        title: "Wheel Speed",
-        defaultValue: 1,
-        min: 0.1,
-        max: 5,
-        step: 0.1,
-        displayStepper: false,
-    },
-    touchSpeed: {
-        type: ControlType.Number,
-        title: "Touch Speed",
-        defaultValue: 1.5,
-        min: 0.1,
-        max: 5,
-        step: 0.1,
-        displayStepper: false,
-    },
-    snapDuration: {
-        type: ControlType.Number,
-        title: "Snap (s)",
-        defaultValue: 0.45,
-        min: 0,
-        max: 2,
-        step: 0.05,
-        displayStepper: false,
-    },
-    mobileBreakpoint: {
-        type: ControlType.Number,
-        title: "Mobile Below",
-        defaultValue: 700,
-        min: 0,
-        max: 1400,
-        step: 10,
-        displayStepper: false,
-    },
-    mobileGap: {
-        type: ControlType.Number,
-        title: "Mobile Gap",
-        defaultValue: 56,
-        min: 0,
-        max: 200,
-        step: 2,
-        displayStepper: false,
-    },
-    mobilePadding: {
-        type: ControlType.Number,
-        title: "Mobile Pad",
-        defaultValue: 20,
-        min: 0,
-        max: 120,
-        step: 2,
-        displayStepper: false,
-    },
-    clickAction: {
-        type: ControlType.Enum,
-        title: "On Click",
-        options: ["focus", "open"],
-        optionTitles: ["Focus, then open", "Open directly"],
-        defaultValue: "focus",
-    },
-    linkTarget: {
-        type: ControlType.Enum,
-        title: "Open In",
-        options: ["same", "new"],
-        optionTitles: ["Same tab", "New tab"],
-        defaultValue: "same",
-        displaySegmentedControl: true,
-    },
-    interruptSnap: {
-        type: ControlType.Boolean,
-        title: "Interrupt Snap",
-        defaultValue: false,
-        enabledTitle: "Yes",
-        disabledTitle: "No",
-    },
-    force3D: {
-        type: ControlType.Boolean,
-        title: "GPU Layers",
-        defaultValue: true,
-        enabledTitle: "On",
-        disabledTitle: "Off",
-    },
-    scrollTarget: {
-        type: ControlType.Enum,
-        title: "Capture",
-        options: ["component", "window"],
-        optionTitles: ["Component", "Page"],
-        defaultValue: "component",
-        displaySegmentedControl: true,
-    },
-})

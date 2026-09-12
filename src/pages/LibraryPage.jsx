@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { previewFor } from "../previews";
 import "./library-page.css";
 
 const SORTS = [
@@ -82,10 +83,63 @@ export default function LibraryPage({ library }) {
 }
 
 function LibraryCard({ item, library }) {
-  // The frame only mounts once the card is on screen — a grid of live iframes
-  // on first paint would stall the page for no benefit.
+  // Without a recording the card falls back to framing the live site, and that
+  // frame only mounts once the card is on screen — a grid of live iframes on
+  // first paint would stall the page for no benefit.
   const [visible, setVisible] = useState(false);
   const pageCount = item.pages?.length ?? 0;
+  const preview = previewFor(item.id);
+  const videoRef = useRef(null);
+
+  const play = () => {
+    const v = videoRef.current;
+    if (!v || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    v.play().catch(() => {});
+  };
+  const stop = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
+  };
+
+  if (preview) {
+    return (
+      <article
+        className={`lcard lcard--${library.shape}`}
+        onMouseEnter={play}
+        onMouseLeave={stop}
+        onFocus={play}
+        onBlur={stop}
+      >
+        <div className="lcard__frame">
+          <video
+            ref={videoRef}
+            className="lcard__video"
+            poster={preview.poster}
+            muted
+            loop
+            playsInline
+            preload="none"
+            aria-label={`${item.name} preview`}
+          >
+            <source src={preview.video} type="video/mp4" />
+          </video>
+
+          <Link
+            to={`${library.itemPath}/${item.id}`}
+            className="lcard__hit"
+            aria-label={`${item.name} — ${item.category}`}
+          />
+
+          {item.pro && <span className="lcard__pro">Pro</span>}
+          {pageCount > 1 && <span className="lcard__pages">{pageCount} pages</span>}
+        </div>
+
+        <LibraryCardMeta item={item} />
+      </article>
+    );
+  }
 
   return (
     <article className={`lcard lcard--${library.shape}`}>
@@ -138,13 +192,19 @@ function LibraryCard({ item, library }) {
         )}
       </div>
 
-      <div className="lcard__meta">
-        <div>
-          <h2 className="lcard__name">{item.name}</h2>
-          <p className="lcard__category">{item.category}</p>
-        </div>
-        <span className="lcard__stack">{item.framework ?? item.stack.join(" · ")}</span>
-      </div>
+      <LibraryCardMeta item={item} />
     </article>
+  );
+}
+
+function LibraryCardMeta({ item }) {
+  return (
+    <div className="lcard__meta">
+      <div>
+        <h2 className="lcard__name">{item.name}</h2>
+        <p className="lcard__category">{item.category}</p>
+      </div>
+      <span className="lcard__stack">{item.framework ?? item.stack.join(" · ")}</span>
+    </div>
   );
 }

@@ -26,11 +26,11 @@ function serializableControl(control) {
   return { ...rest, ...(when ? { dependent: true } : null) };
 }
 
-function entryFor(item, toReactSource) {
+function entryFor(item, toBundlerSource) {
   const { jsx, css, vanilla, html } = item.sources;
 
   const files = [
-    { path: jsx.name, target: "component", content: toReactSource(jsx.code) },
+    { path: jsx.name, target: "component", content: toBundlerSource(jsx.code) },
   ];
   if (css) files.push({ path: css.name, target: "styles", content: css.code });
 
@@ -64,14 +64,14 @@ async function main() {
 
   try {
     const { default: registry } = await server.ssrLoadModule("/src/registry.js");
-    const { toReactSource } = await server.ssrLoadModule("/src/lib/exporters/bake.js");
+    const { toBundlerSource } = await server.ssrLoadModule("/src/lib/exporters/bake.js");
 
     await rm(OUT_DIR, { recursive: true, force: true });
     await mkdir(OUT_DIR, { recursive: true });
 
     const index = [];
     for (const item of registry) {
-      const entry = entryFor(item, toReactSource);
+      const entry = entryFor(item, toBundlerSource);
       await writeFile(
         path.join(OUT_DIR, `${entry.id}.json`),
         JSON.stringify(entry, null, 2) + "\n"

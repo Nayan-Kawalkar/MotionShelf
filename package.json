@@ -8,7 +8,8 @@
     "build": "node scripts/build-registry.js && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "registry": "node scripts/build-registry.js"
+    "registry": "node scripts/build-registry.js",
+    "previews": "node scripts/build-previews.js"
   },
   "dependencies": {
     "framer-motion": "^13.1.1",

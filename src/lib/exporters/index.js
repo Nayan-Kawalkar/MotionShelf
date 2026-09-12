@@ -1,4 +1,4 @@
-import { bakeDefaults, describeValues, toReactSource } from "./bake";
+import { bakeDefaults, describeValues, toBundlerSource } from "./bake";
 
 /**
  * Every export flavour produces the same shape:
@@ -8,9 +8,9 @@ import { bakeDefaults, describeValues, toReactSource } from "./bake";
 
 export function generateCode(item, values) {
   const { jsx, css } = item.sources;
-  // Framer code components must be de-Framered here, or the file will not
+  // CDN URL imports become bare specifiers here, or the file will not
   // compile in the React project the visitor pastes it into.
-  const files = [{ ...jsx, code: toReactSource(bakeDefaults(jsx.code, values)) }];
+  const files = [{ ...jsx, code: toBundlerSource(bakeDefaults(jsx.code, values)) }];
   if (css) files.push(css);
   return {
     id: "code",

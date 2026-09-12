@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getComponent, isScrollDriven, previewVars, similarTo } from "../registry";
+import { previewFor } from "../previews";
 import useComponentState from "../lib/useComponentState";
 import ControlPanel from "../components/ui/ControlPanel";
 import ExportModal from "../components/ui/ExportModal";
@@ -14,6 +15,32 @@ export default function ComponentPage() {
   const item = getComponent(id);
   // Remounting per component keeps each workbench's history and variant its own.
   return item ? <Workbench key={item.id} item={item} /> : <NotFoundPage />;
+}
+
+/**
+ * The rail shows the recorded poster where there is one. Rendering six more
+ * live components beside the one on the stage is a lot of work for thumbnails
+ * this small, and the recordings frame each component better than a scaled
+ * viewport does.
+ */
+function RailPreview({ item }) {
+  const preview = previewFor(item.id);
+
+  if (preview) {
+    return (
+      <div className="rail__preview">
+        <img className="rail__poster" src={preview.poster} alt="" loading="lazy" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rail__preview" style={previewVars(item)}>
+      <div className="rail__scale">
+        <item.component />
+      </div>
+    </div>
+  );
 }
 
 function Workbench({ item }) {
@@ -50,11 +77,7 @@ function Workbench({ item }) {
                     className="rail__hit"
                     aria-label={other.name}
                   />
-                  <div className="rail__preview" style={previewVars(other)}>
-                    <div className="rail__scale">
-                      <other.component />
-                    </div>
-                  </div>
+                  <RailPreview item={other} />
                   <span className="rail__name">{other.name}</span>
                 </div>
               ))}

@@ -284,12 +284,21 @@
   transform-origin: top left;
 }
 
-/* Framer components are sized by their frame and carry no intrinsic height,
-   so the preview box has to supply one. Components that build their own
-   scroll track set height inline, which wins over this. */
+/* These components size themselves to their container and carry no intrinsic
+   height, so the preview box has to supply one. Components that build their
+   own scroll track set height inline, which wins over this. */
 .card__live > * {
   width: 100%;
   height: 100%;
+}
+
+/* Recorded preview: poster until the pointer arrives, then the clip loops. */
+.card__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--surface-2);
 }
 
 .card__still {
