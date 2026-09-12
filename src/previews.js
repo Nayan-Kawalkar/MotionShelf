@@ -6,6 +6,10 @@ const previews = {
     "video": "/preview/ascii-particle-text.mp4",
     "poster": "/preview/ascii-particle-text.webp"
   },
+  "carousel": {
+    "video": "/preview/carousel.mp4",
+    "poster": "/preview/carousel.webp"
+  },
   "curved-card-marquee": {
     "video": "/preview/curved-card-marquee.mp4",
     "poster": "/preview/curved-card-marquee.webp"

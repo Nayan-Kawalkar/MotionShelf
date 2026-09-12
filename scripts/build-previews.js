@@ -40,22 +40,25 @@ const SECONDS = 6;
 const CRF = 30;
 const FPS = 24;
 
-// Recording file names are timestamps, so each component names the clip it
-// appears in by the recording's own order in /media (1-based), plus where to
-// start the excerpt. `sameAs` points an entry at another's files instead,
-// so a shared preview is not encoded or shipped twice.
+// Recording file names are timestamps, so each component names its clip by the
+// timestamp fragment that identifies it, plus where to start the excerpt.
+// Matching on the name rather than position in the folder matters: a new
+// recording that sorts earlier would otherwise shift every mapping silently.
+// `sameAs` points an entry at another's files instead, so a shared preview is
+// not encoded or shipped twice.
 const SOURCES = {
-  "ascii-particle-text": { clip: 10, start: 4 },
-  "curved-card-marquee": { clip: 13, start: 3 },
-  "curved-carousel": { clip: 14, start: 5 },
+  "ascii-particle-text": { clip: "14-54-40", start: 4 },
+  carousel: { clip: "15-53-34", start: 4 },
+  "curved-card-marquee": { clip: "15-05-07", start: 3 },
+  "curved-carousel": { clip: "15-06-14", start: 5 },
   "floating-arc-slider": { sameAs: "curved-card-marquee" },
-  "image-queue": { clip: 5, start: 5 },
-  "paint-spread-wordmark": { clip: 6, start: 6 },
-  "scroll-assemble-image": { clip: 8, start: 8 },
-  "snap-deck": { clip: 11, start: 3 },
-  "sphere-album": { clip: 3, start: 4 },
-  "spherical-gallery": { clip: 9, start: 6 },
-  "tarot-carousel": { clip: 4, start: 5 },
+  "image-queue": { clip: "14-45-25", start: 5 },
+  "paint-spread-wordmark": { clip: "14-46-21", start: 6 },
+  "scroll-assemble-image": { clip: "14-49-23", start: 8 },
+  "snap-deck": { clip: "14-55-52", start: 3 },
+  "sphere-album": { clip: "14-43-24", start: 4 },
+  "spherical-gallery": { clip: "14-50-21", start: 6 },
+  "tarot-carousel": { clip: "14-44-29", start: 5 },
 };
 
 const run = (args) => execFileSync(ffmpeg, args, { stdio: ["ignore", "ignore", "pipe"] });
@@ -82,11 +85,14 @@ for (const [id, { clip, start, sameAs }] of Object.entries(SOURCES)) {
     aliases.push([id, sameAs]);
     continue;
   }
-  const source = clips[clip - 1];
-  if (!source) {
-    console.warn(`  ${id.padEnd(24)} SKIPPED — no recording at position ${clip}`);
+  const matches = clips.filter((f) => f.includes(clip));
+  if (matches.length !== 1) {
+    console.warn(
+      `  ${id.padEnd(24)} SKIPPED — "${clip}" matches ${matches.length} recordings`
+    );
     continue;
   }
+  const source = matches[0];
   const input = join(MEDIA, source);
   const mp4 = join(OUT, `${id}.mp4`);
   const poster = join(OUT, `${id}.webp`);
