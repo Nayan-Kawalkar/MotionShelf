@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { previewFor } from "../previews";
+import usePosterReady from "../lib/usePosterReady";
 import "./library-page.css";
 
 const SORTS = [
@@ -90,6 +91,9 @@ function LibraryCard({ item, library }) {
   const pageCount = item.pages?.length ?? 0;
   const preview = previewFor(item.id);
   const videoRef = useRef(null);
+  const posterReady = usePosterReady(preview?.poster);
+  // The fallback frames the live site, which does report its own load.
+  const [frameReady, setFrameReady] = useState(false);
 
   const play = () => {
     const v = videoRef.current;
@@ -113,6 +117,8 @@ function LibraryCard({ item, library }) {
         onBlur={stop}
       >
         <div className="lcard__frame">
+          <span className={`skeleton${posterReady ? " skeleton--done" : ""}`} aria-hidden="true" />
+
           <video
             ref={videoRef}
             className="lcard__video"
@@ -158,9 +164,12 @@ function LibraryCard({ item, library }) {
           io.observe(node);
         }}
       >
+        <span className={`skeleton${frameReady ? " skeleton--done" : ""}`} aria-hidden="true" />
+
         {visible ? (
           <iframe
             className="lcard__iframe"
+            onLoad={() => setFrameReady(true)}
             src={item.hostedUrl}
             title={`${item.name} preview`}
             loading="lazy"
@@ -173,9 +182,7 @@ function LibraryCard({ item, library }) {
             referrerPolicy="no-referrer"
             tabIndex={-1}
           />
-        ) : (
-          <div className="lcard__placeholder" aria-hidden="true" />
-        )}
+        ) : null}
 
         {/* The frame is inert; the whole card is the link. */}
         <Link

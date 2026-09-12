@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { marked } from "marked";
 import entries, { TYPES, getEntry } from "../lab/content";
@@ -53,9 +53,7 @@ export default function LabEntryPage() {
         </div>
       </header>
 
-      {entry.cover && (
-        <img className="entry__cover" src={entry.cover} alt="" />
-      )}
+      {entry.cover && <Cover src={entry.cover} />}
 
       {hasFlow && <Flow trigger={entry.trigger} steps={entry.steps} />}
 
@@ -81,6 +79,17 @@ export default function LabEntryPage() {
         </section>
       )}
     </article>
+  );
+}
+
+/** The hero image, with a skeleton holding its space until it paints. */
+function Cover({ src }) {
+  const [ready, setReady] = useState(false);
+  return (
+    <div className="entry__cover-wrap">
+      <span className={`skeleton${ready ? " skeleton--done" : ""}`} aria-hidden="true" />
+      <img className="entry__cover" src={src} alt="" onLoad={() => setReady(true)} />
+    </div>
   );
 }
 

@@ -74,11 +74,16 @@ export default function LabPage() {
 }
 
 function LabCard({ entry }) {
+  const [ready, setReady] = useState(false);
+
   return (
     <Link to={`/lab/${entry.slug}`} className={`labcard labcard--${entry.type}`}>
       <div className="labcard__media">
         {entry.cover ? (
-          <img src={entry.cover} alt="" loading="lazy" />
+          <>
+            <span className={`skeleton${ready ? " skeleton--done" : ""}`} aria-hidden="true" />
+            <img src={entry.cover} alt="" loading="lazy" onLoad={() => setReady(true)} />
+          </>
         ) : (
           // No cover: the type mark stands in, so the grid never shows a hole.
           <span className="labcard__mark" aria-hidden="true">

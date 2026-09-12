@@ -25,11 +25,19 @@ export default function ComponentPage() {
  */
 function RailPreview({ item }) {
   const preview = previewFor(item.id);
+  const [ready, setReady] = useState(false);
 
   if (preview) {
     return (
       <div className="rail__preview">
-        <img className="rail__poster" src={preview.poster} alt="" loading="lazy" />
+        <span className={`skeleton${ready ? " skeleton--done" : ""}`} aria-hidden="true" />
+        <img
+          className="rail__poster"
+          src={preview.poster}
+          alt=""
+          loading="lazy"
+          onLoad={() => setReady(true)}
+        />
       </div>
     );
   }

@@ -36,12 +36,18 @@ export default function PreviewFrame({ item, values, title }) {
   }, [ready, values]);
 
   return (
-    <iframe
-      ref={ref}
-      src={`/preview/${item.id}`}
-      title={title ?? `${item.name} preview`}
-      className="preview-frame"
-      loading="eager"
-    />
+    <div className="preview-frame__wrap">
+      {/* `ready` is the frame's own handshake, so the skeleton lifts when the
+          component is actually live — not merely when the document loaded. */}
+      <span className={`skeleton${ready ? " skeleton--done" : ""}`} aria-hidden="true" />
+
+      <iframe
+        ref={ref}
+        src={`/preview/${item.id}`}
+        title={title ?? `${item.name} preview`}
+        className="preview-frame"
+        loading="eager"
+      />
+    </div>
   );
 }

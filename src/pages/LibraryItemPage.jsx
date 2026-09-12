@@ -36,6 +36,7 @@ export default function LibraryItemPage({ library }) {
 function ItemDetail({ item, library }) {
   const pages = item.pages?.length ? item.pages : [{ name: "Page", url: item.hostedUrl }];
   const [pageIndex, setPageIndex] = useState(0);
+  const [frameReady, setFrameReady] = useState(false);
   const [width, setWidth] = useState("full");
   const [tab, setTab] = useState("prompt");
 
@@ -103,7 +104,11 @@ function ItemDetail({ item, library }) {
                 role="tab"
                 aria-selected={i === pageIndex}
                 className={`stage-bar__page${i === pageIndex ? " stage-bar__page--on" : ""}`}
-                onClick={() => setPageIndex(i)}
+                onClick={() => {
+                  if (i === pageIndex) return;
+                  setFrameReady(false);
+                  setPageIndex(i);
+                }}
               >
                 {p.name}
               </button>
@@ -129,8 +134,11 @@ function ItemDetail({ item, library }) {
       </div>
 
       <div className="item-stage">
+        <span className={`skeleton${frameReady ? " skeleton--done" : ""}`} aria-hidden="true" />
+
         <iframe
           className="item-stage__frame"
+          onLoad={() => setFrameReady(true)}
           style={active.width ? { width: active.width } : undefined}
           src={page.url}
           title={`${item.name} — ${page.name}`}

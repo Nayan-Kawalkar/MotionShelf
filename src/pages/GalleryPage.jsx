@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import registry, { categories, previewVars, variantValues } from "../registry";
 import { previewFor } from "../previews";
+import usePosterReady from "../lib/usePosterReady";
 import "./gallery-page.css";
 
 const SORTS = [
@@ -163,6 +164,7 @@ function ComponentCard({ item, mode, index }) {
   const Component = item.component;
   const preview = previewFor(item.id);
   const videoRef = useRef(null);
+  const ready = usePosterReady(preview?.poster);
 
   const play = () => {
     const v = videoRef.current;
@@ -228,6 +230,9 @@ function ComponentCard({ item, mode, index }) {
       </button>
 
       <div className="card__preview" style={previewStyle}>
+        {/* Held until the poster paints, so a card never opens as a bare box. */}
+        {preview && <span className={`skeleton${ready ? " skeleton--done" : ""}`} aria-hidden="true" />}
+
         {preview ? (
           <video
             ref={videoRef}

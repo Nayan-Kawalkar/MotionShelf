@@ -142,6 +142,8 @@
 /* The hosted page is rendered at desktop width and scaled down, so the card
    shows the section as it really lays out rather than its mobile stack. */
 .lcard__iframe {
+  position: relative;
+  z-index: 2;
   width: 1280px;
   height: 800px;
   border: 0;
@@ -164,17 +166,13 @@
 
 /* Recorded preview: poster until the pointer arrives, then the clip loops. */
 .lcard__video {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   background: var(--surface-2);
-}
-
-.lcard__placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(140deg, var(--surface-3), var(--surface-2));
 }
 
 .lcard__hit {

@@ -147,6 +147,54 @@ button {
   border-bottom: 1px solid var(--accent);
 }
 
+/* ---- Skeleton ------------------------------------------------------------ *
+ * Placeholder for anything still loading: a poster, a clip's first frame, an
+ * embedded page. Fills its positioned parent, so the surface keeps its size
+ * and nothing reflows when the real thing arrives.
+ * ------------------------------------------------------------------------- */
+.skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+/* The sweep is a moving highlight rather than a pulse, so a grid of them does
+   not read as a page-wide flash. */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.055),
+    transparent
+  );
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* A skeleton fades out rather than cutting, so a fast load is not a flicker. */
+.skeleton--done {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
 /* ---- Scrollbars ---------------------------------------------------------- */
 * {
   scrollbar-width: thin;
