@@ -4,7 +4,7 @@ import htmlSource from "./index.html?raw";
 
 // Flat keys, uniquely named across the component's grouped controls
 // (geometry / motion / deal). TarotCarouselPreview folds them back into the
-// object groups the Framer component expects.
+// object groups the component expects.
 export const controls = [
   { key: "cream", label: "Frame", type: "color", default: "#f7f1e6" },
   { key: "backField", label: "Card Back", type: "color", default: "#1f0308" },

@@ -1,5 +1,4 @@
 import * as React from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
 import { motion, animate, useMotionValue, useTransform } from "framer-motion"
 
 /**
@@ -9,11 +8,6 @@ import { motion, animate, useMotionValue, useTransform } from "framer-motion"
  * direction and release: it keeps your momentum, falls out of frame and rejoins
  * the back of the queue while the next card steps forward. Next does the same
  * without a drag; Prev pulls the last card back up into the front.
- *
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
- * @framerIntrinsicWidth 900
- * @framerIntrinsicHeight 760
  */
 
 // ---------------------------------------------------------------- types
@@ -414,7 +408,7 @@ export default function ImageQueue(props: Props) {
         style,
     } = props
 
-    const onCanvas = RenderTarget.current() === RenderTarget.canvas
+    const onCanvas = false
     const interactive = !onCanvas
 
     const list: Slide[] = slides && slides.length ? slides : [{}, {}, {}, {}]
@@ -635,85 +629,3 @@ export default function ImageQueue(props: Props) {
 }
 
 // ---------------------------------------------------------------- controls
-
-addPropertyControls(ImageQueue, {
-    slides: {
-        type: ControlType.Array,
-        title: "Slides",
-        control: {
-            type: ControlType.Object,
-            controls: {
-                image: { type: ControlType.ResponsiveImage, title: "Image" },
-                caption: { type: ControlType.String, title: "Caption", defaultValue: "" },
-            },
-        },
-        defaultValue: [{}, {}, {}, {}],
-        maxCount: 24,
-    },
-    background: { type: ControlType.Color, title: "Background", defaultValue: "#C9C9C9" },
-    accent: { type: ControlType.Color, title: "Text", defaultValue: "#111111" },
-    font: {
-        type: ControlType.Font,
-        title: "Font",
-        controls: "extended",
-        defaultFontType: "sans-serif",
-        defaultValue: { fontSize: 13, letterSpacing: "0.14em" },
-    },
-    aspect: {
-        type: ControlType.Number,
-        title: "Ratio",
-        description: "Card width ÷ height",
-        min: 0.4, max: 2.5, step: 0.01, defaultValue: 1,
-    },
-    scale: {
-        type: ControlType.Number, title: "Size",
-        min: 0.2, max: 1, step: 0.01, defaultValue: 0.86, displayStepper: false,
-    },
-    band: {
-        type: ControlType.Number,
-        title: "Peek",
-        description: "How far each card behind pokes out, as a share of card height",
-        min: 0, max: 0.4, step: 0.005, defaultValue: 0.082,
-    },
-    shrink: { type: ControlType.Number, title: "Shrink", min: 0.5, max: 1, step: 0.01, defaultValue: 0.79 },
-    fade: { type: ControlType.Number, title: "Fade", min: 0, max: 0.5, step: 0.01, defaultValue: 0.2 },
-    radius: { type: ControlType.Number, title: "Radius", min: 0, max: 80, step: 1, defaultValue: 0 },
-    grayscale: { type: ControlType.Boolean, title: "B&W", defaultValue: true },
-    tilt: {
-        type: ControlType.Number,
-        title: "Tilt",
-        description: "Degrees of rotation per pixel dragged",
-        min: 0, max: 0.2, step: 0.005, defaultValue: 0.05,
-    },
-    threshold: {
-        type: ControlType.Number,
-        title: "Throw at",
-        description: "Drag distance (px) needed to release the card",
-        min: 10, max: 300, step: 5, defaultValue: 60,
-    },
-    fallSpeed: { type: ControlType.Number, title: "Fall speed", min: 0.4, max: 3, step: 0.05, defaultValue: 1 },
-    showNav: { type: ControlType.Boolean, title: "Arrows", defaultValue: true },
-    navPlacement: {
-        type: ControlType.Enum,
-        title: "Arrows at",
-        options: ["bottomCenter", "bottomLeft", "bottomRight", "sides"],
-        optionTitles: ["Bottom center", "Bottom left", "Bottom right", "Sides"],
-        defaultValue: "bottomCenter",
-        hidden: (p) => !p.showNav,
-    },
-    navSize: {
-        type: ControlType.Number, title: "Arrow size",
-        min: 28, max: 88, step: 1, defaultValue: 46,
-        hidden: (p) => !p.showNav,
-    },
-    showCounter: { type: ControlType.Boolean, title: "Counter", defaultValue: true },
-    counterPlacement: {
-        type: ControlType.Enum,
-        title: "Counter at",
-        options: ["left", "topLeft", "bottomLeft"],
-        optionTitles: ["Left", "Top left", "Bottom left"],
-        defaultValue: "left",
-        hidden: (p) => !p.showCounter,
-    },
-    showCaption: { type: ControlType.Boolean, title: "Captions", defaultValue: true },
-})

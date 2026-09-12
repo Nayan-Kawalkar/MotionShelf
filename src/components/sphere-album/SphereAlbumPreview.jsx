@@ -3,10 +3,9 @@ import SphereAlbum from "./SphereAlbum";
 /**
  * Workbench adapter for the Sphere Album.
  *
- * The component's `items` prop defaults to an empty array — inside Framer the
- * property panel supplies the starting cards, and there is no panel here. This
- * fills that gap with the same twenty-card lattice the panel would hand over,
- * and gives the component the size Framer's frame would otherwise provide.
+ * The component's `items` prop defaults to an empty array, so it renders
+ * nothing until something supplies cards. This fills that gap with a
+ * twenty-card lattice, and gives the component an explicit size.
  *
  * Every tunable the control schema exposes is flat and passes straight through.
  */

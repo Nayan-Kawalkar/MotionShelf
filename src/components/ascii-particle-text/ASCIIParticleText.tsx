@@ -1,11 +1,10 @@
 import { useEffect, useRef } from "react"
 import type { CSSProperties } from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
 
 /**
  * ASCII PARTICLE TEXT — interactive canvas
  *
- * Framer port of the ASCII particle text canvas.
+ * Interactive ASCII particle text canvas.
  * Three states, cycled by clicking:
  *   0 — pile at the bottom
  *   1 — assembled text
@@ -13,12 +12,7 @@ import { addPropertyControls, ControlType, RenderTarget } from "framer"
  *
  * Self-contained: the GSAP tweens (power eases, delays, yoyo/repeat,
  * onComplete chains) are reproduced by a tiny internal tween engine,
- * so there is no external import to load on the Framer canvas.
- *
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
- * @framerIntrinsicWidth 800
- * @framerIntrinsicHeight 500
+ * so there is no external import to load.
  */
 
 /* ------------------------------------------------------------------ */
@@ -256,7 +250,7 @@ export default function ASCIIParticleText(props: Partial<Props>) {
         const ctx = canvas.getContext("2d")
         if (!ctx) return
 
-        const isCanvasTarget = RenderTarget.current() === RenderTarget.canvas
+        const isCanvasTarget = false
         const playing = !isCanvasTarget || playOnCanvas
 
         const chars = charSet && charSet.length > 0 ? charSet : "#"
@@ -800,219 +794,3 @@ const DEFAULTS = {
 /* @controls:end */
 
 ASCIIParticleText.displayName = "ASCII Particle Text"
-
-addPropertyControls(ASCIIParticleText, {
-    text: {
-        type: ControlType.String,
-        title: "Text",
-        defaultValue: "DIGITAL STUDIO",
-        placeholder: "DIGITAL STUDIO",
-    },
-    charSet: {
-        type: ControlType.String,
-        title: "Charset",
-        defaultValue: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#&$%",
-        description: "Characters particles are randomly picked from.",
-    },
-    fontFamily: {
-        type: ControlType.String,
-        title: "Font",
-        defaultValue: "monospace",
-    },
-    textWidthFraction: {
-        type: ControlType.Number,
-        title: "Text Size",
-        defaultValue: 0.125,
-        min: 0.02,
-        max: 0.5,
-        step: 0.005,
-        displayStepper: true,
-        description:
-            "Headline size as a fraction of the frame width. Auto-shrinks further if the text would overflow.",
-    },
-    maxTextSize: {
-        type: ControlType.Number,
-        title: "Max Size",
-        defaultValue: 110,
-        min: 10,
-        max: 400,
-        step: 1,
-        unit: "px",
-    },
-    sidePadding: {
-        type: ControlType.Number,
-        title: "Side Margin",
-        defaultValue: 0.06,
-        min: 0,
-        max: 0.4,
-        step: 0.01,
-        description: "Space kept clear on each side when fitting the text.",
-    },
-    gridSpacing: {
-        type: ControlType.Number,
-        title: "Grid Spacing",
-        defaultValue: 0.09,
-        min: 0.03,
-        max: 0.3,
-        step: 0.005,
-        description:
-            "Distance between letters, relative to the text size. Lower = more rows and columns per letter.",
-    },
-    charScale: {
-        type: ControlType.Number,
-        title: "Char Size",
-        defaultValue: 0.11,
-        min: 0.03,
-        max: 0.4,
-        step: 0.005,
-        description: "Particle character size, relative to the text size.",
-    },
-    scramble: {
-        type: ControlType.Boolean,
-        title: "Scramble",
-        defaultValue: true,
-        enabledTitle: "On",
-        disabledTitle: "Off",
-    },
-    scrambleInterval: {
-        type: ControlType.Number,
-        title: "Every",
-        defaultValue: 1,
-        min: 0.05,
-        max: 5,
-        step: 0.05,
-        unit: "s",
-        hidden: (p) => !p.scramble,
-        description:
-            "How often each character re-rolls. Timers are staggered per particle.",
-    },
-    background: {
-        type: ControlType.Color,
-        title: "Background",
-        defaultValue: "#000000",
-    },
-    particleColor: {
-        type: ControlType.Color,
-        title: "Particles",
-        defaultValue: "rgb(220, 220, 220)",
-    },
-    particleOpacity: {
-        type: ControlType.Number,
-        title: "Opacity",
-        defaultValue: 0.85,
-        min: 0,
-        max: 1,
-        step: 0.01,
-    },
-    highlightColor: {
-        type: ControlType.Color,
-        title: "Highlight",
-        defaultValue: "rgb(255, 255, 255)",
-    },
-    glowColor: {
-        type: ControlType.Color,
-        title: "Glow",
-        defaultValue: "#ffffff",
-    },
-    glowBlur: {
-        type: ControlType.Number,
-        title: "Glow Blur",
-        defaultValue: 8,
-        min: 0,
-        max: 40,
-        step: 1,
-    },
-    mouseRadius: {
-        type: ControlType.Number,
-        title: "Cursor Radius",
-        defaultValue: 55,
-        min: 0,
-        max: 300,
-        step: 1,
-        unit: "px",
-    },
-    pushStrength: {
-        type: ControlType.Number,
-        title: "Push",
-        defaultValue: 0.95,
-        min: 0,
-        max: 3,
-        step: 0.05,
-    },
-    followSpeed: {
-        type: ControlType.Number,
-        title: "Follow",
-        defaultValue: 0.18,
-        min: 0.01,
-        max: 1,
-        step: 0.01,
-        description: "How quickly a particle eases toward its position.",
-    },
-    scatterBandFraction: {
-        type: ControlType.Number,
-        title: "Scatter Band",
-        defaultValue: 0.45,
-        min: 0.05,
-        max: 1,
-        step: 0.01,
-        description: "Height of the scatter zone, as a fraction of the frame.",
-    },
-    maxScatterBand: {
-        type: ControlType.Number,
-        title: "Max Band",
-        defaultValue: 280,
-        min: 40,
-        max: 1200,
-        step: 10,
-        unit: "px",
-    },
-    startDelay: {
-        type: ControlType.Number,
-        title: "Start Delay",
-        defaultValue: 0.4,
-        min: 0,
-        max: 5,
-        step: 0.1,
-        unit: "s",
-    },
-    showHint: {
-        type: ControlType.Boolean,
-        title: "Hint",
-        defaultValue: true,
-        enabledTitle: "Show",
-        disabledTitle: "Hide",
-    },
-    hintText: {
-        type: ControlType.String,
-        title: "Hint Text",
-        defaultValue: "Click to interact",
-        hidden: (p) => !p.showHint,
-    },
-    hintColor: {
-        type: ControlType.Color,
-        title: "Hint Color",
-        defaultValue: "rgba(255, 255, 255, 0.9)",
-        hidden: (p) => !p.showHint,
-    },
-    hintBackground: {
-        type: ControlType.Color,
-        title: "Hint BG",
-        defaultValue: "rgba(0, 0, 0, 0.85)",
-        hidden: (p) => !p.showHint,
-    },
-    hintBorderColor: {
-        type: ControlType.Color,
-        title: "Hint Border",
-        defaultValue: "rgba(255, 255, 255, 0.25)",
-        hidden: (p) => !p.showHint,
-    },
-    playOnCanvas: {
-        type: ControlType.Boolean,
-        title: "Canvas Play",
-        defaultValue: false,
-        enabledTitle: "Animate",
-        disabledTitle: "Static",
-        description:
-            "Off shows the assembled text while designing; the full animation always runs in Preview and on the published site.",
-    },
-})

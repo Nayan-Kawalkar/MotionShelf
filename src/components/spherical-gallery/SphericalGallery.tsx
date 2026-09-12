@@ -1,6 +1,5 @@
 import * as React from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
-// @ts-ignore — URL import, resolved by Framer at build time
+// @ts-ignore — URL import, mapped onto the local package by the bundler
 import * as THREE from "https://esm.sh/three@0.160.1"
 
 /* @controls:start */
@@ -109,7 +108,7 @@ const DEFAULTS = {
 }
 /* @controls:end */
 
-// Framer hands object-groups over as partial objects, so every value gets
+// Object-group props can arrive partial, so every value gets
 // filled in from DEFAULTS rather than trusting the prop to be complete.
 function fill(base: any, over: any) {
     const out = { ...base }
@@ -128,11 +127,6 @@ function fill(base: any, over: any) {
  * card to bring it forward. Drop your own images into the Images control —
  * with none set it draws placeholder "site screenshots", so the component
  * looks right the moment it lands on the canvas.
- *
- * @framerIntrinsicWidth 1200
- * @framerIntrinsicHeight 700
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
  */
 export default function SphericalGallery(props: any) {
     const style = props.style
@@ -159,7 +153,7 @@ export default function SphericalGallery(props: any) {
         images, imageFit, seed, placeholder, grid, lens, look, motion, hover, overlay,
     }
 
-    const isCanvas = RenderTarget.current() === RenderTarget.canvas
+    const isCanvas = false
 
     const imageKey = React.useMemo(
         () =>
@@ -223,7 +217,7 @@ export default function SphericalGallery(props: any) {
         const scene = new THREE.Scene()
         scene.fog = new THREE.FogExp2(0x000000, P0.look.fog)
 
-        // Framer can mount the component before layout settles — fall back
+        // The component can mount before layout settles — fall back
         // to the intrinsic size and let the ResizeObserver correct it
         const sizeOf = () => ({
             w: host.clientWidth || host.offsetWidth || 1200,
@@ -1137,203 +1131,3 @@ export default function SphericalGallery(props: any) {
 }
 
 SphericalGallery.defaultProps = DEFAULTS
-
-addPropertyControls(SphericalGallery, {
-    /* ---------------- CONTENT ---------------- */
-    images: {
-        type: ControlType.Array,
-        title: "Images",
-        control: { type: ControlType.ResponsiveImage },
-        defaultValue: DEFAULTS.images,
-        description:
-            "Leave empty to draw generated placeholder screenshots instead.",
-    },
-    imageFit: {
-        type: ControlType.Enum,
-        title: "Fit",
-        defaultValue: DEFAULTS.imageFit,
-        options: ["cover", "contain"],
-        optionTitles: ["Cover", "Contain"],
-        displaySegmentedControl: true,
-    },
-    seed: {
-        type: ControlType.Number,
-        title: "Seed",
-        defaultValue: DEFAULTS.seed,
-        min: 1,
-        max: 9999,
-        step: 1,
-        description: "Re-rolls the placeholder art and any layout randomness.",
-    },
-
-    /* ---------------- GRID ---------------- */
-    grid: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).grid,
-        title: "Grid",
-        controls: {
-            rows: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.rows, title: "Rows", min: 1, max: 16, step: 1, displayStepper: true },
-            columns: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.columns, title: "Columns", min: 3, max: 40, step: 1, displayStepper: true },
-            gapMode: {
-                type: ControlType.Boolean,
-                defaultValue: (DEFAULTS as any).grid.gapMode,
-                title: "Set By",
-                enabledTitle: "Gap",
-                disabledTitle: "Card",
-                description:
-                    "Card: you pick the card size, gaps fall out. Gap: you pick the gaps, the card size is solved for.",
-            },
-            cardWidth: {
-                type: ControlType.Number,
-                defaultValue: (DEFAULTS as any).grid.cardWidth,
-                title: "Card Size", min: 0.5, max: 14, step: 0.1,
-                hidden: (p: any) => !!p.gapMode,
-            },
-            gapX: {
-                type: ControlType.Number,
-                defaultValue: (DEFAULTS as any).grid.gapX,
-                title: "Gap X", min: 0, max: 14, step: 0.1,
-                hidden: (p: any) => !p.gapMode,
-            },
-            gapY: {
-                type: ControlType.Number,
-                defaultValue: (DEFAULTS as any).grid.gapY,
-                title: "Gap Y", min: 0, max: 14, step: 0.1,
-                hidden: (p: any) => !p.gapMode,
-            },
-            cardAspect: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.cardAspect, title: "Card Ratio", min: 0.3, max: 3.5, step: 0.01 },
-            cornerRadius: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.cornerRadius, title: "Corners", min: 0, max: 0.5, step: 0.005 },
-            edgeLight: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.edgeLight, title: "Edge Light", min: 0, max: 1, step: 0.02 },
-            distance: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.distance, title: "Distance", min: 6, max: 70, step: 0.5 },
-            bandTop: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.bandTop, title: "Band Top", min: 0.02, max: 0.5, step: 0.01, hidden: (p: any) => !!p.gapMode },
-            bandBottom: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.bandBottom, title: "Band Bottom", min: 0.5, max: 0.98, step: 0.01, hidden: (p: any) => !!p.gapMode },
-            stagger: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.stagger, title: "Stagger", min: 0, max: 1, step: 0.05 },
-            density: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.density, title: "Fill", min: 0.2, max: 1, step: 0.02 },
-            sizeVariation: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.sizeVariation, title: "Size Mix", min: 0, max: 0.6, step: 0.01 },
-            depthVariation: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.depthVariation, title: "Depth Mix", min: 0, max: 6, step: 0.1 },
-            angleJitter: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.angleJitter, title: "Scatter", min: 0, max: 0.6, step: 0.01 },
-            tilt: { type: ControlType.Number, defaultValue: (DEFAULTS as any).grid.tilt, title: "Tilt", min: 0, max: 0.3, step: 0.005 },
-        },
-    },
-
-    /* ---------------- LENS ---------------- */
-    lens: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).lens,
-        title: "Lens",
-        controls: {
-            fieldOfView: { type: ControlType.Number, defaultValue: (DEFAULTS as any).lens.fieldOfView, title: "FOV", min: 25, max: 115, step: 1, unit: "°" },
-            maxPixelRatio: { type: ControlType.Number, defaultValue: (DEFAULTS as any).lens.maxPixelRatio, title: "Max DPR", min: 1, max: 3, step: 0.5 },
-            antialias: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).lens.antialias, title: "Antialias" },
-        },
-    },
-
-    /* ---------------- LOOK ---------------- */
-    look: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).look,
-        title: "Look",
-        controls: {
-            background: { type: ControlType.Color, defaultValue: (DEFAULTS as any).look.background, title: "Background" },
-            fogColor: { type: ControlType.Color, defaultValue: (DEFAULTS as any).look.fogColor, title: "Fog Color" },
-            fog: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.fog, title: "Fog", min: 0, max: 0.08, step: 0.001 },
-            glow: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.glow, title: "Glow", min: 0, max: 0.8, step: 0.01 },
-            glowColor: { type: ControlType.Color, defaultValue: (DEFAULTS as any).look.glowColor, title: "Glow Color" },
-            fadeStart: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.fadeStart, title: "Fade In", min: 0, max: 1, step: 0.01 },
-            fadeEnd: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.fadeEnd, title: "Fade Out", min: 0, max: 1, step: 0.005 },
-            fadeCurve: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.fadeCurve, title: "Fade Curve", min: 0.3, max: 4, step: 0.02 },
-            minBrightness: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.minBrightness, title: "Floor", min: 0, max: 0.5, step: 0.01 },
-            vignette: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.vignette, title: "Vignette", min: 0, max: 1, step: 0.05 },
-            vignetteColor: { type: ControlType.Color, defaultValue: (DEFAULTS as any).look.vignetteColor, title: "Vig. Color" },
-            vignetteSize: { type: ControlType.Number, defaultValue: (DEFAULTS as any).look.vignetteSize, title: "Vig. Size", min: 60, max: 200, step: 5, unit: "%" },
-        },
-    },
-
-    /* ---------------- MOTION ---------------- */
-    motion: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).motion,
-        title: "Motion",
-        controls: {
-            drag: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).motion.drag, title: "Drag" },
-            dragSpeed: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.dragSpeed, title: "Drag Speed", min: 0.0005, max: 0.012, step: 0.0001 },
-            invert: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).motion.invert, title: "Invert" },
-            lockVertical: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).motion.lockVertical, title: "Lock Y" },
-            wheel: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).motion.wheel, title: "Wheel" },
-            wheelSpeed: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.wheelSpeed, title: "Wheel Speed", min: 0, max: 0.01, step: 0.0001 },
-            friction: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.friction, title: "Glide", min: 0.75, max: 0.995, step: 0.005 },
-            smoothing: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.smoothing, title: "Coast Smoothing", min: 0.02, max: 0.5, step: 0.01 },
-            dragSmoothing: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.dragSmoothing, title: "Drag Follow", min: 0.05, max: 1, step: 0.01 },
-            pitchLimit: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.pitchLimit, title: "Tilt Limit", min: 0, max: 1.2, step: 0.01 },
-            rubber: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.rubber, title: "Rubber Band", min: 0, max: 1, step: 0.02 },
-            overshoot: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.overshoot, title: "Overshoot", min: 0, max: 0.3, step: 0.01 },
-            autoDrift: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.autoDrift, title: "Auto Drift", min: 0, max: 3, step: 0.01 },
-            driftDirection: {
-                type: ControlType.Enum,
-                defaultValue: (DEFAULTS as any).motion.driftDirection,
-                title: "Direction",
-                options: ["left", "right"],
-                optionTitles: ["Left", "Right"],
-                displaySegmentedControl: true,
-            },
-            driftDelay: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.driftDelay, title: "Drift Delay", min: 0, max: 6, step: 0.1, unit: "s" },
-            parallax: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.parallax, title: "Parallax", min: 0, max: 0.12, step: 0.005 },
-            startAngle: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.startAngle, title: "Start Angle", min: -180, max: 180, step: 1, unit: "°" },
-            startPitch: { type: ControlType.Number, defaultValue: (DEFAULTS as any).motion.startPitch, title: "Start Pitch", min: -40, max: 40, step: 1, unit: "°" },
-        },
-    },
-
-    /* ---------------- HOVER ---------------- */
-    hover: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).hover,
-        title: "Hover",
-        controls: {
-            enabled: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).hover.enabled, title: "Enabled" },
-            scale: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.scale, title: "Grow", min: 0, max: 0.8, step: 0.01 },
-            lift: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.lift, title: "Step Forward", min: 0, max: 0.3, step: 0.005 },
-            brightness: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.brightness, title: "Brighten", min: 0, max: 2, step: 0.05 },
-            glow: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.glow, title: "Halo", min: 0, max: 10, step: 0.1 },
-            dim: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.dim, title: "Dim Others", min: 0, max: 0.9, step: 0.01 },
-            speed: { type: ControlType.Number, defaultValue: (DEFAULTS as any).hover.speed, title: "Speed", min: 0.03, max: 0.6, step: 0.01 },
-            pauseDrift: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).hover.pauseDrift, title: "Pause Drift" },
-            cursor: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).hover.cursor, title: "Cursors" },
-        },
-    },
-
-    /* ---------------- OVERLAY ---------------- */
-    overlay: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).overlay,
-        title: "Overlay",
-        controls: {
-            showTitle: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).overlay.showTitle, title: "Show" },
-            title: { type: ControlType.String, defaultValue: (DEFAULTS as any).overlay.title, title: "Title", displayTextArea: true },
-            titleFont: { type: ControlType.Font, defaultValue: (DEFAULTS as any).overlay.titleFont, title: "Font", controls: "extended" },
-            titleColor: { type: ControlType.Color, defaultValue: (DEFAULTS as any).overlay.titleColor, title: "Color" },
-            textShadow: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.textShadow, title: "Shadow", min: 0, max: 1, step: 0.05 },
-            subtitle: { type: ControlType.String, defaultValue: (DEFAULTS as any).overlay.subtitle, title: "Caption" },
-            subtitleColor: { type: ControlType.Color, defaultValue: (DEFAULTS as any).overlay.subtitleColor, title: "Caption Color" },
-            subtitleSize: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.subtitleSize, title: "Caption Size", min: 6, max: 32, step: 1 },
-            subtitleSpacing: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.subtitleSpacing, title: "Tracking", min: 0, max: 12, step: 0.1 },
-            subtitleUppercase: { type: ControlType.Boolean, defaultValue: (DEFAULTS as any).overlay.subtitleUppercase, title: "Uppercase" },
-            subtitleGap: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.subtitleGap, title: "Caption Gap", min: 0, max: 80, step: 1 },
-            offsetY: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.offsetY, title: "Offset Y", min: -400, max: 400, step: 1 },
-            backdrop: { type: ControlType.Number, defaultValue: (DEFAULTS as any).overlay.backdrop, title: "Backdrop", min: 0, max: 1, step: 0.05 },
-        },
-    },
-
-    /* ---------------- PLACEHOLDERS ---------------- */
-    placeholder: {
-        type: ControlType.Object,
-        defaultValue: (DEFAULTS as any).placeholder,
-        title: "Placeholders",
-        description: "Only used while the Images list is empty.",
-        controls: {
-            lightRatio: { type: ControlType.Number, defaultValue: (DEFAULTS as any).placeholder.lightRatio, title: "Light Mix", min: 0, max: 1, step: 0.02 },
-            chrome: { type: ControlType.Number, defaultValue: (DEFAULTS as any).placeholder.chrome, title: "Browser Bar", min: 0, max: 1, step: 0.02 },
-            names: { type: ControlType.String, defaultValue: (DEFAULTS as any).placeholder.names, title: "Names", displayTextArea: true },
-            headlines: { type: ControlType.String, defaultValue: (DEFAULTS as any).placeholder.headlines, title: "Headlines", displayTextArea: true },
-        },
-    },
-})

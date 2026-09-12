@@ -5,7 +5,7 @@ import htmlSource from "./gallery.html?raw";
 // Flat keys, one per tunable. Each key matches a line inside the component's
 // `@controls` DEFAULTS block — nested there, but uniquely named — so the
 // exporters can bake the visitor's settings straight back into it.
-// SphericalGalleryPreview folds these back into the object groups the Framer
+// SphericalGalleryPreview folds these back into the object groups the
 // component expects.
 export const controls = [
   { key: "background", label: "Background", type: "color", default: "#000000" },
@@ -113,8 +113,8 @@ const meta = {
   copies: 0,
   addedAt: "2026-09-02",
   pro: false,
-  // Pulled from esm.sh in the Framer flavour and from a CDN in the HTML one,
-  // so only a React install needs it on the package list.
+  // Pulled from a CDN by the standalone HTML page, so only a React install
+  // needs it on the package list.
   dependencies: ["three"],
   sources: {
     jsx: { name: "SphericalGallery.tsx", lang: "tsx", code: source },

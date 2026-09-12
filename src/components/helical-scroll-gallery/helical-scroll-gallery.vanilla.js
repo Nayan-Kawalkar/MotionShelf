@@ -5,7 +5,7 @@
 //   gallery.destroy();
 //
 // Three.js is pulled from a CDN at run time — the same r128 UMD build the
-// Framer component uses — so there is nothing to bundle and no import to
+// React component uses — so there is nothing to bundle and no import to
 // resolve. The single-file export strips the `export` below and calls `mount`
 // directly.
 

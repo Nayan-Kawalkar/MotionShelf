@@ -1,5 +1,4 @@
 import * as React from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
 
 /**
  * THE EIGHT — 3D card carousel
@@ -8,12 +7,6 @@ import { addPropertyControls, ControlType, RenderTarget } from "framer"
  * angle moves the same way — like cards on a single drum, at different
  * points in the same turn. Passing 90 degrees is what swaps the face,
  * so there is no separate flip to fall out of sync.
- *
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
- * @framerIntrinsicWidth 1200
- * @framerIntrinsicHeight 760
- * @framerDisableUnlink
  */
 
 // ---------------------------------------------------------------- types
@@ -233,7 +226,7 @@ export default function TarotCarousel(props: Partial<Props>) {
     const motion = merge(MOTION, props.motion)
     const deal = merge(DEAL, props.deal)
 
-    const onCanvas = RenderTarget.current() === RenderTarget.canvas
+    const onCanvas = false
     const N = Math.max(1, cards.length)
 
     const rootRef = React.useRef<HTMLDivElement>(null)
@@ -281,7 +274,7 @@ export default function TarotCarousel(props: Partial<Props>) {
     const tiltsRef = React.useRef(tilts)
     tiltsRef.current = tilts
 
-    // ---- measure the container (Framer resizes freely) ----
+    // ---- measure the container (it resizes freely) ----
     React.useEffect(() => {
         const el = rootRef.current
         if (!el || typeof ResizeObserver === "undefined") return
@@ -825,181 +818,3 @@ export default function TarotCarousel(props: Partial<Props>) {
 }
 
 // ---------------------------------------------------- property controls
-
-addPropertyControls(TarotCarousel, {
-    /* EVERY control carries a defaultValue. Without one Framer supplies its
-       own — for a Number control that is the `min` — so an untouched panel
-       would hand back aspect 1, spread 0.2 and restYaw/push/bump 0: square
-       cards, no depth, no 3D. The constants above are the single source of
-       truth for these values. */
-
-    cards: {
-        type: ControlType.Array,
-        title: "Cards",
-        defaultValue: CARDS,
-        control: {
-            type: ControlType.Object,
-            controls: {
-                image: { type: ControlType.ResponsiveImage, title: "Art" },
-                title: { type: ControlType.String, title: "Name", defaultValue: "" },
-                pip: { type: ControlType.String, title: "Numeral", defaultValue: "8" },
-                tilt: {
-                    type: ControlType.Number,
-                    title: "Lean",
-                    min: -20, max: 20, step: 0.5,
-                    defaultValue: 0,
-                    description: "0 lets the deck deal an angle",
-                },
-            },
-        },
-    },
-
-    background: {
-        type: ControlType.String,
-        title: "Backdrop",
-        defaultValue: BACKDROP,
-        description: "Any CSS background — a colour or a gradient",
-    },
-    cream: { type: ControlType.Color, title: "Frame", defaultValue: "#f7f1e6" },
-    backField: { type: ControlType.Color, title: "Card back", defaultValue: "#1f0308" },
-    patternRed: { type: ControlType.Color, title: "Lattice", defaultValue: "rgba(168,48,42,.46)" },
-    patternInner: { type: ControlType.Color, title: "Lattice dot", defaultValue: "rgba(126,32,28,.34)" },
-
-    showHeader: { type: ControlType.Boolean, title: "Header", defaultValue: true },
-    headerTitle: {
-        type: ControlType.String, title: "Title", defaultValue: "The Eight",
-        hidden: (p: Props) => !p.showHeader,
-    },
-    headerFont: {
-        type: ControlType.String, title: "Title font",
-        defaultValue: "Italianno, 'Snell Roundhand', cursive",
-        description: "Also used for the card numerals",
-    },
-    membersLabel: {
-        type: ControlType.String, title: "Link", defaultValue: "Members",
-        hidden: (p: Props) => !p.showHeader,
-    },
-
-    showArrows: { type: ControlType.Boolean, title: "Arrows", defaultValue: true },
-    showCounter: { type: ControlType.Boolean, title: "Counter", defaultValue: true },
-    responsive: {
-        type: ControlType.Boolean, title: "Adapt", defaultValue: true,
-        description: "Below 820px wide, use the compact layout",
-    },
-    wheelControl: {
-        type: ControlType.Boolean, title: "Scroll", defaultValue: true,
-        description: "Let the wheel or trackpad turn the deck",
-    },
-
-    autoPlay: { type: ControlType.Boolean, title: "Autoplay", defaultValue: false },
-    autoPlayDelay: {
-        type: ControlType.Number, title: "Every",
-        min: 800, max: 12000, step: 100, unit: "ms",
-        defaultValue: 3600,
-        hidden: (p: Props) => !p.autoPlay,
-    },
-
-    geometry: {
-        type: ControlType.Object,
-        title: "Geometry",
-        defaultValue: GEOMETRY,
-        controls: {
-            cardSize: {
-                type: ControlType.Number, title: "Card size",
-                min: 20, max: 100, step: 1, unit: "%",
-                defaultValue: GEOMETRY.cardSize,
-                description: "Height of the centre card, against the frame",
-            },
-            aspect: {
-                type: ControlType.Number, title: "Aspect",
-                min: 0.6, max: 2.2, step: 0.005,
-                defaultValue: GEOMETRY.aspect,
-                description: "Height ÷ width. 1.535 is a tarot card",
-            },
-            spread: {
-                type: ControlType.Number, title: "Spread",
-                min: 0.2, max: 1, step: 0.001,
-                defaultValue: GEOMETRY.spread,
-                description: "Where a neighbour parks, as a share of width",
-            },
-            perspective: {
-                type: ControlType.Number, title: "Camera",
-                min: 0.5, max: 3, step: 0.01,
-                defaultValue: GEOMETRY.perspective,
-            },
-            restYaw: {
-                type: ControlType.Number, title: "Rest yaw",
-                min: 0, max: 30, step: 0.5, unit: "°",
-                defaultValue: GEOMETRY.restYaw,
-            },
-            push: {
-                type: ControlType.Number, title: "Push",
-                min: 0, max: 500, step: 5,
-                defaultValue: GEOMETRY.push,
-            },
-            bump: {
-                type: ControlType.Number, title: "Bump",
-                min: 0, max: 400, step: 5,
-                defaultValue: GEOMETRY.bump,
-            },
-            lean: {
-                type: ControlType.Number, title: "Lean",
-                min: 0, max: 10, step: 0.25, unit: "°",
-                defaultValue: GEOMETRY.lean,
-            },
-        },
-    },
-
-    motion: {
-        type: ControlType.Object,
-        title: "Motion",
-        defaultValue: MOTION,
-        controls: {
-            duration: {
-                type: ControlType.Number, title: "Duration",
-                min: 200, max: 2400, step: 20, unit: "ms",
-                defaultValue: MOTION.duration,
-            },
-            flipFrom: {
-                type: ControlType.Number, title: "Turn from",
-                min: 0, max: 0.5, step: 0.01,
-                defaultValue: MOTION.flipFrom,
-            },
-            flipTo: {
-                type: ControlType.Number, title: "Turn to",
-                min: 0.5, max: 1, step: 0.01,
-                defaultValue: MOTION.flipTo,
-                description: "Narrow the span for a snappier turn",
-            },
-        },
-    },
-
-    deal: {
-        type: ControlType.Object,
-        title: "Resting angles",
-        defaultValue: DEAL,
-        controls: {
-            alternate: {
-                type: ControlType.Boolean, title: "Alternate",
-                defaultValue: DEAL.alternate,
-                description: "Lean right, left, right…",
-            },
-            tiltMin: {
-                type: ControlType.Number, title: "Min",
-                min: 0, max: 20, step: 0.5, unit: "°",
-                defaultValue: DEAL.tiltMin,
-            },
-            tiltMax: {
-                type: ControlType.Number, title: "Max",
-                min: 0, max: 25, step: 0.5, unit: "°",
-                defaultValue: DEAL.tiltMax,
-            },
-            seed: {
-                type: ControlType.Number, title: "Seed",
-                min: 1, max: 99999999, step: 1, displayStepper: false,
-                defaultValue: DEAL.seed,
-                description: "Change it to re-deal",
-            },
-        },
-    },
-})
