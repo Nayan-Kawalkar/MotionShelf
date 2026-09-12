@@ -14,7 +14,9 @@ export default function GalleryPage() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("trending");
   const [category, setCategory] = useState(null);
-  const [livePreviews, setLivePreviews] = useState(false);
+  // "hover" — posters, and a clip plays while the pointer is on its card.
+  // "loop"  — every clip plays at once, continuously.
+  const [previewMode, setPreviewMode] = useState("hover");
   const searchRef = useRef(null);
 
   // "/" focuses search, the way the reference site does.
@@ -116,19 +118,19 @@ export default function GalleryPage() {
             <span className="preview-toggle__label">Preview Type:</span>
             <button
               type="button"
-              aria-pressed={!livePreviews}
-              className={`preview-toggle__btn${livePreviews ? "" : " preview-toggle__btn--on"}`}
-              onClick={() => setLivePreviews(false)}
-              title="Recorded previews"
+              aria-pressed={previewMode === "hover"}
+              className={`preview-toggle__btn${previewMode === "hover" ? " preview-toggle__btn--on" : ""}`}
+              onClick={() => setPreviewMode("hover")}
+              title="Posters — play on hover"
             >
               <StillIcon />
             </button>
             <button
               type="button"
-              aria-pressed={livePreviews}
-              className={`preview-toggle__btn${livePreviews ? " preview-toggle__btn--on" : ""}`}
-              onClick={() => setLivePreviews(true)}
-              title="Live previews"
+              aria-pressed={previewMode === "loop"}
+              className={`preview-toggle__btn${previewMode === "loop" ? " preview-toggle__btn--on" : ""}`}
+              onClick={() => setPreviewMode("loop")}
+              title="Play every preview"
             >
               <LiveIcon />
             </button>
@@ -142,7 +144,7 @@ export default function GalleryPage() {
         ) : (
           <div className="grid">
             {results.map((item, i) => (
-              <ComponentCard key={item.id} item={item} live={livePreviews} index={i} />
+              <ComponentCard key={item.id} item={item} mode={previewMode} index={i} />
             ))}
           </div>
         )}
@@ -156,16 +158,16 @@ export default function GalleryPage() {
 // position — deterministic, so the grid never reshuffles between renders.
 const CARD_RATIOS = ["16 / 10", "16 / 13", "16 / 9", "16 / 11", "4 / 3", "16 / 10"];
 
-function ComponentCard({ item, live, index }) {
+function ComponentCard({ item, mode, index }) {
   const Component = item.component;
   const preview = previewFor(item.id);
   const videoRef = useRef(null);
 
-  // The clip only runs while the pointer is on the card: thirteen looping
-  // videos would otherwise decode continuously for no one's benefit.
   const play = () => {
     const v = videoRef.current;
     if (!v || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // A background tab or a hidden pane refuses video-only playback; that
+    // rejection is expected, not an error.
     v.play().catch(() => {});
   };
   const stop = () => {
@@ -174,9 +176,17 @@ function ComponentCard({ item, live, index }) {
     v.pause();
     v.currentTime = 0;
   };
+
   const [liked, toggleLike] = useLike(item.id);
   // Cards show a component at its first variant, not the visitor's edits.
   const previewValues = useMemo(() => variantValues(item, item.variants[0].id), [item]);
+
+  // Loop mode runs every card continuously; hover mode runs only the card
+  // under the pointer, so switching back has to stop this one.
+  useEffect(() => {
+    if (mode === "loop") play();
+    else stop();
+  }, [mode]);
 
   const previewStyle = {
     ...previewVars(item),
@@ -187,7 +197,13 @@ function ComponentCard({ item, live, index }) {
   // wrapping everything: some components render their own anchors, and an <a>
   // inside an <a> is invalid HTML that React refuses to hydrate.
   return (
-    <div className="card" onMouseEnter={play} onMouseLeave={stop} onFocus={play} onBlur={stop}>
+    <div
+      className="card"
+      onMouseEnter={mode === "hover" ? play : undefined}
+      onMouseLeave={mode === "hover" ? stop : undefined}
+      onFocus={mode === "hover" ? play : undefined}
+      onBlur={mode === "hover" ? stop : undefined}
+    >
       <Link
         to={`/component/${item.id}`}
         className="card__hit"
@@ -211,11 +227,7 @@ function ComponentCard({ item, live, index }) {
       </button>
 
       <div className="card__preview" style={previewStyle}>
-        {live ? (
-          <div className="card__live">
-            <Component {...previewValues} />
-          </div>
-        ) : preview ? (
+        {preview ? (
           <video
             ref={videoRef}
             className="card__video"
@@ -225,7 +237,9 @@ function ComponentCard({ item, live, index }) {
             playsInline
             // Only the poster is fetched up front; the clip itself waits for a
             // hover, so a full gallery costs almost nothing to load.
-            preload="none"
+            // Loop mode needs the data up front; hover mode should cost
+            // nothing until someone actually hovers.
+            preload={mode === "loop" ? "auto" : "none"}
             aria-label={`${item.name} preview`}
           >
             <source src={preview.video} type="video/mp4" />
