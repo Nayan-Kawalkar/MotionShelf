@@ -41,6 +41,10 @@ const previews = {
   "tarot-carousel": {
     "video": "/preview/tarot-carousel.mp4",
     "poster": "/preview/tarot-carousel.webp"
+  },
+  "floating-arc-slider": {
+    "video": "/preview/curved-card-marquee.mp4",
+    "poster": "/preview/curved-card-marquee.webp"
   }
 };
 
