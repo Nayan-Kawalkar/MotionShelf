@@ -46,6 +46,22 @@ const previews = {
     "video": "/preview/tarot-carousel.mp4",
     "poster": "/preview/tarot-carousel.webp"
   },
+  "luxeria": {
+    "video": "/preview/luxeria.mp4",
+    "poster": "/preview/luxeria.webp"
+  },
+  "nexbot": {
+    "video": "/preview/nexbot.mp4",
+    "poster": "/preview/nexbot.webp"
+  },
+  "axiom-sneaker": {
+    "video": "/preview/axiom-sneaker.mp4",
+    "poster": "/preview/axiom-sneaker.webp"
+  },
+  "moving-garden": {
+    "video": "/preview/moving-garden.mp4",
+    "poster": "/preview/moving-garden.webp"
+  },
   "floating-arc-slider": {
     "video": "/preview/curved-card-marquee.mp4",
     "poster": "/preview/curved-card-marquee.webp"

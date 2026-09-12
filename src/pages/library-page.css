@@ -162,6 +162,15 @@
   }
 }
 
+/* Recorded preview: poster until the pointer arrives, then the clip loops. */
+.lcard__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--surface-2);
+}
+
 .lcard__placeholder {
   width: 100%;
   height: 100%;

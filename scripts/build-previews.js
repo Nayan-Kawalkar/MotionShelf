@@ -1,5 +1,6 @@
 /**
- * Turns the screen recordings in /media into web-sized card previews.
+ * Turns the screen recordings in /media into web-sized card previews for
+ * components, templates and sections.
  *
  *   node scripts/build-previews.js
  *
@@ -59,6 +60,13 @@ const SOURCES = {
   "sphere-album": { clip: "14-43-24", start: 4 },
   "spherical-gallery": { clip: "14-50-21", start: 6 },
   "tarot-carousel": { clip: "14-44-29", start: 5 },
+
+  // Templates and sections. Ids are unique across all three registries, so
+  // they share this table and the one manifest.
+  luxeria: { clip: "Luxeria", start: 5 },
+  nexbot: { clip: "NexBot", start: 5 },
+  "axiom-sneaker": { clip: "ed shoe", start: 5 },
+  "moving-garden": { clip: "Moving gardern", start: 5 },
 };
 
 const run = (args) => execFileSync(ffmpeg, args, { stdio: ["ignore", "ignore", "pipe"] });
