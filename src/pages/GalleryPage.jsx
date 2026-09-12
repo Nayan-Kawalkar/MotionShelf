@@ -14,9 +14,10 @@ export default function GalleryPage() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("trending");
   const [category, setCategory] = useState(null);
-  // "hover" — posters, and a clip plays while the pointer is on its card.
-  // "loop"  — every clip plays at once, continuously.
-  const [previewMode, setPreviewMode] = useState("hover");
+  // "loop"  — every clip plays at once, continuously. The default: the grid
+  //            is meant to show the components moving.
+  // "hover" — posters, and a clip plays only while the pointer is on its card.
+  const [previewMode, setPreviewMode] = useState("loop");
   const searchRef = useRef(null);
 
   // "/" focuses search, the way the reference site does.
