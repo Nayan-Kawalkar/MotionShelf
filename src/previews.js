@@ -50,6 +50,10 @@ const previews = {
     "video": "/preview/luxeria.mp4",
     "poster": "/preview/luxeria.webp"
   },
+  "nova-cans": {
+    "video": "/preview/nova-cans.mp4",
+    "poster": "/preview/nova-cans.webp"
+  },
   "nexbot": {
     "video": "/preview/nexbot.mp4",
     "poster": "/preview/nexbot.webp"

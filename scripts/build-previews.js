@@ -64,6 +64,7 @@ const SOURCES = {
   // Templates and sections. Ids are unique across all three registries, so
   // they share this table and the one manifest.
   luxeria: { clip: "Luxeria", start: 5 },
+  "nova-cans": { clip: "can with no audio", start: 5 },
   nexbot: { clip: "NexBot", start: 5 },
   "axiom-sneaker": { clip: "ed shoe", start: 5 },
   "moving-garden": { clip: "Moving gardern", start: 5 },
@@ -121,7 +122,7 @@ for (const [id, { clip, start, sameAs }] of Object.entries(SOURCES)) {
   run(["-y", "-ss", String(start + 1), "-i", input, "-vframes", "1",
        "-vf", `scale=${WIDTH}:-2:flags=lanczos`, frame, "-loglevel", "error"]);
   await sharp(frame).webp({ quality: 72 }).toFile(poster);
-  rmSync(frame);
+  rmSync(frame, { force: true });
 
   const sizes = `${kb(mp4)}KB mp4 + ${kb(poster)}KB poster`;
   totalKb += kb(mp4) + kb(poster);
