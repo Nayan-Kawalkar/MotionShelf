@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Source screen recordings for card previews. Huge, and only the derived
+# files in public/preview are shipped — rebuild with: npm run previews
+media
